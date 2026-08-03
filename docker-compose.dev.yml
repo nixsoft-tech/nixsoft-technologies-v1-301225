@@ -1,0 +1,37 @@
+# docker-compose.dev.yml — LOCAL DEVELOPMENT OVERRIDE
+#
+# Usage:
+#   docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+#
+# This override restores direct port access on localhost so you can
+# develop without running the nginx-proxy or certbot services.
+# The production docker-compose.yml locks everything behind nginx-proxy.
+
+services:
+  # Expose internal services directly for local access
+  app:
+    ports:
+      - "3001:80"
+    build:
+      args:
+        - VITE_API_BASE_URL=http://localhost:5000
+
+  server:
+    ports:
+      - "5000:5000"
+    environment:
+      # Allow the locally-served frontend origins to call the API
+      - ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3001
+
+  wordpress:
+    ports:
+      - "8080:80"
+
+  # Disable nginx-proxy and certbot in dev — not needed locally
+  nginx-proxy:
+    profiles:
+      - production
+
+  certbot:
+    profiles:
+      - production

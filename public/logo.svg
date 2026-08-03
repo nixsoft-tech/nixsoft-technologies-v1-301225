@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240" role="img" aria-label="nixSOFT">
+  <style>
+    .nix  { font-family: 'Poppins', 'Arial Black', Arial, sans-serif; font-weight: 800; }
+    .soft { font-family: 'Poppins', 'Arial Black', Arial, sans-serif; font-weight: 700; }
+  </style>
+  <!-- oversized dot over the i -->
+  <circle cx="129" cy="52" r="12" fill="#EA5A0C"/>
+  <!-- nix -->
+  <text class="nix" x="120" y="108" text-anchor="middle" font-size="92" fill="#EA5A0C" letter-spacing="-2">nix</text>
+  <!-- SOFT. -->
+  <text class="soft" x="120" y="182" text-anchor="middle" font-size="70" letter-spacing="2" fill="#6DB33F">SOFT<tspan fill="#E4002B">.</tspan></text>
+  <!-- underline -->
+  <rect x="82" y="200" width="76" height="9" rx="4.5" fill="#6DB33F"/>
+</svg>

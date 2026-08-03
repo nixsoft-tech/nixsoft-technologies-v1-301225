@@ -1,0 +1,142 @@
+# Secrets are read from a gitignored `.env` file in this directory
+# (docker-compose loads it automatically). Copy `.env.example` to `.env`
+# and fill in real values. `${VAR:?...}` guards make compose refuse to
+# start if a required secret is missing — nothing falls back to a default.
+
+services:
+  # ─── Database for WordPress ──────────────────────────────────────────────────
+  db:
+    image: mariadb:10.11.8
+    restart: always
+    environment:
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wp_user
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env}
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - nixsoft_network
+
+  # ─── WordPress CMS ───────────────────────────────────────────────────────────
+  wordpress:
+    depends_on:
+      - db
+    image: wordpress:6.5.3-php8.3-apache
+    restart: always
+    # NO public ports — all traffic routed through nginx-proxy
+    expose:
+      - "80"
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wp_user
+      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - wordpress_data:/var/www/html
+    networks:
+      - nixsoft_network
+
+  # ─── Backend Server (Chat AI proxy, Logs & SMTP) ─────────────────────────────
+  server:
+    build:
+      context: ./server
+    restart: always
+    # NO public ports — all traffic routed through nginx-proxy
+    expose:
+      - "5000"
+    environment:
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in .env}
+      # GEMINI_API_KEY and SMTP_PASS may be empty — the server degrades
+      # gracefully (chat runs in demo mode, /api/contact returns 503) and
+      # logs a startup warning. This keeps `docker compose` usable (e.g.
+      # for certbot bootstrap) before these values are filled in.
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - SMTP_HOST=${SMTP_HOST:-smtp.gmail.com}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_SECURE=${SMTP_SECURE:-false}
+      - SMTP_USER=${SMTP_USER:-sales@nixsoftech.in}
+      - SMTP_PASS=${SMTP_PASS:-}
+      - CONTACT_EMAIL=${CONTACT_EMAIL:-sales@nixsoftech.in}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-https://new.nixsoftech.in}
+    volumes:
+      - chat_logs:/app/logs
+    networks:
+      - nixsoft_network
+
+  # ─── React Frontend ───────────────────────────────────────────────────────────
+  app:
+    build:
+      context: .
+      args:
+        # NOTE: no VITE_GEMINI_API_KEY — Gemini calls are proxied through the
+        # backend so no API key ever ships in the browser bundle.
+        - VITE_WORDPRESS_API_URL=https://blog.new.nixsoftech.in/wp-json/wp/v2
+        # Empty string = use relative /api/... paths (proxied by nginx-proxy)
+        - VITE_API_BASE_URL=
+        #
+        # VITE_SITE_URL is deliberately NOT set here. It feeds every
+        # <link rel="canonical">, og:url, and the JSON-LD, and defaults to the
+        # production apex (https://nixsoftech.in) — see constants.ts.
+        #
+        # Do NOT set it to https://new.nixsoftech.in for UAT. This host is
+        # served noindex (see nginx-proxy/conf.d/default.conf), so its
+        # canonicals are never read by a crawler and pointing them at the UAT
+        # host buys nothing. The failure modes are wildly asymmetric: leaving
+        # it unset means a production build is correct by default, whereas
+        # setting it here means anyone who reuses this file at cutover ships
+        # production with every page canonicalized to a dead staging host —
+        # the exact bug fixed on 16 Jul 2026.
+    restart: always
+    # NO public ports — all traffic routed through nginx-proxy
+    expose:
+      - "80"
+    networks:
+      - nixsoft_network
+
+  # ─── Nginx Reverse Proxy (Single public entry point) ─────────────────────────
+  nginx-proxy:
+    image: nginx:1.26.1-alpine
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      # Custom nginx configs
+      - ./nginx-proxy/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx-proxy/conf.d:/etc/nginx/conf.d:ro
+      # Let's Encrypt certificates (managed by certbot)
+      - certbot_conf:/etc/letsencrypt:ro
+      # ACME challenge webroot (shared with certbot)
+      - certbot_www:/var/www/certbot:ro
+    depends_on:
+      - app
+      - server
+      - wordpress
+    networks:
+      - nixsoft_network
+
+  # ─── Certbot (Automatic SSL Renewal) ─────────────────────────────────────────
+  certbot:
+    image: certbot/certbot:v2.11.0
+    restart: unless-stopped
+    volumes:
+      # Same volumes as nginx-proxy so it can write certs nginx reads
+      - certbot_conf:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
+    # Check for renewal every 12 hours; Let's Encrypt certs are valid 90 days
+    # and renewed automatically when < 30 days remain
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot; sleep 12h & wait $${!}; done;'"
+    networks:
+      - nixsoft_network
+
+networks:
+  nixsoft_network:
+    driver: bridge
+
+volumes:
+  db_data:
+  wordpress_data:
+  chat_logs:
+  certbot_conf:    # Let's Encrypt certs & config
+  certbot_www:     # ACME challenge files
