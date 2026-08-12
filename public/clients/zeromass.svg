@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 130" width="100%" height="100%" role="img" aria-label="ZERO — On The Right Side">
+  <g font-family="Arial, Helvetica, system-ui, sans-serif">
+    <!-- ZER wordmark -->
+    <text x="8" y="70" font-size="72" font-weight="800" letter-spacing="1" fill="#3a3a3a">ZER</text>
+    <!-- O rendered as a thick green ring -->
+    <circle cx="200" cy="46" r="30" fill="none" stroke="#159a5b" stroke-width="12" />
+    <!-- Tagline -->
+    <text x="10" y="108" font-size="20" font-weight="700" letter-spacing="4" fill="#3a3a3a">ON THE RIGHT SIDE</text>
+  </g>
+</svg>

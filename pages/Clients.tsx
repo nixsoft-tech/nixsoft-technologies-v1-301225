@@ -24,12 +24,14 @@ const CASE_STUDIES: CaseStudy[] = [
   },
   {
     name: 'NCCL',
+    logo: '/clients/nccl.svg',
     industry: 'Clearing Corp',
     engagement: 'PostgreSQL Performance Optimization',
     summary: 'To support surging clearing volumes, we implemented a proactive maintenance framework. Our comprehensive tuning and automated monitoring ensured zero-data-loss reliability for risk management systems.'
   },
   {
     name: 'Zero Mass',
+    logo: '/clients/zeromass.svg',
     industry: 'FinTech',
     engagement: 'Linux Infrastructure Support',
     summary: 'Required a hardened operating environment for financial inclusion services. Nixsoft provided end-to-end Enterprise Linux support and automated patch management, delivering a secure foundation for millions of end-users.'
@@ -43,7 +45,7 @@ const CASE_STUDIES: CaseStudy[] = [
   },
   {
     name: 'Tata Trent',
-    logo: '/clients/tatatrent.png',
+    logo: '/clients/tatatrent.svg',
     industry: 'Retail',
     engagement: 'Automated Patch Management & VulnGuard™',
     summary: 'Manual patching was a security risk across their vast retail footprint. We implemented VulnGuard™ to automate vulnerability assessment, ensuring 100% compliance without disrupting daily retail operations.'

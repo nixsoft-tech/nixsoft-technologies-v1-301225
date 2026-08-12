@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 130" width="100%" height="100%" role="img" aria-label="Trent Limited — A Tata Enterprise">
+  <g font-family="Arial, Helvetica, system-ui, sans-serif" fill="#1a1a1a" text-anchor="middle">
+    <!-- TRENT wordmark -->
+    <text x="150" y="60" font-size="58" font-weight="800" letter-spacing="2">TRENT</text>
+    <!-- LIMITED -->
+    <text x="150" y="88" font-size="20" font-weight="700" letter-spacing="10">LIMITED</text>
+    <!-- Divider rule -->
+    <line x1="60" y1="100" x2="240" y2="100" stroke="#1a1a1a" stroke-width="1.5" />
+    <!-- Tagline -->
+    <text x="150" y="118" font-size="15" font-weight="600" letter-spacing="1">A TATA Enterprise</text>
+  </g>
+</svg>
