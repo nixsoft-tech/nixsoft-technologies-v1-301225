@@ -8,7 +8,7 @@ const Navbar: React.FC = () => {
 
   return (
     <nav className="fixed w-full z-50 glass-effect border-b border-gray-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl min-[1650px]:max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20 items-center">
           {/* Logo */}
           <div className="flex items-center space-x-6">
@@ -19,8 +19,8 @@ const Navbar: React.FC = () => {
               </span>
             </Link>
             
-            {/* System Status Badge */}
-            <div className="hidden lg:flex items-center space-x-2 px-3 py-1 bg-green-50 border border-green-100 rounded-full">
+            {/* System Status Badge — only on very wide screens to avoid crowding the nav */}
+            <div className="hidden min-[1650px]:flex items-center space-x-2 px-3 py-1 bg-green-50 border border-green-100 rounded-full whitespace-nowrap">
               <span className="relative flex h-2.5 w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
@@ -30,7 +30,7 @@ const Navbar: React.FC = () => {
           </div>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex space-x-8 items-center">
+          <div className="hidden lg:flex space-x-5 xl:space-x-7 items-center">
             {NAV_LINKS.map((link) => (
               <NavLink
                 key={link.path}
@@ -46,7 +46,7 @@ const Navbar: React.FC = () => {
             ))}
             <Link
               to="/contact"
-              className="bg-nixOrange hover:bg-orange-600 text-white px-5 py-2.5 rounded-md text-sm font-semibold shadow-lg shadow-orange-200 transition-all flex items-center group"
+              className="bg-nixOrange hover:bg-orange-600 text-white px-5 py-2.5 rounded-md text-sm font-semibold shadow-lg shadow-orange-200 transition-all flex items-center group whitespace-nowrap"
             >
               Talk to an Expert
               <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
@@ -54,7 +54,7 @@ const Navbar: React.FC = () => {
           </div>
 
           {/* Mobile menu button */}
-          <div className="flex md:hidden">
+          <div className="flex lg:hidden">
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="text-slate-600 hover:text-nixBlue focus:outline-none"
