@@ -140,8 +140,8 @@ const Home: React.FC = () => {
                 <Link to="/contact" className="bg-nixOrange hover:bg-orange-600 text-white text-center px-8 py-4 rounded-lg font-bold text-lg shadow-lg shadow-orange-900/20 transition-all hover:-translate-y-1">
                   Talk to an Expert
                 </Link>
-                <Link to="/solutions" className="bg-white/5 border border-white/20 hover:bg-white/10 text-white text-center px-8 py-4 rounded-lg font-semibold text-lg transition-all backdrop-blur-sm">
-                  Explore Solutions
+                <Link to="/services" className="bg-white/5 border border-white/20 hover:bg-white/10 text-white text-center px-8 py-4 rounded-lg font-semibold text-lg transition-all backdrop-blur-sm">
+                  Explore Services
                 </Link>
               </div>
 
@@ -196,7 +196,7 @@ const Home: React.FC = () => {
                 </div>
                 <h4 className="text-xl font-bold text-slate-900 mb-3">{service.title}</h4>
                 <p className="text-slate-500 leading-relaxed mb-4">{service.description}</p>
-                <Link to={`/service/${service.slug}`} className="text-nixBlue font-semibold flex items-center text-sm group-hover:underline">
+                <Link to={`/services/${service.slug}`} className="text-nixBlue font-semibold flex items-center text-sm group-hover:underline">
                   Learn more <ArrowRight size={14} className="ml-1" />
                 </Link>
               </div>

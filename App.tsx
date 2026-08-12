@@ -5,9 +5,12 @@ import Footer from './components/Footer';
 import ChatWidget from './components/ChatWidget';
 import Schema from './components/Schema';
 import Home from './pages/Home';
+import { getServiceBySlugOrAlias } from './data/services';
 
-const Solutions = lazy(() => import('./pages/Solutions'));
+const Services = lazy(() => import('./pages/Services'));
 const ServiceDetail = lazy(() => import('./pages/ServiceDetail'));
+const Solutions = lazy(() => import('./pages/Solutions'));
+const SolutionDetail = lazy(() => import('./pages/SolutionDetail'));
 const Products = lazy(() => import('./pages/Products'));
 const Industries = lazy(() => import('./pages/Industries'));
 const Contact = lazy(() => import('./pages/Contact'));
@@ -33,6 +36,14 @@ const BlogPostRedirect: React.FC = () => {
   return <Navigate to={`/blog/${slug}`} replace />;
 };
 
+// Legacy /service/<slug> URLs now live under /services. Resolve the old slug
+// (canonical or alias) to the current service and 301 there; unknown → /services.
+const LegacyServiceRedirect: React.FC = () => {
+  const { slug } = useParams<{ slug: string }>();
+  const service = slug ? getServiceBySlugOrAlias(slug) : undefined;
+  return <Navigate to={service ? `/services/${service.slug}` : '/services'} replace />;
+};
+
 const App: React.FC = () => {
   return (
     <BrowserRouter>
@@ -49,7 +60,10 @@ const App: React.FC = () => {
           }>
             <Routes>
               <Route path="/" element={<Home />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/services/:slug" element={<ServiceDetail />} />
               <Route path="/solutions" element={<Solutions />} />
+              <Route path="/solutions/:slug" element={<SolutionDetail />} />
               <Route path="/products" element={<Products />} />
               <Route path="/industries" element={<Industries />} />
               <Route path="/clients" element={<Clients />} />
@@ -63,33 +77,24 @@ const App: React.FC = () => {
               {/* Core Page Redirects */}
               <Route path="/about-us" element={<Navigate to="/about" replace />} />
               <Route path="/contact-us" element={<Navigate to="/contact" replace />} />
-              <Route path="/services" element={<Navigate to="/solutions" replace />} />
               <Route path="/nixsoft-blog" element={<Navigate to="/blog" replace />} />
 
-              {/* Legacy duplicate/overlapping old-site slugs — 301 to the canonical dedicated page
-                  (avoids serving the same content at multiple URLs). */}
-              <Route path="/service/it-managed-services" element={<Navigate to="/service/it-ops-services" replace />} />
-              <Route path="/service/on-demand-services" element={<Navigate to="/service/it-ops-services" replace />} />
-              <Route path="/service/performance-testing" element={<Navigate to="/service/automation-testing" replace />} />
-              <Route path="/service/functional-testing" element={<Navigate to="/service/automation-testing" replace />} />
-              <Route path="/service/synthetic-monitoring" element={<Navigate to="/service/infrastructure-monitoring" replace />} />
-              <Route path="/service/application-performance-monitoring" element={<Navigate to="/service/infrastructure-monitoring" replace />} />
+              {/* Legacy /service/<slug> URLs — the technical catalogue moved to /services.
+                  Resolve each old slug (canonical or alias) to its current page and 301. */}
+              <Route path="/service/:slug" element={<LegacyServiceRedirect />} />
+              <Route path="/service" element={<Navigate to="/services" replace />} />
 
-              {/* Dedicated service pages — canonical slugs (devops-automation, cloud-managed-service,
-                  security-testing, database-management-service, infrastructure-monitoring,
-                  it-ops-services, automation-testing, middleware-services, robotics-process-automation)
-                  are all served here, matched against data/solutions.ts. Unknown slugs redirect to /solutions. */}
-              <Route path="/service/:slug" element={<ServiceDetail />} />
+              {/* Platform solutions moved from /products to the Solutions tab. */}
+              <Route path="/asset-management" element={<Navigate to="/solutions/asset-management" replace />} />
+              <Route path="/email-collaboration" element={<Navigate to="/solutions/email-collaboration" replace />} />
+              <Route path="/ticketing-system" element={<Navigate to="/solutions/ticketing-system" replace />} />
 
-              {/* Product/Utility Redirects */}
-              <Route path="/asset-management" element={<Navigate to="/products" replace />} />
-              <Route path="/email-collaboration" element={<Navigate to="/products" replace />} />
-              <Route path="/ticketing-system" element={<Navigate to="/products" replace />} />
+              {/* Utility Redirects */}
               <Route path="/get-quote" element={<Navigate to="/contact" replace />} />
               <Route path="/raise-ticket" element={<Navigate to="/contact" replace />} />
-              <Route path="/testing" element={<Navigate to="/solutions" replace />} />
-              <Route path="/monitoring" element={<Navigate to="/solutions" replace />} />
-              <Route path="/it-service-management" element={<Navigate to="/solutions" replace />} />
+              <Route path="/testing" element={<Navigate to="/services" replace />} />
+              <Route path="/monitoring" element={<Navigate to="/services" replace />} />
+              <Route path="/it-service-management" element={<Navigate to="/services" replace />} />
 
               {/* Root-Level Blog Redirect Catch-All */}
               <Route path="/:slug" element={<BlogPostRedirect />} />
