@@ -6,9 +6,18 @@ import {
   Landmark, RadioTower, ShoppingBag, Cpu, CheckCircle2
 } from 'lucide-react';
 
-const CASE_STUDIES = [
+type CaseStudy = {
+  name: string;
+  industry: string;
+  engagement: string;
+  summary: string;
+  logo?: string;
+};
+
+const CASE_STUDIES: CaseStudy[] = [
   {
     name: 'NCDEX',
+    logo: '/clients/ncdex.png',
     industry: 'Exchange',
     engagement: 'MySQL & PostgreSQL Database Management',
     summary: 'Faced with high-latency transactions during peak hours, we re-architected the database layer using advanced tuning and replication strategies. This resulted in 99.99% availability and sub-millisecond response times for critical trading operations.'
@@ -27,53 +36,88 @@ const CASE_STUDIES = [
   },
   {
     name: 'Hathway',
+    logo: '/clients/hathway.ico',
     industry: 'Telecom',
     engagement: 'Infrastructure & Network Monitoring',
     summary: 'Managing a distributed network required centralized visibility. We deployed a unified Network Monitoring System (NMS) with intelligent alerting, reducing noise and enabling proactive incident resolution.'
   },
   {
     name: 'Tata Trent',
+    logo: '/clients/tatatrent.png',
     industry: 'Retail',
     engagement: 'Automated Patch Management & VulnGuard™',
     summary: 'Manual patching was a security risk across their vast retail footprint. We implemented VulnGuard™ to automate vulnerability assessment, ensuring 100% compliance without disrupting daily retail operations.'
   },
   {
     name: 'Atos',
+    logo: '/clients/atos.png',
     industry: 'Technology',
     engagement: 'Database & Linux Vulnerability Remediation',
     summary: 'Faced with strict audit requirements, the client needed rapid remediation. We executed a systematic automated hardening strategy across database and OS layers, closing critical gaps and meeting global standards.'
   },
   {
     name: 'Globus',
+    logo: '/clients/globus.png',
     industry: 'Retail',
     engagement: 'Enterprise Monitoring Solutions',
     summary: 'Operational blind spots were leading to unpredicted downtime. We engineered a full-stack observability suite providing real-time dashboards, preventing outages and optimizing resource utilization.'
   },
   {
     name: 'IndusInd Bank',
+    logo: '/clients/indusind.png',
     industry: 'BFSI',
     engagement: 'Linux & Monitoring Support',
     summary: 'In a highly regulated environment, security and uptime are non-negotiable. We delivered 24/7 specialized Linux support and real-time monitoring, ensuring strict compliance and seamless banking operations.'
   }
 ];
 
-const getIndustryIcon = (industry: string) => {
+const IndustryIcon: React.FC<{ industry: string; size?: number; className?: string }> = ({
+  industry,
+  size = 14,
+  className = 'mr-1.5',
+}) => {
   switch (industry) {
     case 'BFSI':
     case 'Clearing Corp':
     case 'FinTech':
-      return <Landmark size={14} className="mr-1.5" />;
+      return <Landmark size={size} className={className} />;
     case 'Exchange':
-      return <TrendingUp size={14} className="mr-1.5" />;
+      return <TrendingUp size={size} className={className} />;
     case 'Retail':
-      return <ShoppingBag size={14} className="mr-1.5" />;
+      return <ShoppingBag size={size} className={className} />;
     case 'Telecom':
-      return <RadioTower size={14} className="mr-1.5" />;
+      return <RadioTower size={size} className={className} />;
     case 'Technology':
-      return <Cpu size={14} className="mr-1.5" />;
+      return <Cpu size={size} className={className} />;
     default:
-      return <Building2 size={14} className="mr-1.5" />;
+      return <Building2 size={size} className={className} />;
   }
+};
+
+// Company icon shown before the client name. Falls back to a neutral badge
+// with the industry icon if no logo is set or the image fails to load.
+const ClientLogo: React.FC<{ name: string; industry: string; logo?: string }> = ({ name, industry, logo }) => {
+  const [failed, setFailed] = React.useState(false);
+
+  if (logo && !failed) {
+    return (
+      <span className="w-11 h-11 rounded-lg bg-white border border-gray-100 shadow-sm flex items-center justify-center overflow-hidden flex-shrink-0">
+        <img
+          src={logo}
+          alt={`${name} logo`}
+          className="w-7 h-7 object-contain"
+          loading="lazy"
+          onError={() => setFailed(true)}
+        />
+      </span>
+    );
+  }
+
+  return (
+    <span className="w-11 h-11 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center flex-shrink-0">
+      <IndustryIcon industry={industry} size={22} className="" />
+    </span>
+  );
 };
 
 const Clients: React.FC = () => {
@@ -135,11 +179,12 @@ const Clients: React.FC = () => {
                 className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:border-nixBlue/30 transition-all duration-300 flex flex-col h-full group"
               >
                 <div className="mb-6 pb-4 border-b border-gray-50">
-                    <div className="flex justify-between items-start mb-2">
+                    <div className="flex items-center gap-3 mb-3">
+                        <ClientLogo name={study.name} industry={study.industry} logo={study.logo} />
                         <h3 className="text-2xl font-bold text-slate-900 font-display group-hover:text-nixBlue transition-colors">{study.name}</h3>
                     </div>
                     <span className="inline-flex items-center text-xs font-bold text-slate-500 uppercase tracking-wide bg-slate-100 px-2 py-1 rounded">
-                        {getIndustryIcon(study.industry)} {study.industry}
+                        <IndustryIcon industry={study.industry} /> {study.industry}
                     </span>
                 </div>
                 
