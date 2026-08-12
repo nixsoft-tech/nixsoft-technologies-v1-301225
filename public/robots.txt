@@ -1,14 +1,14 @@
-# ─────────────────────────────────────────────────────────────────────────────
-# STAGING / UAT — keep this environment out of search engines for now.
+# -----------------------------------------------------------------------------
+# STAGING / UAT - keep this environment out of search engines for now.
 #
-# NOTE: robots.txt has no supported "noindex" directive (Google deprecated it in
-# 2019). "Disallow: /" blocks crawling of the whole site. For a hard guarantee,
-# also serve a `<meta name="robots" content="noindex">` tag or an
-# `X-Robots-Tag: noindex` HTTP header.
+# NOTE: robots.txt has no supported "noindex" directive (Google deprecated it
+# in 2019). "Disallow: /" blocks crawling of the whole site. For a hard
+# guarantee, also serve a <meta name="robots" content="noindex"> tag or an
+# X-Robots-Tag: noindex HTTP header.
 #
 # IMPORTANT: revert this to allow crawling before promoting to production
 # (nixsoftech.in), or the live site will be dropped from search results.
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 User-agent: *
 Disallow: /
 
