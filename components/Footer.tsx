@@ -23,19 +23,22 @@ const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Solutions */}
+          {/* Services & Solutions */}
           <div>
-            <h4 className="font-display font-semibold text-lg mb-4 text-nixGreen">Solutions</h4>
+            <h4 className="font-display font-semibold text-lg mb-4 text-nixGreen">Services</h4>
             <ul className="space-y-3 text-sm text-slate-400">
-              <li><Link to="/service/devops-automation" className="hover:text-white transition-colors">DevOps Transformation</Link></li>
-              <li><Link to="/service/cloud-managed-service" className="hover:text-white transition-colors">Cloud Migration</Link></li>
-              <li><Link to="/service/security-testing" className="hover:text-white transition-colors">Cybersecurity (VAPT)</Link></li>
-              <li><Link to="/service/database-management-service" className="hover:text-white transition-colors">Database Engineering</Link></li>
-              <li><Link to="/service/infrastructure-monitoring" className="hover:text-white transition-colors">AI-Driven Monitoring</Link></li>
-              <li><Link to="/service/it-ops-services" className="hover:text-white transition-colors">Managed IT & On-Demand Ops</Link></li>
-              <li><Link to="/service/automation-testing" className="hover:text-white transition-colors">Quality Engineering & Testing</Link></li>
-              <li><Link to="/service/middleware-services" className="hover:text-white transition-colors">Middleware Management</Link></li>
-              <li><Link to="/service/robotics-process-automation" className="hover:text-white transition-colors">Robotics Process Automation</Link></li>
+              <li><Link to="/services/devops-services" className="hover:text-white transition-colors">DevOps Services</Link></li>
+              <li><Link to="/services/cloud-management-services" className="hover:text-white transition-colors">Cloud Management</Link></li>
+              <li><Link to="/services/security-testing" className="hover:text-white transition-colors">Security Testing (VAPT)</Link></li>
+              <li><Link to="/services/infrastructure-monitoring" className="hover:text-white transition-colors">Infrastructure Monitoring</Link></li>
+              <li><Link to="/services/it-managed-services" className="hover:text-white transition-colors">IT Managed Services</Link></li>
+              <li><Link to="/services" className="hover:text-white transition-colors font-medium text-slate-300">View all services →</Link></li>
+            </ul>
+            <h4 className="font-display font-semibold text-lg mt-6 mb-4 text-nixGreen">Solutions</h4>
+            <ul className="space-y-3 text-sm text-slate-400">
+              <li><Link to="/solutions/asset-management" className="hover:text-white transition-colors">Asset Management</Link></li>
+              <li><Link to="/solutions/email-collaboration" className="hover:text-white transition-colors">Email & Collaboration</Link></li>
+              <li><Link to="/solutions/ticketing-system" className="hover:text-white transition-colors">Ticketing System</Link></li>
             </ul>
           </div>
 

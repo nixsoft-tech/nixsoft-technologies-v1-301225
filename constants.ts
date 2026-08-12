@@ -7,6 +7,7 @@ import { ServiceItem, ProductItem, NavItem } from './types';
 export const SITE_URL = (import.meta.env.VITE_SITE_URL ?? 'https://nixsoftech.in').replace(/\/+$/, '');
 
 export const NAV_LINKS: NavItem[] = [
+  { label: 'Services', path: '/services' },
   { label: 'Solutions', path: '/solutions' },
   { label: 'Products', path: '/products' },
   { label: 'Industries', path: '/industries' },
@@ -23,7 +24,7 @@ export const SERVICES: ServiceItem[] = [
     description: 'End-to-end CI/CD pipelines, infrastructure as code (IaC), and container orchestration with Kubernetes.',
     iconName: 'Infinity',
     category: 'DevOps',
-    slug: 'devops-automation'
+    slug: 'devops-services'
   },
   {
     id: 'cloud',
@@ -31,7 +32,7 @@ export const SERVICES: ServiceItem[] = [
     description: 'Strategic migration, multi-cloud management, and cost optimization for AWS, Azure, and Google Cloud.',
     iconName: 'Cloud',
     category: 'Cloud',
-    slug: 'cloud-managed-service'
+    slug: 'cloud-management-services'
   },
   {
     id: 'security',
@@ -47,7 +48,7 @@ export const SERVICES: ServiceItem[] = [
     description: 'High-availability architecture, tuning, and management for PostgreSQL, MongoDB, and enterprise SQL.',
     iconName: 'Database',
     category: 'Database',
-    slug: 'database-management-service'
+    slug: 'db-management-services'
   }
 ];
 
