@@ -9,20 +9,21 @@ const Products: React.FC = () => {
   return (
     <div className="flex flex-col">
       <SEO
-        title="Enterprise Security & Automation Products"
-        description="Discover Nixsoft's enterprise-grade open-source automation and compliance platforms: VulnGuard for vulnerability management, SecureBench for CIS hardening, and NixOps AI Agents for self-healing infrastructure."
+        title="Security, Compliance & AIOps Products"
+        description="Nixsoft products: VulnGuard vulnerability management, SecureBench CIS benchmark hardening automation, and NixOps AI Agents for self-healing infrastructure."
         path="/products"
-        keywords="VulnGuard, SecureBench, NixOps AI Agents, CIS Hardening Automation, Vulnerability Management Software, Nixsoft Products"
+        keywords="vulnerability management platform, CIS benchmark automation tool, AIOps platform, VulnGuard, SecureBench, NixOps AI Agents, security automation products"
+        breadcrumbs={[{ name: 'Products', path: '/products' }]}
       />
       {/* Hero Section */}
       <section className="bg-nixDark py-32 px-4 relative overflow-hidden">
-        <HeroImage src="/images/banners/products-hero.webp" />
+        <HeroImage src="/images/banners/products-hero.webp" alt="Close-up of a teal-lit circuit board representing security and automation software" />
         <div className="max-w-7xl mx-auto text-center relative z-10">
           <h1 className="text-4xl md:text-6xl font-display font-bold text-white mb-6">
-            Enterprise-Grade <span className="text-nixBlue bg-white px-2">Frameworks</span>
+            Security &amp; Automation <span className="text-nixBlue bg-white px-2">Products</span>
           </h1>
           <p className="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
-            Proprietary tools built on open-source foundations. Designed for security, compliance, and automated operations.
+            Proprietary tools built on open-source foundations, for vulnerability management, CIS benchmark compliance, and AIOps-driven, self-healing operations.
           </p>
         </div>
       </section>

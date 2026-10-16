@@ -9,20 +9,21 @@ const Industries: React.FC = () => {
   return (
     <div className="flex flex-col">
       <SEO
-        title="DevOps & Cloud Solutions for Critical Industries"
-        description="Nixsoft Technologies delivers high-performance, compliant DevOps and open-source automation systems for BFSI, Telecom, Retail, and Manufacturing across Pan-Asia."
+        title="Industry IT Solutions: BFSI, Telecom & Retail"
+        description="Industry-specific IT infrastructure and DevOps solutions for BFSI, telecom, retail and manufacturing: compliant, high-availability systems across India and Asia."
         path="/industries"
-        keywords="BFSI DevOps, Telecom 5G Automation, Retail Auto-scaling, Industry 4.0 IoT Security, Nixsoft Industries"
+        keywords="industry IT solutions, IT infrastructure for BFSI, telecom IT infrastructure, retail IT services, manufacturing IT OT security, DevOps for regulated industries"
+        breadcrumbs={[{ name: 'Industries', path: '/industries' }]}
       />
       {/* Hero Section */}
       <section className="bg-nixDark py-32 px-4 relative overflow-hidden">
-        <HeroImage src="/images/banners/industries-hero.webp" />
+        <HeroImage src="/images/banners/industries-hero.webp" alt="Mumbai skyline along Marine Drive at dusk" />
         <div className="max-w-7xl mx-auto text-center relative z-10">
           <h1 className="text-4xl md:text-6xl font-display font-bold text-white mb-6">
-            Powering <span className="text-nixGreen">Critical Infrastructure</span>
+            IT Solutions for <span className="text-nixGreen">Critical Industries</span>
           </h1>
           <p className="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
-            Tailored engineering solutions for highly regulated and high-performance sectors across Asia.
+            Tailored IT infrastructure and DevOps solutions for highly regulated, high-performance sectors, from banking and telecom to retail and manufacturing, across India and Asia.
           </p>
         </div>
       </section>
@@ -39,7 +40,7 @@ const Industries: React.FC = () => {
               <div className="-mx-8 -mt-8 mb-6 h-52 overflow-hidden">
                 <img
                   src={industry.image}
-                  alt={industry.fullName}
+                  alt={industry.imageAlt}
                   loading="lazy"
                   decoding="async"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"

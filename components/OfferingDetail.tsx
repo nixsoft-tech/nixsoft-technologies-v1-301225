@@ -6,6 +6,7 @@ import {
 import ROICalculator from './ROICalculator';
 import SEO from './SEO';
 import HeroImage from './HeroImage';
+import FaqList from './FaqList';
 import type { OfferingData } from '../types';
 
 interface OfferingDetailProps {
@@ -17,26 +18,35 @@ interface OfferingDetailProps {
   /** Related offerings to show at the bottom. */
   related: OfferingData[];
   relatedHeading?: string;
-  /** Hero banner photo. */
+  /** Hero banner photo and its alt text. */
   image?: string;
+  imageAlt?: string;
 }
 
 const OfferingDetail: React.FC<OfferingDetailProps> = ({
-  offering, basePath, back, related, relatedHeading = 'Related Services', image,
+  offering, basePath, back, related, relatedHeading = 'Related Services', image, imageAlt,
 }) => {
+  // Headings reuse the page's primary keyword phrase, e.g. "VAPT and security testing".
+  const phrase = offering.keywordPhrase;
+  const sectionName = back.label.replace(/^All /, '');
+
   return (
     <div className="flex flex-col">
       <SEO
-        title={offering.title}
+        title={offering.seoTitle}
         description={offering.metaDescription}
         path={`${basePath}/${offering.slug}`}
-        keywords={`${offering.title}, ${offering.stack.join(', ')}`}
+        keywords={offering.keywords.join(', ')}
+        breadcrumbs={[
+          { name: sectionName, path: basePath },
+          { name: offering.title, path: `${basePath}/${offering.slug}` },
+        ]}
       />
 
       {/* Hero */}
       <section className="relative bg-nixDark py-28 px-4 overflow-hidden">
         {image ? (
-          <HeroImage src={image} />
+          <HeroImage src={image} alt={imageAlt} />
         ) : (
           <div className="absolute inset-0 z-0">
             <div className="absolute top-0 right-0 w-96 h-96 bg-nixBlue/30 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2"></div>
@@ -67,14 +77,14 @@ const OfferingDetail: React.FC<OfferingDetailProps> = ({
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Overview */}
           <div className="mb-14 max-w-3xl">
-            <h2 className="text-2xl font-display font-bold text-slate-900 mb-4">Overview</h2>
+            <h2 className="text-2xl font-display font-bold text-slate-900 mb-4">About our {phrase}</h2>
             <p className="text-lg text-slate-600 leading-relaxed">{offering.overview}</p>
           </div>
 
           {/* What we do */}
           <div className="mb-14">
             <h2 className="flex items-center text-2xl font-display font-bold text-slate-900 mb-6">
-              <ListChecks size={22} className="mr-3 text-nixBlue" /> What we do
+              <ListChecks size={22} className="mr-3 text-nixBlue shrink-0" /> What's included in our {phrase}
             </h2>
             <div className="grid sm:grid-cols-2 gap-4">
               {offering.whatWeDo.map((item, i) => (
@@ -89,7 +99,7 @@ const OfferingDetail: React.FC<OfferingDetailProps> = ({
           {/* Approach */}
           <div className="mb-14 bg-slate-50 p-8 rounded-xl border border-gray-100">
             <h2 className="flex items-center text-sm font-bold text-slate-700 mb-4 uppercase tracking-wide">
-              <Zap size={16} className="mr-2 text-nixGreen" /> Our Approach
+              <Zap size={16} className="mr-2 text-nixGreen shrink-0" /> How we deliver {phrase}
             </h2>
             <p className="text-slate-600 leading-relaxed text-lg">{offering.approach}</p>
           </div>
@@ -97,7 +107,7 @@ const OfferingDetail: React.FC<OfferingDetailProps> = ({
           {/* Tech stack */}
           <div className="mb-14">
             <h2 className="text-sm font-bold text-slate-900 mb-4 flex items-center uppercase tracking-wide">
-              <Layers size={18} className="mr-2 text-slate-400" /> Tools & Technology
+              <Layers size={18} className="mr-2 text-slate-400 shrink-0" /> Tools and technology for {phrase}
             </h2>
             <div className="flex flex-wrap gap-2">
               {offering.stack.map((tech) => (
@@ -111,7 +121,7 @@ const OfferingDetail: React.FC<OfferingDetailProps> = ({
           {/* Outcomes */}
           <div className="mb-12">
             <h2 className="text-sm font-bold text-slate-900 mb-4 flex items-center uppercase tracking-wide">
-              <CheckCircle2 size={18} className="mr-2 text-slate-400" /> Key Outcomes
+              <CheckCircle2 size={18} className="mr-2 text-slate-400 shrink-0" /> Outcomes of our {phrase}
             </h2>
             <ul className="space-y-3">
               {offering.outcomes.map((outcome, i) => (
@@ -122,6 +132,12 @@ const OfferingDetail: React.FC<OfferingDetailProps> = ({
               ))}
             </ul>
           </div>
+
+          {offering.faqs && offering.faqs.length > 0 && (
+            <div className="mb-12">
+              <FaqList faqs={offering.faqs} heading={`Frequently asked questions about ${phrase}`} />
+            </div>
+          )}
 
           <div className="pt-6 border-t border-gray-100">
             <Link to="/contact" className="inline-flex items-center text-nixBlue font-bold hover:underline text-lg">

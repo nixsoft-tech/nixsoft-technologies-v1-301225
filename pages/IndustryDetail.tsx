@@ -28,11 +28,15 @@ const IndustryDetail: React.FC = () => {
         description={industry.metaDescription}
         path={`/industries/${industry.slug}`}
         keywords={industry.keywords}
+        breadcrumbs={[
+          { name: 'Industries', path: '/industries' },
+          { name: industry.fullName, path: `/industries/${industry.slug}` },
+        ]}
       />
 
       {/* Hero */}
       <section className="bg-nixDark py-28 px-4 relative overflow-hidden">
-        <HeroImage src={industry.image} />
+        <HeroImage src={industry.image} alt={industry.imageAlt} />
         <div className="max-w-5xl mx-auto relative z-10">
           <Link to="/industries" className="inline-flex items-center text-slate-400 hover:text-white text-sm font-medium mb-8 transition-colors">
             <ArrowLeft size={16} className="mr-2" /> All Industries
@@ -54,7 +58,7 @@ const IndustryDetail: React.FC = () => {
       <section className="bg-white py-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-12 gap-12">
           <div className="lg:col-span-8">
-            <h2 className="text-3xl font-display font-bold text-slate-900 mb-6">Overview</h2>
+            <h2 className="text-3xl font-display font-bold text-slate-900 mb-6">IT and DevOps solutions for {industry.name}</h2>
             <div className="space-y-4">
               {industry.overview.map((para, i) => (
                 <p key={i} className="text-lg text-slate-600 leading-relaxed">{para}</p>
@@ -86,7 +90,7 @@ const IndustryDetail: React.FC = () => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-12 gap-12">
           <div className="lg:col-span-4 bg-nixDark text-white p-8 rounded-2xl self-start">
             <h2 className="text-lg font-bold mb-6 flex items-center text-red-400">
-              <Lock size={20} className="mr-2" /> Common Challenges
+              <Lock size={20} className="mr-2 shrink-0" /> {industry.name} IT challenges we solve
             </h2>
             <ul className="space-y-4">
               {industry.challenges.map((challenge) => (
@@ -105,7 +109,7 @@ const IndustryDetail: React.FC = () => {
           </div>
           <div className="lg:col-span-8">
             <h2 className="text-2xl font-display font-bold text-slate-900 mb-6 flex items-center">
-              <Cpu size={24} className={`mr-3 ${industry.textColor}`} /> Specialized Use Cases
+              <Cpu size={24} className={`mr-3 shrink-0 ${industry.textColor}`} /> {industry.name} use cases we deliver
             </h2>
             <div className="grid md:grid-cols-2 gap-6">
               {industry.solutions.map((sol) => (
@@ -166,7 +170,7 @@ const IndustryDetail: React.FC = () => {
             </div>
           )}
 
-          <FaqList faqs={industry.faqs} />
+          <FaqList faqs={industry.faqs} heading={`Frequently asked questions about ${industry.name} IT services`} />
         </div>
       </section>
 

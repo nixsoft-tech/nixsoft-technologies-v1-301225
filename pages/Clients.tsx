@@ -126,10 +126,10 @@ const Clients: React.FC = () => {
   return (
     <div className="flex flex-col">
       <SEO 
-        title="Trusted by Enterprise Industry Leaders"
-        description="Read case studies of how Nixsoft Technologies helped market leaders like NCDEX, Hathway, IndusInd Bank, and Tata Trent achieve sub-millisecond database speeds and compliance."
+        title="Case Studies: NCDEX, IndusInd Bank, Tata Trent"
+        description="DevOps, database and security case studies: how Nixsoft helped NCDEX, NCCL, IndusInd Bank, Hathway and Tata Trent improve uptime, performance and compliance."
         path="/clients"
-        keywords="Nixsoft Case Studies, Enterprise DevOps Portfolio, Database Optimization NCDEX, CIS Compliance Tata Trent"
+        keywords="Nixsoft case studies, DevOps case studies India, PostgreSQL performance tuning case study, BFSI IT infrastructure case study, patch management case study"
       />
       {/* Hero Section */}
       <section className="bg-nixDark py-32 px-4 relative overflow-hidden">
@@ -170,7 +170,7 @@ const Clients: React.FC = () => {
       <section className="py-24 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-display font-bold text-slate-900 mb-4">Client Success Stories</h2>
+            <h2 className="text-3xl font-display font-bold text-slate-900 mb-4">Client Case Studies: DevOps, Database &amp; Security</h2>
             <p className="text-slate-600 text-lg">Real-world impact delivering mission-critical solutions.</p>
           </div>
 

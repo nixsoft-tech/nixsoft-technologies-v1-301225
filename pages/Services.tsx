@@ -9,21 +9,22 @@ const Services: React.FC = () => {
   return (
     <div className="flex flex-col">
       <SEO
-        title="Services"
-        description="Nixsoft's full technical services catalogue — Managed IT & Operations, DevOps, Monitoring, Quality Engineering, Cloud, and Infrastructure — delivered with open-source excellence."
+        title="IT Infrastructure & DevOps Services in India"
+        description="IT infrastructure and DevOps services in India: 24x7 managed IT and NOC, DevOps consulting, monitoring, VAPT and testing, cloud, middleware and DBA support."
         path="/services"
-        keywords="Managed IT Services, DevOps, Infrastructure Monitoring, Automation Testing, Security Testing, Cloud Management, Middleware, Database Management, RPA"
+        keywords="IT infrastructure services India, DevOps services, managed IT services, 24x7 NOC services, VAPT services, cloud managed services, remote DBA services, test automation services"
+        breadcrumbs={[{ name: 'Services', path: '/services' }]}
       />
 
       {/* Hero */}
       <section className="relative bg-nixDark py-32 px-4 overflow-hidden">
-        <HeroImage src="/images/banners/services-hero.webp" />
+        <HeroImage src="/images/banners/services-hero.webp" alt="Engineer monitoring IT infrastructure on a wall of NOC screens" />
         <div className="max-w-7xl mx-auto text-center relative z-10">
           <h1 className="text-5xl md:text-6xl font-display font-bold text-white mb-6 animate-fade-in">
-            Our <span className="text-nixGreen">Services</span>
+            IT Infrastructure &amp; DevOps <span className="text-nixGreen">Services</span>
           </h1>
           <p className="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
-            End-to-end technical services across the full infrastructure lifecycle — from day-to-day operations to DevOps, observability, quality engineering, and cloud.
+            End-to-end IT infrastructure services for enterprises across India, from 24x7 managed IT and NOC operations to DevOps consulting, monitoring, VAPT and testing, and cloud management.
           </p>
         </div>
       </section>
@@ -39,8 +40,7 @@ const Services: React.FC = () => {
                 <div className="relative mb-8 rounded-2xl overflow-hidden bg-nixDark">
                   <img
                     src={category.image}
-                    alt=""
-                    aria-hidden="true"
+                    alt={category.imageAlt}
                     loading="lazy"
                     decoding="async"
                     className="absolute inset-0 w-full h-full object-cover"

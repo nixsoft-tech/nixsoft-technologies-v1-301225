@@ -10,6 +10,8 @@ export interface IndustryData {
   icon: LucideIcon;
   /** Banner photo for the detail page and overview card. */
   image: string;
+  /** Descriptive alt text for the banner photo. */
+  imageAlt: string;
   /** One-line summary for overview cards and the Home page. */
   summary: string;
   description: string;
@@ -39,6 +41,7 @@ export const INDUSTRIES_DATA: IndustryData[] = [
     id: 'bfsi',
     slug: 'bfsi',
     image: '/images/banners/ind-bfsi.webp',
+    imageAlt: 'Real-time trading and banking dashboard on a financial services screen',
     name: 'BFSI',
     fullName: 'Banking, Financial Services & Insurance',
     icon: Landmark,
@@ -46,7 +49,7 @@ export const INDUSTRIES_DATA: IndustryData[] = [
     description: 'Modernize legacy core banking systems while maintaining military-grade security and strict regulatory compliance.',
     overview: [
       'Financial institutions run some of the most demanding infrastructure anywhere: transaction platforms that cannot go down, data that regulators require to stay in-country, and audit cycles that never really end.',
-      'Nixsoft helps banks, exchanges, clearing corporations, insurers, and fintechs modernise that infrastructure without trading away control — automating compliance, hardening every layer, and engineering the databases and platforms behind critical trading and payment systems for high availability.',
+      'Nixsoft helps banks, exchanges, clearing corporations, insurers, and fintechs modernise that infrastructure without trading away control — automating compliance, hardening every layer, and engineering the databases and platforms behind critical trading and payment systems for high availability. From IT infrastructure services for banks and NBFCs to database management for stock exchanges, every engagement is built for regulated, always-on environments.',
     ],
     challenges: ['Legacy mainframe dependencies', 'Strict data residency laws (RBI/MAS)', 'Zero-tolerance for downtime'],
     solutions: [
@@ -63,17 +66,19 @@ export const INDUSTRIES_DATA: IndustryData[] = [
       { q: 'Which compliance frameworks do you support for BFSI?', a: 'Our BFSI engagements are built around PCI-DSS, ISO 27001, SOC 2, and GDPR, with compliance enforced as code so evidence is generated continuously rather than assembled at audit time.' },
       { q: 'Can you work within data residency requirements?', a: 'Yes. We deploy on-premise, in in-country cloud regions, or in air-gapped environments, so regulated data stays where regulators require it.' },
       { q: 'Do you support exchanges and clearing corporations?', a: 'Yes — our BFSI clients include NCDEX and NCCL, where we manage and tune the MySQL and PostgreSQL platforms behind critical trading and clearing systems.' },
+      { q: 'Can you act as an IT service provider for banks and NBFCs?', a: 'Yes. We work with regulated BFSI organisations and run engagements with documented processes, access controls, audit trails, and SLA reporting, supporting the vendor oversight that RBI expects of banks and NBFCs when they outsource IT services.' },
     ],
     lightColor: 'bg-blue-50',
     textColor: 'text-blue-600',
-    metaTitle: 'BFSI — DevOps, Security & Compliance for Financial Services',
-    metaDescription: 'Secure, compliant, high-availability infrastructure for banks, exchanges, clearing corporations, insurers, and fintechs — PCI-DSS, ISO 27001, and data-residency ready.',
-    keywords: 'BFSI DevOps, banking infrastructure, financial services compliance, PCI-DSS automation, fintech infrastructure, exchange database management',
+    metaTitle: 'IT Infrastructure & Security for BFSI in India',
+    metaDescription: 'IT infrastructure and security services for banks, NBFCs, exchanges and insurers in India: PCI-DSS automation, database management and data-residency compliance.',
+    keywords: 'BFSI IT infrastructure services, IT infrastructure services for banks and NBFCs, PCI-DSS compliance automation, database management for stock exchanges, fintech DevOps India',
   },
   {
     id: 'telecom',
     slug: 'telecom',
     image: '/images/banners/ind-telecom.webp',
+    imageAlt: 'Telecom towers and 5G network infrastructure at sunset',
     name: 'Telecom',
     fullName: 'Telecommunications & 5G',
     icon: RadioTower,
@@ -81,7 +86,7 @@ export const INDUSTRIES_DATA: IndustryData[] = [
     description: 'Build the backbone of the future with high-throughput, low-latency infrastructure automation for 5G and edge computing.',
     overview: [
       'Telecom operators run infrastructure at a scale few other industries match — thousands of sites, enormous data volumes, and customers who notice every second of downtime. Manual operations simply do not keep up.',
-      'Nixsoft brings automation and observability to telecom networks: zero-touch provisioning for edge locations, modernised OSS/BSS platforms, and unified network monitoring that cuts alert noise so teams can resolve incidents before customers feel them.',
+      'Nixsoft brings automation and observability to telecom networks: zero-touch provisioning for edge locations, modernised OSS/BSS platforms, and a unified network monitoring system for ISPs and operators that cuts alert noise, so teams resolve incidents before customers feel them.',
     ],
     challenges: ['Massive scale data ingestion', 'Network function virtualization (NFV)', 'Edge deployment complexity'],
     solutions: [
@@ -100,14 +105,15 @@ export const INDUSTRIES_DATA: IndustryData[] = [
     ],
     lightColor: 'bg-green-50',
     textColor: 'text-green-600',
-    metaTitle: 'Telecom — Network Automation & Monitoring for 5G and Edge',
-    metaDescription: 'Infrastructure automation and network monitoring for telecom operators and broadband providers — zero-touch provisioning, OSS/BSS modernisation, and 5G automation.',
-    keywords: 'telecom automation, 5G network automation, network monitoring system, OSS/BSS modernisation, zero-touch provisioning, edge computing infrastructure',
+    metaTitle: 'Telecom IT Infrastructure & Network Monitoring',
+    metaDescription: 'Telecom IT infrastructure services: network monitoring for ISPs and broadband providers, zero-touch provisioning, OSS/BSS modernisation and 5G edge automation.',
+    keywords: 'telecom IT infrastructure services, network monitoring system for ISPs, 5G and edge infrastructure automation, OSS/BSS modernisation, zero-touch provisioning',
   },
   {
     id: 'retail',
     slug: 'retail',
     image: '/images/banners/ind-retail.webp',
+    imageAlt: 'Fashion retail store interior with clothing racks and displays',
     name: 'Retail',
     fullName: 'Retail & E-Commerce',
     icon: ShoppingBag,
@@ -115,7 +121,7 @@ export const INDUSTRIES_DATA: IndustryData[] = [
     description: 'Survive and thrive during high-traffic events like Black Friday with elastic, self-healing infrastructure.',
     overview: [
       'Retail infrastructure has to absorb huge swings in demand — a festive sale can bring many times normal traffic in minutes — while securing payments and customer data across hundreds of stores and online channels.',
-      'Nixsoft builds retail platforms that scale elastically, heal themselves, and stay patched across a distributed footprint. From automated vulnerability management in stores to full-stack observability for e-commerce, we keep revenue flowing on the days that matter most.',
+      'Nixsoft builds retail platforms that scale elastically, heal themselves, and stay patched across a distributed footprint. From automated patch management across retail stores to e-commerce auto-scaling for sale-day traffic, we keep revenue flowing on the days that matter most.',
     ],
     challenges: ['Unpredictable traffic spikes', 'Omnichannel inventory sync', 'Customer data protection'],
     solutions: [
@@ -134,14 +140,15 @@ export const INDUSTRIES_DATA: IndustryData[] = [
     ],
     lightColor: 'bg-orange-50',
     textColor: 'text-orange-600',
-    metaTitle: 'Retail & E-Commerce — Scalable, Secure Infrastructure',
-    metaDescription: 'Elastic, self-healing infrastructure for retail and e-commerce — auto-scaling for sale-day traffic, POS security hardening, and automated patch management.',
-    keywords: 'retail infrastructure, e-commerce scalability, Black Friday auto-scaling, POS security, retail patch management, e-commerce monitoring',
+    metaTitle: 'Retail & E-Commerce IT Infrastructure Services',
+    metaDescription: 'Retail and e-commerce IT infrastructure services: auto-scaling for sale-day traffic, POS security hardening and automated patch management across stores.',
+    keywords: 'retail IT infrastructure services, e-commerce auto-scaling for sale-day traffic, retail store patch management, POS security hardening, e-commerce performance monitoring',
   },
   {
     id: 'manufacturing',
     slug: 'manufacturing',
     image: '/images/banners/ind-manufacturing.webp',
+    imageAlt: 'Robotic arms on an automated Industry 4.0 factory production line',
     name: 'Manufacturing',
     fullName: 'Manufacturing & Industry 4.0',
     icon: Factory,
@@ -149,7 +156,7 @@ export const INDUSTRIES_DATA: IndustryData[] = [
     description: 'Bridge the gap between OT (Operational Technology) and IT with secure IoT integration and digital twins.',
     overview: [
       'Modern factories connect production lines, sensors, and legacy control systems to IT networks — unlocking real-time insight, but also exposing operational technology that was never designed to face modern threats.',
-      'Nixsoft helps manufacturers converge IT and OT securely: ingesting sensor data at scale, running predictive-maintenance models close to the equipment, and delivering updates safely into isolated, air-gapped factory networks.',
+      'Nixsoft helps manufacturers converge IT and OT securely: ingesting sensor data at scale, running predictive-maintenance models close to the equipment, and delivering updates safely into isolated, air-gapped factory networks, the foundations of IT/OT convergence security for Industry 4.0.',
     ],
     challenges: ['IT/OT Convergence security', 'Legacy SCADA systems', 'Supply chain visibility'],
     solutions: [
@@ -168,9 +175,9 @@ export const INDUSTRIES_DATA: IndustryData[] = [
     ],
     lightColor: 'bg-indigo-50',
     textColor: 'text-indigo-600',
-    metaTitle: 'Manufacturing & Industry 4.0 — Secure IT/OT Infrastructure',
-    metaDescription: 'Secure IT/OT convergence for manufacturers — IoT data pipelines, edge predictive maintenance, and air-gapped CI/CD for Industry 4.0 factories.',
-    keywords: 'Industry 4.0, manufacturing IT OT convergence, IoT data platform, predictive maintenance, air-gapped CI/CD, IEC 62443',
+    metaTitle: 'Manufacturing IT/OT Security & Industry 4.0',
+    metaDescription: 'IT/OT convergence security for manufacturers: IoT data platforms, edge predictive maintenance and air-gapped CI/CD that keep Industry 4.0 factories running.',
+    keywords: 'manufacturing IT services, IT OT convergence security, IoT data platform for manufacturing, predictive maintenance solutions, Industry 4.0 infrastructure, IEC 62443',
   },
 ];
 

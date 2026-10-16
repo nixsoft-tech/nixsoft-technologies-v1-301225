@@ -44,7 +44,7 @@ export const PRODUCTS_DATA: ProductData[] = [
     description: 'A continuous security posture management platform designed specifically for dynamic, containerized, and hybrid environments. VulnGuard moves beyond static scanning to provide real-time context and prioritized remediation.',
     overview: [
       'Traditional vulnerability scanners run on a schedule and hand your team a long, flat list of CVEs. In a containerised, hybrid environment that list is out of date almost immediately — and with no sense of which findings actually matter, critical issues get lost among thousands of low-risk ones.',
-      'VulnGuard scans continuously across containers and hosts, ranks every finding by its real-world context so your team fixes what matters first, and closes the loop by raising tickets in the tools you already use and deploying patches automatically.',
+      'VulnGuard is a vulnerability management platform built for continuous container and host vulnerability scanning. It ranks every finding by its real-world context so your team fixes what matters first, and closes the loop by raising tickets in the tools you already use and deploying patches automatically.',
     ],
     icon: ShieldCheck,
     features: [
@@ -76,9 +76,9 @@ export const PRODUCTS_DATA: ProductData[] = [
     accentText: 'text-green-600',
     accentBg: 'bg-green-50',
     accentBorder: 'border-green-200',
-    metaTitle: 'VulnGuard™ — Continuous Vulnerability Management',
-    metaDescription: 'Nixsoft VulnGuard™ continuously scans containers and hosts for CVEs, prioritises findings by context, and automates patching across hybrid and air-gapped environments.',
-    keywords: 'VulnGuard, vulnerability management, container security scanning, CVE scanning, automated patch management, air-gapped vulnerability scanner',
+    metaTitle: 'VulnGuard™ Vulnerability Management Platform',
+    metaDescription: 'VulnGuard™ vulnerability management: continuous container and host CVE scanning, context-based prioritisation and automated patching, even air-gapped.',
+    keywords: 'VulnGuard, vulnerability management platform, container and host vulnerability scanning, automated patch management tool, air-gapped vulnerability scanner, CVE scanning for Kubernetes',
   },
   {
     id: 'securebench',
@@ -90,7 +90,7 @@ export const PRODUCTS_DATA: ProductData[] = [
     description: 'Automated hardening framework that enforces CIS Level 1 & 2 benchmarks across your entire server fleet. Detect configuration drift and auto-remediate deviations in seconds.',
     overview: [
       'Hardening servers to CIS benchmarks by hand is slow, inconsistent from one engineer to the next, and starts to drift the moment someone changes a setting. Come audit time, teams scramble to prove a baseline they cannot actually guarantee.',
-      'SecureBench turns the CIS benchmarks into automation. It applies Level 1 and Level 2 controls in one click, watches every server for configuration drift and corrects it, and produces the audit evidence for you — with rollback if a control ever conflicts with an application.',
+      'SecureBench turns the CIS benchmarks into automation for server hardening at scale. It applies Level 1 and Level 2 controls in one click, watches every server for configuration drift and corrects it, and produces the audit evidence for you — with rollback if a control ever conflicts with an application.',
     ],
     icon: ListChecks,
     features: [
@@ -122,9 +122,9 @@ export const PRODUCTS_DATA: ProductData[] = [
     accentText: 'text-blue-600',
     accentBg: 'bg-blue-50',
     accentBorder: 'border-blue-200',
-    metaTitle: 'SecureBench — Automated CIS Benchmark Hardening',
+    metaTitle: 'SecureBench: CIS Benchmark Hardening Automation',
     metaDescription: 'SecureBench automates CIS Level 1 & 2 hardening across your server fleet, detects configuration drift, and generates audit-ready compliance reports.',
-    keywords: 'SecureBench, CIS benchmark automation, CIS hardening, server hardening, configuration drift detection, compliance automation',
+    keywords: 'SecureBench, CIS benchmark automation, CIS benchmark compliance tool, server hardening automation, configuration drift detection, CIS Level 1 and Level 2 hardening',
   },
   {
     id: 'nixops-ai',
@@ -136,7 +136,7 @@ export const PRODUCTS_DATA: ProductData[] = [
     description: 'Lightweight, intelligent agents that live on your endpoints. They utilize local machine learning models to predict failures, optimize resource usage, and automatically fix common operational issues.',
     overview: [
       'Much of an operations team’s day goes on the same recurring issues: a stopped service, a full disk, a runaway process. Each one becomes a ticket, an alert, and an engineer’s time — and many are only spotted after users notice.',
-      'NixOps AI Agents run on your endpoints and use local machine-learning models to learn each system’s normal behaviour. They spot anomalies early, analyse logs automatically, run self-healing scripts for known issues, and right-size resource usage to cut compute cost.',
+      'NixOps AI Agents bring AIOps to your endpoints: they use local machine-learning models to learn each system’s normal behaviour. They spot anomalies early, analyse logs automatically, run self-healing scripts for known issues, and right-size resource usage to cut compute cost.',
     ],
     icon: BrainCircuit,
     features: [
@@ -168,9 +168,9 @@ export const PRODUCTS_DATA: ProductData[] = [
     accentText: 'text-orange-600',
     accentBg: 'bg-orange-50',
     accentBorder: 'border-orange-200',
-    metaTitle: 'NixOps AI Agents — Self-Healing Infrastructure',
+    metaTitle: 'NixOps AI Agents: AIOps & Self-Healing Infra',
     metaDescription: 'NixOps AI Agents use local machine learning to predict failures, analyse logs, and self-heal common issues across Linux, Windows, and Kubernetes.',
-    keywords: 'NixOps AI, AIOps agents, self-healing infrastructure, predictive anomaly detection, automated log analysis, infrastructure automation',
+    keywords: 'NixOps AI Agents, AIOps platform, self-healing infrastructure, predictive anomaly detection agents, automated log analysis, cloud cost optimisation',
   },
 ];
 

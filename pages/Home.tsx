@@ -104,10 +104,10 @@ const Home: React.FC = () => {
   return (
     <div className="flex flex-col">
       <SEO 
-        title="Open-Source Automation & DevOps Consulting & Training"
-        description="Nixsoft Technologies helps Pan-Asia enterprises modernize infrastructure and automate operations using Kubernetes, Terraform, and battle-tested open-source tech."
+        title="Open-Source DevOps & Managed IT Services in India"
+        description="Nixsoft Technologies is a Mumbai-based DevOps and managed IT services company helping enterprises automate, secure and scale infrastructure with open source."
         path="/"
-        keywords="DevOps Consulting, Open-Source Automation, Kubernetes Experts, Infrastructure as Code, Cloud Security"
+        keywords="DevOps and managed IT services company in India, DevOps consulting company in Mumbai, open-source infrastructure automation, 24x7 managed IT support, Kubernetes consulting"
       />
       {/* Hero Section */}
       <section className="relative min-h-[90vh] flex items-center bg-nixNavy overflow-hidden pt-20">
@@ -178,7 +178,7 @@ const Home: React.FC = () => {
           <div className="text-center max-w-3xl mx-auto mb-16">
             <h2 className="text-nixBlue font-bold tracking-wide uppercase text-sm mb-2">Our DevOps & Automation Services</h2>
             <h3 className="text-3xl md:text-4xl font-display font-bold text-slate-900 mb-6">
-              Enterprise-Grade Engineering Solutions
+              Managed IT, DevOps &amp; Cloud Services for Enterprises
             </h3>
             <p className="text-slate-600 text-lg">
               We bridge the gap between development agility and operational stability.

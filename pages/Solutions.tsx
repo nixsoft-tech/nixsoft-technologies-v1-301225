@@ -9,21 +9,22 @@ const Solutions: React.FC = () => {
   return (
     <div className="flex flex-col">
       <SEO
-        title="Solutions"
-        description="Nixsoft's packaged platform solutions — Asset Management, Email & Collaboration, and Ticketing System — deployed, secured, and fully managed."
+        title="IT Asset Management, Email & Helpdesk Solutions"
+        description="Enterprise IT solutions deployed and managed by Nixsoft: IT asset management software, Zimbra and business email hosting, and an ITIL helpdesk ticketing system."
         path="/solutions"
-        keywords="IT Asset Management, Email & Collaboration, Service Desk, Ticketing System, ITSM, Enterprise Solutions"
+        keywords="enterprise IT solutions, IT asset management software, enterprise email hosting, Zimbra email hosting India, IT helpdesk ticketing system, ITSM solutions"
+        breadcrumbs={[{ name: 'Solutions', path: '/solutions' }]}
       />
 
       {/* Hero */}
       <section className="relative bg-nixDark py-32 px-4 overflow-hidden">
-        <HeroImage src="/images/banners/solutions-hero.webp" />
+        <HeroImage src="/images/banners/solutions-hero.webp" alt="Technician inspecting server racks with a handheld diagnostic tool" />
         <div className="max-w-7xl mx-auto text-center relative z-10">
           <h1 className="text-5xl md:text-6xl font-display font-bold text-white mb-6 animate-fade-in">
-            Platform <span className="text-nixGreen">Solutions</span>
+            Enterprise IT <span className="text-nixGreen">Solutions</span>
           </h1>
           <p className="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
-            Ready-to-run enterprise platforms — deployed, secured, and managed by Nixsoft — that put you back in control of your assets, communication, and support.
+            Ready-to-run IT asset management, business email, and helpdesk ticketing platforms, deployed, secured, and managed by Nixsoft, so you stay in control of your assets, communication, and support.
           </p>
         </div>
       </section>
@@ -42,7 +43,7 @@ const Solutions: React.FC = () => {
                   <div className="-mx-8 -mt-8 mb-6 h-44 overflow-hidden">
                     <img
                       src={solution.image}
-                      alt={solution.title}
+                      alt={solution.imageAlt ?? solution.title}
                       loading="lazy"
                       decoding="async"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"

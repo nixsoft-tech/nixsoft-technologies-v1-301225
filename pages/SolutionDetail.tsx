@@ -21,6 +21,7 @@ const SolutionDetail: React.FC = () => {
       related={related}
       relatedHeading="Other Solutions"
       image={solution.image}
+      imageAlt={solution.imageAlt}
     />
   );
 };

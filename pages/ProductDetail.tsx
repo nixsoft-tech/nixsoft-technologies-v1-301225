@@ -24,6 +24,10 @@ const ProductDetail: React.FC = () => {
         description={product.metaDescription}
         path={`/products/${product.slug}`}
         keywords={product.keywords}
+        breadcrumbs={[
+          { name: 'Products', path: '/products' },
+          { name: product.name, path: `/products/${product.slug}` },
+        ]}
       />
 
       {/* Hero */}
@@ -53,7 +57,7 @@ const ProductDetail: React.FC = () => {
       <section className="bg-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="text-3xl font-display font-bold text-slate-900 mb-6">Overview</h2>
+            <h2 className="text-3xl font-display font-bold text-slate-900 mb-6">What is {product.shortName}?</h2>
             <div className="space-y-4">
               {product.overview.map((para, i) => (
                 <p key={i} className="text-lg text-slate-600 leading-relaxed">{para}</p>
@@ -79,7 +83,7 @@ const ProductDetail: React.FC = () => {
       <section className="bg-slate-50 py-20 border-t border-slate-200">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="flex items-center text-2xl font-display font-bold text-slate-900 mb-8">
-            <Activity size={22} className="mr-3 text-nixBlue" /> Key Features
+            <Activity size={22} className="mr-3 text-nixBlue shrink-0" /> Key features of {product.shortName}
           </h2>
           <div className="grid sm:grid-cols-2 gap-4">
             {product.features.map((feature) => (
@@ -114,7 +118,7 @@ const ProductDetail: React.FC = () => {
       <section className="bg-slate-50 py-20 border-t border-slate-200">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="flex items-center text-2xl font-display font-bold text-slate-900 mb-8">
-            <Target size={22} className="mr-3 text-nixBlue" /> Use Cases
+            <Target size={22} className="mr-3 text-nixBlue shrink-0" /> {product.shortName} use cases
           </h2>
           <div className="grid md:grid-cols-3 gap-6">
             {product.useCases.map((uc) => (

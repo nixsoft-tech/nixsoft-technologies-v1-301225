@@ -21,10 +21,10 @@ const Blog: React.FC = () => {
   return (
     <div className="pt-24 min-h-screen bg-slate-50">
       <SEO 
-        title="DevOps & Automation Blog"
-        description="Stay updated with the latest insights on DevOps, open-source automation, cloud security, and infrastructure engineering from Nixsoft experts."
+        title="DevOps, Cloud & IT Infrastructure Blog"
+        description="Practical guides on DevOps, cloud, security testing and IT infrastructure from Nixsoft engineers: Kubernetes, CI/CD, monitoring, VAPT and open-source automation."
         path="/blog"
-        keywords="DevOps Blog, Automation Insights, Cloud Native, SecOps, Infrastructure as Code"
+        keywords="DevOps blog, cloud infrastructure guides, Kubernetes tutorials, CI/CD best practices, IT infrastructure blog India"
       />
       {/* Header */}
       <section className="bg-nixDark py-20 relative overflow-hidden">

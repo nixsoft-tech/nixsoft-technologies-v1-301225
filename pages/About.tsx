@@ -50,14 +50,14 @@ const About: React.FC = () => {
   return (
     <div className="flex flex-col">
       <SEO 
-        title="About Our DevOps & Automation Journey"
-        description="Founded in 2019, Nixsoft Technologies is Mumbai's premier DevOps consulting firm, serving Pan-Asia with open-source first infrastructure excellence."
+        title="About Nixsoft: DevOps & IT Company in Mumbai"
+        description="Founded in 2019, Nixsoft Technologies is a Mumbai-based DevOps and IT infrastructure company serving enterprises across India and Asia with open-source expertise."
         path="/about"
-        keywords="Nixsoft Technologies, DevOps Mumbai, Open Source Consulting, IT Modernization"
+        keywords="Nixsoft Technologies, DevOps company in Mumbai, IT infrastructure company India, open-source consulting, IT modernisation partner"
       />
       {/* Hero Section */}
       <section className="bg-nixDark py-32 px-4 relative overflow-hidden">
-        <HeroImage src="/images/banners/about-hero.webp" />
+        <HeroImage src="/images/banners/about-hero.webp" alt="Modern open-plan office workspace" />
         <div className="max-w-7xl mx-auto text-center relative z-10">
           <h1 className="text-4xl md:text-6xl font-display font-bold text-white mb-6">
             Engineering Trust Through <br/>

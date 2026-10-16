@@ -83,10 +83,10 @@ const Contact: React.FC = () => {
   return (
     <div className="flex flex-col">
       <SEO 
-        title="Contact Our Technical Architects"
-        description="Ready to modernize your infrastructure? Connect with Nixsoft Technologies for a free consultation on DevOps, Security, and Cloud Automation."
+        title="Contact Our DevOps & IT Experts in Mumbai"
+        description="Talk to Nixsoft's DevOps and IT infrastructure experts in Mumbai. Book a free consultation on managed IT, cloud, security testing or automation for your business."
         path="/contact"
-        keywords="Contact Nixsoft, Tech Consultation, IT Audit, DevOps Support"
+        keywords="contact Nixsoft Technologies, DevOps consultation Mumbai, free IT infrastructure consultation, managed IT services enquiry"
       />
        {/* Hero / Header */}
        <section className="bg-nixDark pt-32 pb-24 px-4">
