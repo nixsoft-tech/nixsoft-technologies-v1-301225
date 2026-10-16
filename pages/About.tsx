@@ -7,6 +7,7 @@ import {
   Globe, Server
 } from 'lucide-react';
 import SEO from '../components/SEO';
+import HeroImage from '../components/HeroImage';
 
 const EXPERTISE = [
   {
@@ -56,9 +57,7 @@ const About: React.FC = () => {
       />
       {/* Hero Section */}
       <section className="bg-nixDark py-32 px-4 relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-full opacity-10" 
-             style={{ backgroundImage: 'linear-gradient(45deg, #0A4A8F 25%, transparent 25%, transparent 75%, #0A4A8F 75%, #0A4A8F), linear-gradient(45deg, #0A4A8F 25%, transparent 25%, transparent 75%, #0A4A8F 75%, #0A4A8F)', backgroundSize: '60px 60px', backgroundPosition: '0 0, 30px 30px' }}>
-        </div>
+        <HeroImage src="/images/banners/about-hero.webp" />
         <div className="max-w-7xl mx-auto text-center relative z-10">
           <h1 className="text-4xl md:text-6xl font-display font-bold text-white mb-6">
             Engineering Trust Through <br/>

@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Globe } from 'lucide-react';
 import SEO from '../components/SEO';
+import HeroImage from '../components/HeroImage';
 import { INDUSTRIES_DATA } from '../data/industries';
 
 const Industries: React.FC = () => {
@@ -15,11 +16,7 @@ const Industries: React.FC = () => {
       />
       {/* Hero Section */}
       <section className="bg-nixDark py-32 px-4 relative overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <div className="absolute top-0 left-0 w-full h-full opacity-10"
-            style={{ backgroundImage: 'radial-gradient(#39FF14 1px, transparent 1px)', backgroundSize: '30px 30px' }}>
-          </div>
-        </div>
+        <HeroImage src="/images/banners/industries-hero.webp" />
         <div className="max-w-7xl mx-auto text-center relative z-10">
           <h1 className="text-4xl md:text-6xl font-display font-bold text-white mb-6">
             Powering <span className="text-nixGreen">Critical Infrastructure</span>
@@ -37,8 +34,17 @@ const Industries: React.FC = () => {
             <Link
               key={industry.id}
               to={`/industries/${industry.slug}`}
-              className="group flex flex-col p-8 rounded-2xl border border-gray-100 shadow-lg hover:shadow-2xl hover:border-nixBlue/30 transition-all duration-300 hover:-translate-y-1 bg-white"
+              className="group flex flex-col p-8 rounded-2xl border border-gray-100 shadow-lg hover:shadow-2xl hover:border-nixBlue/30 transition-all duration-300 hover:-translate-y-1 bg-white overflow-hidden"
             >
+              <div className="-mx-8 -mt-8 mb-6 h-52 overflow-hidden">
+                <img
+                  src={industry.image}
+                  alt={industry.fullName}
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+              </div>
               <div className="flex items-start justify-between mb-6">
                 <div className={`w-16 h-16 rounded-2xl ${industry.lightColor} flex items-center justify-center`}>
                   <industry.icon size={32} className={industry.textColor} strokeWidth={1.5} />

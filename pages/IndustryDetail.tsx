@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Cpu, FileKey, Lock, TrendingUp, Building2 } from 'lucide-react';
 import SEO from '../components/SEO';
+import HeroImage from '../components/HeroImage';
 import FaqList from '../components/FaqList';
 import RelatedServices from '../components/RelatedServices';
 import { INDUSTRIES_DATA, getIndustryBySlug } from '../data/industries';
@@ -31,9 +32,7 @@ const IndustryDetail: React.FC = () => {
 
       {/* Hero */}
       <section className="bg-nixDark py-28 px-4 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10"
-          style={{ backgroundImage: 'radial-gradient(#39FF14 1px, transparent 1px)', backgroundSize: '30px 30px' }}>
-        </div>
+        <HeroImage src={industry.image} />
         <div className="max-w-5xl mx-auto relative z-10">
           <Link to="/industries" className="inline-flex items-center text-slate-400 hover:text-white text-sm font-medium mb-8 transition-colors">
             <ArrowLeft size={16} className="mr-2" /> All Industries

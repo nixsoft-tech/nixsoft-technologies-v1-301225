@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Check, ChevronRight } from 'lucide-react';
 import SEO from '../components/SEO';
+import HeroImage from '../components/HeroImage';
 import { PRODUCTS_DATA } from '../data/products';
 
 const Products: React.FC = () => {
@@ -15,7 +16,7 @@ const Products: React.FC = () => {
       />
       {/* Hero Section */}
       <section className="bg-nixDark py-32 px-4 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-1/3 h-full bg-slate-800/50 -skew-x-12 transform origin-top-right"></div>
+        <HeroImage src="/images/banners/products-hero.webp" />
         <div className="max-w-7xl mx-auto text-center relative z-10">
           <h1 className="text-4xl md:text-6xl font-display font-bold text-white mb-6">
             Enterprise-Grade <span className="text-nixBlue bg-white px-2">Frameworks</span>

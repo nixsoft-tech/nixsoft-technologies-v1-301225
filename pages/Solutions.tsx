@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Cpu } from 'lucide-react';
 import SEO from '../components/SEO';
+import HeroImage from '../components/HeroImage';
 import { SOLUTIONS_DATA } from '../data/solutions';
 
 const Solutions: React.FC = () => {
@@ -16,10 +17,7 @@ const Solutions: React.FC = () => {
 
       {/* Hero */}
       <section className="relative bg-nixDark py-32 px-4 overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-nixBlue/30 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2"></div>
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-nixGreen/10 rounded-full blur-3xl transform -translate-x-1/2 translate-y-1/2"></div>
-        </div>
+        <HeroImage src="/images/banners/solutions-hero.webp" />
         <div className="max-w-7xl mx-auto text-center relative z-10">
           <h1 className="text-5xl md:text-6xl font-display font-bold text-white mb-6 animate-fade-in">
             Platform <span className="text-nixGreen">Solutions</span>
@@ -38,8 +36,19 @@ const Solutions: React.FC = () => {
               <Link
                 key={solution.id}
                 to={`/solutions/${solution.slug}`}
-                className="group flex flex-col p-8 bg-white rounded-2xl border border-gray-100 shadow-lg hover:shadow-2xl hover:border-nixBlue/30 transition-all duration-300 hover:-translate-y-1"
+                className="group flex flex-col p-8 bg-white rounded-2xl border border-gray-100 shadow-lg hover:shadow-2xl hover:border-nixBlue/30 transition-all duration-300 hover:-translate-y-1 overflow-hidden"
               >
+                {solution.image && (
+                  <div className="-mx-8 -mt-8 mb-6 h-44 overflow-hidden">
+                    <img
+                      src={solution.image}
+                      alt={solution.title}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
+                )}
                 <div className={`w-16 h-16 rounded-2xl ${solution.iconBg} flex items-center justify-center mb-6`}>
                   <solution.icon size={32} className={solution.iconColor} strokeWidth={1.5} />
                 </div>

@@ -21,6 +21,8 @@ export interface OfferingCategory {
   id: ServiceCategoryId;
   name: string;
   blurb: string;
+  /** Banner photo shared by every service in this category. */
+  image: string;
 }
 
 /**
@@ -42,6 +44,8 @@ export interface OfferingData {
   icon: LucideIcon;
   iconColor: string;
   iconBg: string;
+  /** Banner photo. Services fall back to their category's image. */
+  image?: string;
   /** Opening paragraph on the detail page. */
   overview: string;
   /** "What we do" — concrete deliverables / scope of work. */

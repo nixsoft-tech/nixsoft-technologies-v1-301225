@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import ROICalculator from './ROICalculator';
 import SEO from './SEO';
+import HeroImage from './HeroImage';
 import type { OfferingData } from '../types';
 
 interface OfferingDetailProps {
@@ -16,10 +17,12 @@ interface OfferingDetailProps {
   /** Related offerings to show at the bottom. */
   related: OfferingData[];
   relatedHeading?: string;
+  /** Hero banner photo. */
+  image?: string;
 }
 
 const OfferingDetail: React.FC<OfferingDetailProps> = ({
-  offering, basePath, back, related, relatedHeading = 'Related Services',
+  offering, basePath, back, related, relatedHeading = 'Related Services', image,
 }) => {
   return (
     <div className="flex flex-col">
@@ -32,10 +35,14 @@ const OfferingDetail: React.FC<OfferingDetailProps> = ({
 
       {/* Hero */}
       <section className="relative bg-nixDark py-28 px-4 overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-nixBlue/30 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2"></div>
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-nixGreen/10 rounded-full blur-3xl transform -translate-x-1/2 translate-y-1/2"></div>
-        </div>
+        {image ? (
+          <HeroImage src={image} />
+        ) : (
+          <div className="absolute inset-0 z-0">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-nixBlue/30 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2"></div>
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-nixGreen/10 rounded-full blur-3xl transform -translate-x-1/2 translate-y-1/2"></div>
+          </div>
+        )}
 
         <div className="max-w-5xl mx-auto relative z-10">
           <Link to={back.path} className="inline-flex items-center text-slate-400 hover:text-white text-sm font-medium mb-8 transition-colors">

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate, useParams } from 'react-router-dom';
 import OfferingDetail from '../components/OfferingDetail';
-import { SERVICES_DATA, getServiceBySlug } from '../data/services';
+import { SERVICES_DATA, getServiceBySlug, getServiceImage } from '../data/services';
 
 const ServiceDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -27,6 +27,7 @@ const ServiceDetail: React.FC = () => {
       back={{ path: '/services', label: 'All Services' }}
       related={related}
       relatedHeading="Related Services"
+      image={getServiceImage(service)}
     />
   );
 };

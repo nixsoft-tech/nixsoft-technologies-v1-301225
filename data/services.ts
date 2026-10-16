@@ -5,11 +5,11 @@ import {
 import type { OfferingCategory, OfferingData } from '../types';
 
 export const SERVICE_CATEGORIES: OfferingCategory[] = [
-  { id: 'managed-it', name: 'Managed IT & Operations', blurb: 'Run your day-to-day operations with an SLA-backed extended team.' },
-  { id: 'devops', name: 'DevOps & Automation', blurb: 'Ship faster with automated pipelines and software-driven workflows.' },
-  { id: 'monitoring', name: 'Monitoring & Observability', blurb: 'See everything — from infrastructure health to the end-user journey.' },
-  { id: 'quality', name: 'Quality Engineering & Testing', blurb: 'Validate every release for correctness, speed, and security.' },
-  { id: 'cloud-infra', name: 'Cloud & Infrastructure', blurb: 'Design, run, and tune the platforms your applications depend on.' },
+  { id: 'managed-it', name: 'Managed IT & Operations', blurb: 'Run your day-to-day operations with an SLA-backed extended team.', image: '/images/banners/cat-managed-it.webp' },
+  { id: 'devops', name: 'DevOps & Automation', blurb: 'Ship faster with automated pipelines and software-driven workflows.', image: '/images/banners/cat-devops.webp' },
+  { id: 'monitoring', name: 'Monitoring & Observability', blurb: 'See everything — from infrastructure health to the end-user journey.', image: '/images/banners/cat-monitoring.webp' },
+  { id: 'quality', name: 'Quality Engineering & Testing', blurb: 'Validate every release for correctness, speed, and security.', image: '/images/banners/cat-quality.webp' },
+  { id: 'cloud-infra', name: 'Cloud & Infrastructure', blurb: 'Design, run, and tune the platforms your applications depend on.', image: '/images/banners/cat-cloud.webp' },
 ];
 
 export const SERVICES_DATA: OfferingData[] = [
@@ -439,3 +439,7 @@ export const getServiceBySlugOrAlias = (slug: string): OfferingData | undefined 
 
 export const getServicesByCategory = (category: string): OfferingData[] =>
   SERVICES_DATA.filter((s) => s.category === category);
+
+/** A service's banner: its own image if set, otherwise its category's. */
+export const getServiceImage = (service: OfferingData): string | undefined =>
+  service.image ?? SERVICE_CATEGORIES.find((c) => c.id === service.category)?.image;

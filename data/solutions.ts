@@ -19,6 +19,7 @@ export const SOLUTIONS_DATA: OfferingData[] = [
     icon: Boxes,
     iconColor: 'text-indigo-600',
     iconBg: 'bg-indigo-50',
+    image: '/images/banners/sol-asset.webp',
     overview: 'Untracked assets drain budgets, create compliance gaps, and slow down audits. We deploy and manage an IT Asset Management (ITAM) platform that discovers, catalogues, and tracks every asset across its full lifecycle — so you always know what you own, where it is, and what it costs.',
     whatWeDo: [
       'Automated hardware and software discovery across your estate',
@@ -45,6 +46,7 @@ export const SOLUTIONS_DATA: OfferingData[] = [
     icon: Mail,
     iconColor: 'text-emerald-600',
     iconBg: 'bg-emerald-50',
+    image: '/images/banners/sol-email.webp',
     overview: 'Email and collaboration are mission-critical yet often outside your control, with data residency and cost concerns mounting. We deploy and manage secure, scalable communication platforms — including sovereign open-source stacks — that keep your data where you want it.',
     whatWeDo: [
       'Deployment of enterprise email and groupware platforms',
@@ -71,6 +73,7 @@ export const SOLUTIONS_DATA: OfferingData[] = [
     icon: Ticket,
     iconColor: 'text-amber-600',
     iconBg: 'bg-amber-50',
+    image: '/images/banners/sol-ticketing.webp',
     overview: 'Support requests lost in inboxes mean missed SLAs and frustrated users. We deploy and configure a proper ITSM ticketing platform that captures every request, routes it intelligently, and gives you the reporting to run support as a measurable service.',
     whatWeDo: [
       'Deployment and configuration of an ITIL-aligned service desk',

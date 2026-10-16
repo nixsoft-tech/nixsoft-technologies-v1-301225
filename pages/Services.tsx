@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Cpu } from 'lucide-react';
 import SEO from '../components/SEO';
+import HeroImage from '../components/HeroImage';
 import { SERVICE_CATEGORIES, getServicesByCategory } from '../data/services';
 
 const Services: React.FC = () => {
@@ -16,10 +17,7 @@ const Services: React.FC = () => {
 
       {/* Hero */}
       <section className="relative bg-nixDark py-32 px-4 overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-nixBlue/30 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2"></div>
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-nixGreen/10 rounded-full blur-3xl transform -translate-x-1/2 translate-y-1/2"></div>
-        </div>
+        <HeroImage src="/images/banners/services-hero.webp" />
         <div className="max-w-7xl mx-auto text-center relative z-10">
           <h1 className="text-5xl md:text-6xl font-display font-bold text-white mb-6 animate-fade-in">
             Our <span className="text-nixGreen">Services</span>
@@ -38,9 +36,20 @@ const Services: React.FC = () => {
             if (services.length === 0) return null;
             return (
               <div key={category.id}>
-                <div className="mb-8 pb-4 border-b border-gray-100">
-                  <h2 className="text-2xl md:text-3xl font-display font-bold text-slate-900">{category.name}</h2>
-                  <p className="text-slate-500 mt-2">{category.blurb}</p>
+                <div className="relative mb-8 rounded-2xl overflow-hidden bg-nixDark">
+                  <img
+                    src={category.image}
+                    alt=""
+                    aria-hidden="true"
+                    loading="lazy"
+                    decoding="async"
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-slate-950/70 md:bg-transparent md:bg-gradient-to-r md:from-slate-950/90 md:via-slate-950/70 md:to-slate-950/25" />
+                  <div className="relative px-8 py-10 md:py-12">
+                    <h2 className="text-2xl md:text-3xl font-display font-bold text-white">{category.name}</h2>
+                    <p className="text-slate-300 mt-2 max-w-xl">{category.blurb}</p>
+                  </div>
                 </div>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {services.map((service) => (

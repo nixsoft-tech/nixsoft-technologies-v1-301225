@@ -8,6 +8,8 @@ export interface IndustryData {
   name: string;
   fullName: string;
   icon: LucideIcon;
+  /** Banner photo for the detail page and overview card. */
+  image: string;
   /** One-line summary for overview cards and the Home page. */
   summary: string;
   description: string;
@@ -36,6 +38,7 @@ export const INDUSTRIES_DATA: IndustryData[] = [
   {
     id: 'bfsi',
     slug: 'bfsi',
+    image: '/images/banners/ind-bfsi.webp',
     name: 'BFSI',
     fullName: 'Banking, Financial Services & Insurance',
     icon: Landmark,
@@ -70,6 +73,7 @@ export const INDUSTRIES_DATA: IndustryData[] = [
   {
     id: 'telecom',
     slug: 'telecom',
+    image: '/images/banners/ind-telecom.webp',
     name: 'Telecom',
     fullName: 'Telecommunications & 5G',
     icon: RadioTower,
@@ -103,6 +107,7 @@ export const INDUSTRIES_DATA: IndustryData[] = [
   {
     id: 'retail',
     slug: 'retail',
+    image: '/images/banners/ind-retail.webp',
     name: 'Retail',
     fullName: 'Retail & E-Commerce',
     icon: ShoppingBag,
@@ -136,6 +141,7 @@ export const INDUSTRIES_DATA: IndustryData[] = [
   {
     id: 'manufacturing',
     slug: 'manufacturing',
+    image: '/images/banners/ind-manufacturing.webp',
     name: 'Manufacturing',
     fullName: 'Manufacturing & Industry 4.0',
     icon: Factory,
