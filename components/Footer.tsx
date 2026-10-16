@@ -46,10 +46,10 @@ const Footer: React.FC = () => {
           <div>
             <h4 className="font-display font-semibold text-lg mb-4 text-nixGreen">Industries</h4>
             <ul className="space-y-3 text-sm text-slate-400">
-              <li><Link to="/industries" className="hover:text-white transition-colors flex items-center"><Landmark size={16} className="mr-2 text-slate-500" /> BFSI</Link></li>
-              <li><Link to="/industries" className="hover:text-white transition-colors flex items-center"><RadioTower size={16} className="mr-2 text-slate-500" /> Telecom</Link></li>
-              <li><Link to="/industries" className="hover:text-white transition-colors flex items-center"><ShoppingBag size={16} className="mr-2 text-slate-500" /> Retail</Link></li>
-              <li><Link to="/industries" className="hover:text-white transition-colors flex items-center"><Factory size={16} className="mr-2 text-slate-500" /> Manufacturing</Link></li>
+              <li><Link to="/industries/bfsi" className="hover:text-white transition-colors flex items-center"><Landmark size={16} className="mr-2 text-slate-500" /> BFSI</Link></li>
+              <li><Link to="/industries/telecom" className="hover:text-white transition-colors flex items-center"><RadioTower size={16} className="mr-2 text-slate-500" /> Telecom</Link></li>
+              <li><Link to="/industries/retail" className="hover:text-white transition-colors flex items-center"><ShoppingBag size={16} className="mr-2 text-slate-500" /> Retail</Link></li>
+              <li><Link to="/industries/manufacturing" className="hover:text-white transition-colors flex items-center"><Factory size={16} className="mr-2 text-slate-500" /> Manufacturing</Link></li>
             </ul>
           </div>
 

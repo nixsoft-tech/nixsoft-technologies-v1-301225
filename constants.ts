@@ -77,10 +77,10 @@ export const PRODUCTS: ProductItem[] = [
 ];
 
 export const INDUSTRIES = [
-  { name: 'BFSI', icon: 'Landmark', desc: 'Secure, compliant infrastructure for banking and fintech.' },
-  { name: 'Telecom', icon: 'RadioTower', desc: 'High-throughput, low-latency network automation.' },
-  { name: 'Retail', icon: 'ShoppingBag', desc: 'Scalable platforms for high-traffic e-commerce events.' },
-  { name: 'Manufacturing', icon: 'Factory', desc: 'IoT integration and supply chain system reliability.' }
+  { name: 'BFSI', slug: 'bfsi', icon: 'Landmark', desc: 'Secure, compliant infrastructure for banking and fintech.' },
+  { name: 'Telecom', slug: 'telecom', icon: 'RadioTower', desc: 'High-throughput, low-latency network automation.' },
+  { name: 'Retail', slug: 'retail', icon: 'ShoppingBag', desc: 'Scalable platforms for high-traffic e-commerce events.' },
+  { name: 'Manufacturing', slug: 'manufacturing', icon: 'Factory', desc: 'IoT integration and supply chain system reliability.' }
 ];
 
 export const ROI_CONSTANTS = {

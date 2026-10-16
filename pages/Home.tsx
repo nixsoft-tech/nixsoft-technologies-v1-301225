@@ -230,7 +230,7 @@ const Home: React.FC = () => {
                 ))}
               </ul>
 
-              <Link to="/products" className="inline-flex items-center bg-white text-nixDark px-6 py-3 rounded-lg font-bold hover:bg-gray-100 transition-colors">
+              <Link to="/products/vulnguard" className="inline-flex items-center bg-white text-nixDark px-6 py-3 rounded-lg font-bold hover:bg-gray-100 transition-colors">
                 Request Demo <ChevronRight size={18} className="ml-2" />
               </Link>
             </div>
@@ -399,10 +399,10 @@ const Home: React.FC = () => {
           <h2 className="text-3xl font-display font-bold mb-12">Trusted Across Critical Industries</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {INDUSTRIES.map((ind) => (
-              <div key={ind.name} className="p-6 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition-colors">
+              <Link key={ind.name} to={`/industries/${ind.slug}`} className="block p-6 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition-colors">
                  <h3 className="font-bold text-xl text-nixGreen mb-2">{ind.name}</h3>
                  <p className="text-sm text-blue-100">{ind.desc}</p>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
