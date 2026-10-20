@@ -34,6 +34,8 @@ services:
       WORDPRESS_DB_NAME: wordpress
     volumes:
       - wordpress_data:/var/www/html
+      # Raise PHP upload/time limits (default 2M is too small for imports)
+      - ./wordpress/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini:ro
     networks:
       - nixsoft_network
 
