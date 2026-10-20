@@ -1,4 +1,6 @@
 process.env.ADMIN_PASSWORD = 'test_admin_password';
+// Chat logs go to a throwaway folder, not server/logs.
+process.env.CHAT_LOGS_DIR = require('fs').mkdtempSync(require('path').join(require('os').tmpdir(), 'nixsoft-api-logs-'));
 process.env.XAI_API_KEY = ''; // No AI provider keys → demo mode
 process.env.DEEPSEEK_API_KEY = '';
 process.env.ALLOWED_ORIGINS = 'http://localhost:3000';

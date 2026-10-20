@@ -57,6 +57,10 @@ services:
       - AI_PROVIDERS=${AI_PROVIDERS:-grok,deepseek}
       - XAI_MODEL=${XAI_MODEL:-grok-4.7}
       - DEEPSEEK_MODEL=${DEEPSEEK_MODEL:-deepseek-flash}
+      # NixBot abuse limits (see server/nixbot.js)
+      - CHAT_RATE_PER_MINUTE=${CHAT_RATE_PER_MINUTE:-8}
+      - CHAT_RATE_PER_HOUR=${CHAT_RATE_PER_HOUR:-60}
+      - AI_DAILY_LIMIT=${AI_DAILY_LIMIT:-1500}
       - SMTP_HOST=${SMTP_HOST:-smtp.gmail.com}
       - SMTP_PORT=${SMTP_PORT:-587}
       - SMTP_SECURE=${SMTP_SECURE:-false}
