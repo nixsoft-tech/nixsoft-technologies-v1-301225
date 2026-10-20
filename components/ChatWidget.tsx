@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { MessageSquare, X, Send, Bot, Loader2 } from 'lucide-react';
 import DOMPurify from 'dompurify';
-import { sendMessageToGemini } from '../services/geminiService';
+import { sendChatMessage } from '../services/chatService';
 
 // Move type outside component to avoid redefinition on each render
 type Message = { role: 'user' | 'model'; text: string };
@@ -44,7 +44,7 @@ const ChatWidget: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Keep a mutable ref in sync with state to fix the stale-closure bug.
-  // We always read from this ref when building the history to send to Gemini.
+  // We always read from this ref when building the history to send to the AI.
   const messagesRef = useRef<Message[]>(messages);
   useEffect(() => { messagesRef.current = messages; }, [messages]);
 
@@ -85,7 +85,7 @@ const ChatWidget: React.FC = () => {
 
     try {
       await logMessage('user', userMessage);
-      const response = await sendMessageToGemini(history, userMessage);
+      const response = await sendChatMessage(history, userMessage);
       setMessages(prev => [...prev, { role: 'model', text: response }]);
       await logMessage('model', response);
     } catch (err) {
@@ -129,7 +129,7 @@ const ChatWidget: React.FC = () => {
             </div>
             <div>
               <h3 className="text-white font-semibold text-sm">NixBot Assistant</h3>
-              <p className="text-blue-200 text-xs">Powered by Gemini AI</p>
+              <p className="text-blue-200 text-xs">AI-powered assistant</p>
             </div>
           </div>
 

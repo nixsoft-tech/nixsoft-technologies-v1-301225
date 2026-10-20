@@ -1,11 +1,12 @@
-// All Gemini calls are proxied through the backend (POST /api/chat) so the
-// API key never ships in the browser bundle.
+// All AI calls are proxied through the backend (POST /api/chat), which picks
+// the provider (Grok, falling back to DeepSeek), so no API key ever ships in
+// the browser bundle.
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5000';
 
 const FALLBACK_REPLY =
   "I'm having trouble connecting to the knowledge base. Please try again or contact our team directly.";
 
-export const sendMessageToGemini = async (
+export const sendChatMessage = async (
   history: { role: string; parts: { text: string }[] }[],
   message: string
 ): Promise<string> => {

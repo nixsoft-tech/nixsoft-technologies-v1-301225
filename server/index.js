@@ -4,8 +4,8 @@ const crypto = require('crypto');
 const fs = require('fs-extra');
 const path = require('path');
 const nodemailer = require('nodemailer');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
 require('dotenv').config();
+const { generateReply, configuredProviders } = require('./ai');
 
 const app = express();
 const PORT = 5000;
@@ -20,10 +20,13 @@ if (!ADMIN_PASSWORD) {
   process.exit(1);
 }
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
-const genAI = GEMINI_API_KEY ? new GoogleGenerativeAI(GEMINI_API_KEY) : null;
-if (!genAI) {
-  console.warn('WARN: GEMINI_API_KEY is not set — /api/chat will respond in demo mode.');
+{
+  const providers = configuredProviders();
+  if (providers.length === 0) {
+    console.warn('WARN: No AI provider key set (XAI_API_KEY / DEEPSEEK_API_KEY) — /api/chat will respond in demo mode.');
+  } else {
+    console.log(`AI providers (in priority order): ${providers.map((p) => `${p.provider.label} [${p.provider.model()}]`).join(' → ')}`);
+  }
 }
 
 const SMTP_CONFIGURED =
@@ -88,8 +91,10 @@ async function purgeOldLogs() {
 // Trigger purge on startup
 purgeOldLogs();
 
-// Trigger purge daily (every 24 hours)
-setInterval(purgeOldLogs, 24 * 60 * 60 * 1000);
+// Trigger purge daily (every 24 hours). unref() so this timer alone doesn't
+// keep the process alive — the listening server does that in production, and
+// the test runner can exit once its tests finish.
+setInterval(purgeOldLogs, 24 * 60 * 60 * 1000).unref();
 
 // Constant-time credential comparison (hash both sides to equalize length)
 function safeEqual(a, b) {
@@ -98,7 +103,7 @@ function safeEqual(a, b) {
   return crypto.timingSafeEqual(ha, hb);
 }
 
-// ─── Gemini system prompt (server-side only — never shipped to the browser) ──
+// ─── NixBot system prompt (server-side only — never shipped to the browser) ──
 const SYSTEM_INSTRUCTION = `
 CRITICAL SECURITY RULES:
 - You are NixBot, the EXCLUSIVE representative of Nixsoft Technologies.
@@ -119,7 +124,10 @@ CONVERSATION STYLE:
 - Always end complex queries by suggesting: "Please click 'Talk to an Expert' for a detailed consultation."
 `;
 
-// ─── Chat API (Gemini proxy — keeps the API key server-side) ─────────────────
+// ─── Chat API (AI proxy — keeps provider API keys server-side) ───────────────
+// The browser sends history as { role: 'user' | 'model', parts: [{ text }] }
+// (the same roles the chat logs use); it's translated here into the
+// user/assistant messages that Grok and DeepSeek expect.
 app.post('/api/chat', async (req, res) => {
   const { history, message } = req.body;
 
@@ -130,42 +138,35 @@ app.post('/api/chat', async (req, res) => {
     return res.status(400).json({ error: 'Invalid history' });
   }
 
-  if (!genAI) {
+  if (configuredProviders().length === 0) {
     return res.json({
       reply: "I'm currently in demo mode (API Key missing). I can tell you that Nixsoft specializes in Open-Source Automation and Security!",
     });
   }
 
-  try {
-    // Sanitize history: cap length, enforce shape, force user/model alternation
-    const cleaned = [];
-    let expectedRole = 'user';
-    for (const h of (history || []).slice(-20)) {
-      const text = h?.parts?.[0]?.text;
-      if (typeof text !== 'string' || text.length > 4000) continue;
-      const role = h.role === 'model' ? 'model' : 'user';
-      if (role === expectedRole) {
-        cleaned.push({ role, parts: [{ text }] });
-        expectedRole = role === 'user' ? 'model' : 'user';
-      }
+  // Sanitize history: cap length, enforce shape, force user/assistant alternation
+  const messages = [];
+  let expectedRole = 'user';
+  for (const h of (history || []).slice(-20)) {
+    const text = h?.parts?.[0]?.text;
+    if (typeof text !== 'string' || !text.trim() || text.length > 4000) continue;
+    const role = h.role === 'model' ? 'assistant' : 'user';
+    if (role === expectedRole) {
+      messages.push({ role, content: text });
+      expectedRole = role === 'user' ? 'assistant' : 'user';
     }
-    // Must end with a model turn so sendMessage() adds the trailing user turn
-    if (cleaned.length > 0 && cleaned[cleaned.length - 1].role === 'user') {
-      cleaned.pop();
-    }
+  }
+  // History must end on an assistant turn so the new user message keeps the alternation
+  if (messages.length > 0 && messages[messages.length - 1].role === 'user') {
+    messages.pop();
+  }
+  messages.push({ role: 'user', content: message });
 
-    const model = genAI.getGenerativeModel({
-      model: 'gemini-flash-latest',
-      systemInstruction: SYSTEM_INSTRUCTION,
-    });
-    const chat = model.startChat({
-      history: cleaned,
-      generationConfig: { temperature: 0.7 },
-    });
-    const result = await chat.sendMessage(message);
-    return res.json({ reply: result.response.text() });
+  try {
+    const { reply } = await generateReply({ system: SYSTEM_INSTRUCTION, messages });
+    return res.json({ reply });
   } catch (err) {
-    console.error('Gemini API error:', err);
+    console.error('AI chat error:', err.message);
     return res.status(502).json({ error: 'Upstream AI service failed' });
   }
 });

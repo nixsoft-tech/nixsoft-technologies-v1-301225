@@ -138,7 +138,8 @@ Set the values exactly as follows:
 ```env
 # ─── Required secrets ─────────────────────────────────────────────────────────
 ADMIN_PASSWORD=generate_a_long_secure_password
-GEMINI_API_KEY=AIzaSy...your_real_gemini_key
+XAI_API_KEY=xai-...your_grok_key          # NixBot chat (primary)
+DEEPSEEK_API_KEY=sk-...your_deepseek_key   # NixBot chat (fallback)
 SMTP_PASS=your_gmail_app_password
 
 # MariaDB credentials

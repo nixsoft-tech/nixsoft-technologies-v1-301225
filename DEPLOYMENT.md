@@ -67,7 +67,8 @@ Then fill in:
 
 ```env
 ADMIN_PASSWORD=your_secure_admin_password
-GEMINI_API_KEY=your_gemini_api_key       # server-side only, never in the frontend
+XAI_API_KEY=your_xai_api_key             # Grok — server-side only, never in the frontend
+DEEPSEEK_API_KEY=your_deepseek_api_key   # fallback if Grok fails (optional)
 SMTP_PASS=your_real_app_password_here
 MYSQL_ROOT_PASSWORD=your_secure_db_root_password
 MYSQL_PASSWORD=your_secure_db_password

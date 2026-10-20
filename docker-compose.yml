@@ -47,11 +47,16 @@ services:
       - "5000"
     environment:
       - ADMIN_PASSWORD=${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in .env}
-      # GEMINI_API_KEY and SMTP_PASS may be empty — the server degrades
+      # The AI keys and SMTP_PASS may be empty — the server degrades
       # gracefully (chat runs in demo mode, /api/contact returns 503) and
       # logs a startup warning. This keeps `docker compose` usable (e.g.
       # for certbot bootstrap) before these values are filled in.
-      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      # NixBot tries AI_PROVIDERS in order (Grok, then DeepSeek as fallback).
+      - XAI_API_KEY=${XAI_API_KEY:-}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY:-}
+      - AI_PROVIDERS=${AI_PROVIDERS:-grok,deepseek}
+      - XAI_MODEL=${XAI_MODEL:-grok-4.7}
+      - DEEPSEEK_MODEL=${DEEPSEEK_MODEL:-deepseek-flash}
       - SMTP_HOST=${SMTP_HOST:-smtp.gmail.com}
       - SMTP_PORT=${SMTP_PORT:-587}
       - SMTP_SECURE=${SMTP_SECURE:-false}
@@ -69,7 +74,7 @@ services:
     build:
       context: .
       args:
-        # NOTE: no VITE_GEMINI_API_KEY — Gemini calls are proxied through the
+        # NOTE: no AI API key here — chat calls are proxied through the
         # backend so no API key ever ships in the browser bundle.
         - VITE_WORDPRESS_API_URL=https://blog.new.nixsoftech.in/wp-json/wp/v2
         # Empty string = use relative /api/... paths (proxied by nginx-proxy)

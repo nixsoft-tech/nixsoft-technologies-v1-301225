@@ -10,7 +10,7 @@
 
 | # | Item | Why | Owner |
 |---|------|-----|-------|
-| 1 | **Rotate the exposed Gemini API key** (`AIzaSy…6IE`) | It was committed in `docker-compose.yml` and `.env.local` — treat as compromised. Regenerate in Google AI Studio, put the new key in `.env` as `GEMINI_API_KEY`. | You |
+| 1 | **Delete the exposed Gemini API key** (`AIzaSy…6IE`) and **set the new AI keys** | The chat no longer uses Gemini (it now runs on Grok with DeepSeek as fallback), but the old key was committed in `docker-compose.yml` and `.env.local`, so delete it in Google AI Studio. Then add `XAI_API_KEY` and/or `DEEPSEEK_API_KEY` to `.env`. | You |
 | 2 | **Set fresh production credentials in `.env`** | `cp .env.example .env`, then set strong values for `ADMIN_PASSWORD`, `MYSQL_PASSWORD`, `MYSQL_ROOT_PASSWORD`, and the real `SMTP_PASS`. The old values (`Nixsoft@2026`, `wp_password`, `root_password`) were committed — do not reuse them. | You |
 | 3 | **Supply `og-image.png`, `logo.png`, `favicon.ico`** | All three are referenced by `index.html`, `SEO.tsx`, and `Schema.tsx` but do not exist in `public/` — they 404 today. Social shares render blank and the Organization schema's required `logo` field fails the Rich Results Test. Needs real brand assets from design; not something code can generate. | You / Design |
 | 4 | **Re-create the `www` → apex 301 in nginx at cutover** | `https://www.nixsoftech.in` currently 301s to the apex, but that redirect is served by the **old WordPress/Apache** stack (`X-Redirect-By: WordPress`). It is not in `nginx-proxy/conf.d/default.conf`. When DNS moves to the new stack the redirect vanishes, and www + apex both serve 200 → duplicate content against the canonicals now pointing at the apex. | DevOps |

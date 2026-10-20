@@ -1,5 +1,6 @@
 process.env.ADMIN_PASSWORD = 'test_admin_password';
-process.env.GEMINI_API_KEY = ''; // Force demo mode
+process.env.XAI_API_KEY = ''; // No AI provider keys → demo mode
+process.env.DEEPSEEK_API_KEY = '';
 process.env.ALLOWED_ORIGINS = 'http://localhost:3000';
 
 const test = require('node:test');
