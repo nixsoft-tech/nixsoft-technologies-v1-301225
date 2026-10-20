@@ -72,7 +72,9 @@ export const getBlogPosts = async (): Promise<BlogPost[]> => {
   if (cached) return cached;
 
   try {
-    const response = await fetch(`${WP_API_URL}/posts?_embed&per_page=9`);
+    // 100 is the WordPress REST maximum per request; the /blog page has no
+    // pagination, so fetch them all (the migrated archive is 17 posts).
+    const response = await fetch(`${WP_API_URL}/posts?_embed&per_page=100`);
     if (!response.ok) throw new Error('Failed to fetch posts');
     const data = await response.json();
     const mapped = data.map(mapWordPressPost);
