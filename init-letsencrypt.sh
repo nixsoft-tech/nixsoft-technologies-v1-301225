@@ -14,7 +14,13 @@
 set -e
 
 # ─── Configuration ────────────────────────────────────────────────────────────
-DOMAINS=("new.nixsoftech.in" "blog.new.nixsoftech.in")
+# Production hosts. NOTE: on the existing EC2 server the production certificate
+# is issued before the DNS switch by scripts/issue-production-certs.sh (see
+# CUTOVER.md) — this script is for bootstrapping a NEW server whose DNS
+# already points at it. On a new server, first delete the two "retired UAT
+# hosts" server blocks at the end of nginx-proxy/conf.d/default.conf: their
+# certificate (live/new.nixsoftech.in) won't exist there and nginx won't start.
+DOMAINS=("nixsoftech.in" "www.nixsoftech.in" "blog.nixsoftech.in")
 EMAIL="sales@nixsoftech.in"     # Let's Encrypt expiry notifications
 RSA_KEY_SIZE=4096
 STAGING=0                       # Set to 1 for testing (no rate limits, untrusted cert)
@@ -132,6 +138,6 @@ echo " Certificates live in the 'certbot_conf' Docker volume."
 echo ""
 echo " Certbot will automatically renew the certificate every 12 hours."
 echo " Your site is now live at:"
-echo "   https://new.nixsoftech.in         (React App + API)"
-echo "   https://blog.new.nixsoftech.in    (WordPress Blog)"
+echo "   https://nixsoftech.in         (React App + API)"
+echo "   https://blog.nixsoftech.in    (WordPress Blog)"
 echo "==================================================================="

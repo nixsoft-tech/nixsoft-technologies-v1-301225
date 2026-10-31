@@ -94,27 +94,15 @@ existed. The two genuinely critical defects below were **not** in the report.
 > ⚠️ The nginx changes were **not** machine-verified — Docker was unavailable in
 > that session. Run `nginx -t` before reloading the proxy.
 
-### 🚀 Production cutover checklist (UAT `new.nixsoftech.in` → prod `nixsoftech.in`)
+### 🚀 Production cutover (UAT `new.nixsoftech.in` → prod `nixsoftech.in`)
 
-The UAT hostname is baked into six places. This list is file-specific — unlike
-the generic checklist in the review report, which misses most of them.
-
-| # | File | Change |
-|---|------|--------|
-| 1 | `nginx-proxy/conf.d/default.conf` | **Delete both UAT noindex blocks** — the `X-Robots-Tag` server headers, the repeat inside the static-asset location, and both `location = /robots.txt` overrides. Leaving any in place silently deindexes production. |
-| 2 | `nginx-proxy/conf.d/default.conf` | `server_name` → `nixsoftech.in` (L24, L43) and `blog.nixsoftech.in` (L142). |
-| 3 | `nginx-proxy/conf.d/default.conf` | **Add a `www.nixsoftech.in` → apex 301 server block.** Today's www→apex redirect is served by the old WordPress/Apache stack and is lost the moment DNS moves. Without it, www and apex both serve 200. |
-| 4 | `nginx-proxy/conf.d/default.conf` | CSP (L67): swap `new.nixsoftech.in` / `blog.new.nixsoftech.in` in `img-src` and `connect-src` for the production hosts. Missing this breaks the blog fetch and the CSP report. |
-| 5 | `docker-compose.yml` | `VITE_WORDPRESS_API_URL` (L74) → production blog. `ALLOWED_ORIGINS` default (L61) → `https://nixsoftech.in`, or the contact form and chat 403. Leave `VITE_SITE_URL` **unset**. |
-| 6 | `init-letsencrypt.sh` | `DOMAINS` (L17) → the production hostnames, incl. `www.nixsoftech.in` so the redirect block has a cert. |
-| 7 | `public/robots.txt` | Already correct for production (`Allow: /` + apex sitemap) — the UAT block is at the nginx layer, so **no revert needed here**. |
-
-Verify after cutover:
-```bash
-curl -sI https://nixsoftech.in | grep -i x-robots-tag   # expect: no output
-curl -sI https://www.nixsoftech.in | grep -i location   # expect: 301 → apex
-curl -s  https://nixsoftech.in/robots.txt               # expect: Allow: /, not Disallow: /
-```
+Done on branch `feat/production-cutover`. Follow **[CUTOVER.md](CUTOVER.md)** on
+swap day. The branch covers every item that used to be listed here: production
+`server_name`s, no UAT noindex, the www → apex 301, CSP, `VITE_WORDPRESS_API_URL`,
+`ALLOWED_ORIGINS` and the certificate domains. It adds a `blog.nixsoftech.in`
+vhost, redirects from the retired UAT hosts, DNS-based certificate issuance so
+the certificates exist before DNS moves, and a WP-CLI container for the
+WordPress URL change. Verify with `scripts/post-cutover-check.sh`.
 
 ### Still open from that review
 

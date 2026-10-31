@@ -69,7 +69,9 @@ services:
       - SMTP_USER=${SMTP_USER:-sales@nixsoftech.in}
       - SMTP_PASS=${SMTP_PASS:-}
       - CONTACT_EMAIL=${CONTACT_EMAIL:-sales@nixsoftech.in}
-      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-https://new.nixsoftech.in}
+      # A value in .env overrides this — remove any UAT ALLOWED_ORIGINS there,
+      # or the contact form and chat answer 403 on the production site.
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-https://nixsoftech.in}
     volumes:
       - chat_logs:/app/logs
     networks:
@@ -82,7 +84,7 @@ services:
       args:
         # NOTE: no AI API key here — chat calls are proxied through the
         # backend so no API key ever ships in the browser bundle.
-        - VITE_WORDPRESS_API_URL=https://blog.new.nixsoftech.in/wp-json/wp/v2
+        - VITE_WORDPRESS_API_URL=https://blog.nixsoftech.in/wp-json/wp/v2
         # Empty string = use relative /api/... paths (proxied by nginx-proxy)
         - VITE_API_BASE_URL=
         #
@@ -90,14 +92,10 @@ services:
         # <link rel="canonical">, og:url, and the JSON-LD, and defaults to the
         # production apex (https://nixsoftech.in) — see constants.ts.
         #
-        # Do NOT set it to https://new.nixsoftech.in for UAT. This host is
-        # served noindex (see nginx-proxy/conf.d/default.conf), so its
-        # canonicals are never read by a crawler and pointing them at the UAT
-        # host buys nothing. The failure modes are wildly asymmetric: leaving
-        # it unset means a production build is correct by default, whereas
-        # setting it here means anyone who reuses this file at cutover ships
-        # production with every page canonicalized to a dead staging host —
-        # the exact bug fixed on 16 Jul 2026.
+        # Never set it to a UAT host: leaving it unset means a production
+        # build is correct by default, whereas a UAT value here would ship
+        # every page canonicalized to a dead staging host — the exact bug
+        # fixed on 16 Jul 2026.
     restart: always
     # NO public ports — all traffic routed through nginx-proxy
     expose:
@@ -141,7 +139,43 @@ services:
       - certbot_www:/var/www/certbot
     # Check for renewal every 12 hours; Let's Encrypt certs are valid 90 days
     # and renewed automatically when < 30 days remain
+    # `--webroot` here applies to every certificate, including nixsoftech.in,
+    # which was first issued via DigitalOcean DNS (certbot-dns below): once
+    # DNS points at this server, renewals use the HTTP challenge like UAT's.
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot; sleep 12h & wait $${!}; done;'"
+    networks:
+      - nixsoft_network
+
+  # ─── One-off tools — never started by `docker compose up` ────────────────────
+  # Run with `docker compose run --rm <service> ...` (see CUTOVER.md).
+
+  # Issues the production certificate BEFORE the DNS switch, by proving
+  # domain ownership through a DigitalOcean DNS record instead of over HTTP.
+  # Needs ./digitalocean.ini (gitignored): dns_digitalocean_token = <token>
+  certbot-dns:
+    image: certbot/dns-digitalocean:v2.11.0
+    profiles: ["tools"]
+    volumes:
+      - certbot_conf:/etc/letsencrypt
+      - ./digitalocean.ini:/digitalocean.ini:ro
+
+  # WP-CLI against the live WordPress files and database, e.g. the
+  # blog.new.nixsoftech.in -> blog.nixsoftech.in search-replace at cutover.
+  wpcli:
+    image: wordpress:cli-2.11.0-php8.3
+    profiles: ["tools"]
+    # uid 33 = www-data in the Debian-based wordpress image, so files WP-CLI
+    # writes (e.g. regenerated thumbnails) stay owned by the web server.
+    user: "33:33"
+    depends_on:
+      - db
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wp_user
+      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - wordpress_data:/var/www/html
     networks:
       - nixsoft_network
 

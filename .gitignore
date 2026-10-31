@@ -35,6 +35,8 @@ server/logs/
 # Environment files with secrets
 .env
 .env.production
+# DigitalOcean API token for scripts/issue-production-certs.sh
+digitalocean.ini
 
 # Local working backups (created during manual edits, not part of the app)
 _backup_*/
