@@ -72,6 +72,7 @@ services:
       # EC2 instance's IAM role) and SMTP_FROM, an address on the SES domain.
       - SES_REGION=${SES_REGION:-}
       - SMTP_FROM=${SMTP_FROM:-}
+      - SES_CONFIGURATION_SET=${SES_CONFIGURATION_SET:-}
       - CONTACT_EMAIL=${CONTACT_EMAIL:-sales@nixsoftech.in}
       # A value in .env overrides this — remove any UAT ALLOWED_ORIGINS there,
       # or the contact form and chat answer 403 on the production site.
