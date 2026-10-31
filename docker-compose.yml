@@ -68,6 +68,10 @@ services:
       - SMTP_SECURE=${SMTP_SECURE:-false}
       - SMTP_USER=${SMTP_USER:-sales@nixsoftech.in}
       - SMTP_PASS=${SMTP_PASS:-}
+      # Amazon SES instead of SMTP: set SES_REGION (credentials come from the
+      # EC2 instance's IAM role) and SMTP_FROM, an address on the SES domain.
+      - SES_REGION=${SES_REGION:-}
+      - SMTP_FROM=${SMTP_FROM:-}
       - CONTACT_EMAIL=${CONTACT_EMAIL:-sales@nixsoftech.in}
       # A value in .env overrides this — remove any UAT ALLOWED_ORIGINS there,
       # or the contact form and chat answer 403 on the production site.
