@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ChatWidget from './components/ChatWidget';
 import Schema from './components/Schema';
+import Analytics from './components/Analytics';
 import Home from './pages/Home';
 import { getServiceBySlugOrAlias } from './data/services';
 
@@ -51,6 +52,7 @@ const App: React.FC = () => {
     <BrowserRouter>
       <div className="flex flex-col min-h-screen">
         <ScrollToTop />
+        <Analytics />
         <Schema />
         <Navbar />
         

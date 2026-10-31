@@ -6,6 +6,12 @@ import { ServiceItem, ProductItem, NavItem } from './types';
 // so callers can safely concatenate a leading-slash path.
 export const SITE_URL = (import.meta.env.VITE_SITE_URL ?? 'https://nixsoftech.in').replace(/\/+$/, '');
 
+// Google Analytics 4 — the "nixsoftech.in - GA4" property, which holds the
+// site's full history since Apr 2023. Loaded only on the production hosts, so
+// UAT (new.nixsoftech.in) and localhost visits never reach the reports.
+export const GA_MEASUREMENT_ID = 'G-MMF22YW499';
+export const ANALYTICS_HOSTS = ['nixsoftech.in', 'www.nixsoftech.in'];
+
 export const NAV_LINKS: NavItem[] = [
   { label: 'Services', path: '/services' },
   { label: 'Solutions', path: '/solutions' },
