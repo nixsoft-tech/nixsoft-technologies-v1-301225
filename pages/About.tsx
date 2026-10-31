@@ -69,13 +69,13 @@ const About: React.FC = () => {
   const { hash } = useLocation();
 
   // Old-site /team/* URLs redirect to /about#team. ScrollToTop in App.tsx
-  // resets the scroll on every route change, so wait a frame before jumping.
+  // resets the scroll on every route change, so jump after it has run. An
+  // instant jump, not a smooth one: on a full page load the smooth scroll
+  // got interrupted part-way and left the visitor near the top of the page.
   useEffect(() => {
     if (hash !== '#team') return;
-    const id = requestAnimationFrame(() =>
-      document.getElementById('team')?.scrollIntoView({ behavior: 'smooth' })
-    );
-    return () => cancelAnimationFrame(id);
+    const id = setTimeout(() => document.getElementById('team')?.scrollIntoView(), 100);
+    return () => clearTimeout(id);
   }, [hash]);
 
   return (
