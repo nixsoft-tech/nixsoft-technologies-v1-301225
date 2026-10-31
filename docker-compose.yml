@@ -109,6 +109,10 @@ services:
   nginx-proxy:
     image: nginx:1.26.1-alpine
     restart: always
+    # nginx reads certificates only at start/reload, so without this it keeps
+    # serving the old certificate after certbot renews it (below) — until
+    # that one expires and HTTPS breaks. Reload every 6h to pick up renewals.
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & exec nginx -g \"daemon off;\"'"
     ports:
       - "80:80"
       - "443:443"
