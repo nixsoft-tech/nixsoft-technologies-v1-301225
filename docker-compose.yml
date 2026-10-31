@@ -63,6 +63,10 @@ services:
       - CHAT_RATE_PER_MINUTE=${CHAT_RATE_PER_MINUTE:-8}
       - CHAT_RATE_PER_HOUR=${CHAT_RATE_PER_HOUR:-60}
       - AI_DAILY_LIMIT=${AI_DAILY_LIMIT:-1500}
+      # Contact + homepage form email limits (see server/formguard.js)
+      - FORM_EMAILS_PER_MINUTE=${FORM_EMAILS_PER_MINUTE:-2}
+      - FORM_EMAILS_PER_HOUR=${FORM_EMAILS_PER_HOUR:-5}
+      - FORM_EMAILS_DAILY_LIMIT=${FORM_EMAILS_DAILY_LIMIT:-200}
       - SMTP_HOST=${SMTP_HOST:-smtp.gmail.com}
       - SMTP_PORT=${SMTP_PORT:-587}
       - SMTP_SECURE=${SMTP_SECURE:-false}

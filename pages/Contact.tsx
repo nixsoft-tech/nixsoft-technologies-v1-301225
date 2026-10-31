@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Mail, MapPin, Send, Calendar, MessageCircle, ArrowRight, AlertCircle } from 'lucide-react';
 import SEO from '../components/SEO';
-
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5000';
+import AltchaWidget from '../components/AltchaWidget';
+import Honeypot from '../components/Honeypot';
+import { submitForm, HONEYPOT_FIELD } from '../services/formApi';
 
 // ─── Validation helpers ────────────────────────────────────────────────────────
 function validateForm(data: typeof INITIAL_FORM): Record<string, string> {
@@ -38,12 +39,17 @@ const Contact: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  // Abuse protection: solved "I'm not a robot" puzzle + hidden honeypot field
+  const [puzzle, setPuzzle] = useState<string | null>(null);
+  const [puzzleKey, setPuzzleKey] = useState(0);
+  const [honeypot, setHoneypot] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // ✅ Client-side validation before network call
     const errors = validateForm(formData);
+    if (!puzzle) errors.puzzle = 'Please tick "I\'m not a robot" first.';
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
       return;
@@ -52,22 +58,16 @@ const Contact: React.FC = () => {
     setServerError(null);
     setIsSubmitting(true);
 
-    try {
-      const response = await fetch(`${API_BASE}/api/contact`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
-      if (response.ok) {
-        setSubmitted(true);
-        setFormData(INITIAL_FORM);
-      } else {
-        setServerError('Failed to send message. Please try again later.');
-      }
-    } catch {
-      setServerError('Network error. Please check your connection and try again.');
-    } finally {
-      setIsSubmitting(false);
+    const result = await submitForm('/api/contact', { ...formData, altcha: puzzle, [HONEYPOT_FIELD]: honeypot });
+    setIsSubmitting(false);
+    // Each solved puzzle works once, so start a fresh one whatever happened.
+    setPuzzle(null);
+    setPuzzleKey((k) => k + 1);
+    if (result.ok) {
+      setSubmitted(true);
+      setFormData(INITIAL_FORM);
+    } else {
+      setServerError(result.message);
     }
   };
 
@@ -283,6 +283,21 @@ const Contact: React.FC = () => {
                                placeholder="Briefly describe your infrastructure needs..."
                             ></textarea>
                             {fieldErrors.message && <p className="text-red-500 text-xs mt-1">{fieldErrors.message}</p>}
+                         </div>
+
+                         <Honeypot value={honeypot} onChange={setHoneypot} />
+
+                         <div>
+                            <AltchaWidget
+                              key={puzzleKey}
+                              onChange={(payload) => {
+                                setPuzzle(payload);
+                                if (payload && fieldErrors.puzzle) {
+                                  setFieldErrors(prev => { const next = { ...prev }; delete next.puzzle; return next; });
+                                }
+                              }}
+                            />
+                            {fieldErrors.puzzle && <p className="text-red-500 text-xs mt-1">{fieldErrors.puzzle}</p>}
                          </div>
 
                          <button

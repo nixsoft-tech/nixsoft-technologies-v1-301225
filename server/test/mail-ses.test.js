@@ -10,6 +10,8 @@ process.env.SMTP_FROM = 'website@nixsoftech.in';
 process.env.SES_CONFIGURATION_SET = 'website';
 process.env.SMTP_USER = 'AKIAEXAMPLESMTPUSER'; // an SES-style login, never a valid sender
 process.env.CONTACT_EMAIL = 'sales@nixsoftech.in';
+const { EASY_PUZZLE_ENV, solvedPuzzle } = require('./puzzle');
+Object.assign(process.env, EASY_PUZZLE_ENV);
 
 const test = require('node:test');
 const assert = require('node:assert');
@@ -30,7 +32,8 @@ test('POST /api/contact sends through Amazon SES when SES_REGION is set', async 
 
   const server = http.createServer(app).listen(0);
   try {
-    const res = await fetch(`http://localhost:${server.address().port}/api/contact`, {
+    const baseUrl = `http://localhost:${server.address().port}`;
+    const res = await fetch(`${baseUrl}/api/contact`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -38,6 +41,7 @@ test('POST /api/contact sends through Amazon SES when SES_REGION is set', async 
         email: 'jane@example.com',
         company: 'ACME',
         message: 'We need managed DevOps support.',
+        altcha: await solvedPuzzle(baseUrl),
       }),
     });
     assert.strictEqual(res.status, 200);
