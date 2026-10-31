@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   ArrowRight, ShieldCheck, Database, Cloud, Infinity, 
@@ -9,6 +9,12 @@ import { SERVICES, INDUSTRIES, PRODUCTS } from '../constants';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import TerminalSimulator from '../components/TerminalSimulator';
 import SEO from '../components/SEO';
+import Honeypot from '../components/Honeypot';
+import { submitForm, HONEYPOT_FIELD } from '../services/formApi';
+
+// The puzzle widget (~90 KB) loads only once someone starts on the audit form,
+// so it never weighs on the home page's first paint.
+const AltchaWidget = lazy(() => import('../components/AltchaWidget'));
 
 const data = [
   { name: 'Traditional IT', efficiency: 40, cost: 100 },
@@ -93,12 +99,34 @@ const HeroBackground = () => (
 const Home: React.FC = () => {
   const [email, setEmail] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [leadError, setLeadError] = useState<string | null>(null);
+  // Abuse protection: the puzzle appears once the visitor starts on the form
+  const [showPuzzle, setShowPuzzle] = useState(false);
+  const [puzzle, setPuzzle] = useState<string | null>(null);
+  const [puzzleKey, setPuzzleKey] = useState(0);
+  const [honeypot, setHoneypot] = useState('');
 
-  const handleLeadSubmit = (e: React.FormEvent) => {
+  const handleLeadSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitted(true);
-    setTimeout(() => setIsSubmitted(false), 3000);
-    setEmail('');
+    if (!puzzle) {
+      setShowPuzzle(true);
+      setLeadError('Please tick "I\'m not a robot" first.');
+      return;
+    }
+    setLeadError(null);
+    setIsSending(true);
+    const result = await submitForm('/api/lead', { email, altcha: puzzle, [HONEYPOT_FIELD]: honeypot });
+    setIsSending(false);
+    // Each solved puzzle works once, so start a fresh one whatever happened.
+    setPuzzle(null);
+    setPuzzleKey((k) => k + 1);
+    if (result.ok) {
+      setIsSubmitted(true);
+      setEmail('');
+    } else {
+      setLeadError(result.message);
+    }
   };
 
   return (
@@ -426,19 +454,38 @@ const Home: React.FC = () => {
                 Thank you! Our team will be in touch shortly.
               </div>
             ) : (
-              <div className="flex flex-col sm:flex-row gap-3">
-                <input 
-                  type="email" 
-                  placeholder="Enter your work email" 
-                  className="flex-1 px-5 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-nixBlue focus:ring-1 focus:ring-nixBlue"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-                <button type="submit" className="bg-nixOrange hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-lg transition-colors whitespace-nowrap">
-                  Get Started
-                </button>
-              </div>
+              <>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <input
+                    type="email"
+                    placeholder="Enter your work email"
+                    aria-label="Work email"
+                    className="flex-1 px-5 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-nixBlue focus:ring-1 focus:ring-nixBlue"
+                    required
+                    value={email}
+                    onFocus={() => setShowPuzzle(true)}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                  <button type="submit" disabled={isSending} className="bg-nixOrange hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-lg transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed">
+                    {isSending ? 'Sending...' : 'Get Started'}
+                  </button>
+                </div>
+                <Honeypot value={honeypot} onChange={setHoneypot} />
+                {showPuzzle && (
+                  <div className="mt-3 min-h-[60px]">
+                    <Suspense fallback={null}>
+                      <AltchaWidget
+                        key={puzzleKey}
+                        onChange={(payload) => {
+                          setPuzzle(payload);
+                          if (payload) setLeadError(null);
+                        }}
+                      />
+                    </Suspense>
+                  </div>
+                )}
+                {leadError && <p role="alert" className="text-red-600 text-sm mt-3 text-center">{leadError}</p>}
+              </>
             )}
             <p className="text-center text-xs text-slate-400 mt-4">
               No spam. Unsubscribe anytime.

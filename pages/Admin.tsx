@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Shield, Calendar, MessageCircle, Clock, ChevronRight, Lock, AlertCircle } from 'lucide-react';
+import AltchaWidget from '../components/AltchaWidget';
 
 interface ChatLog {
   timestamp: string;
@@ -19,16 +20,26 @@ const Admin: React.FC = () => {
   const [selectedSession, setSelectedSession] = useState<string | null>(null);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  // "I'm not a robot" puzzle — required with every login attempt
+  const [puzzle, setPuzzle] = useState<string | null>(null);
+  const [puzzleKey, setPuzzleKey] = useState(0);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!puzzle) {
+      setLoginError('Please tick "I\'m not a robot" first.');
+      return;
+    }
     setIsLoggingIn(true);
     setLoginError(null);
+    // Each solved puzzle works once, so the next attempt needs a fresh one.
+    setPuzzle(null);
+    setPuzzleKey((k) => k + 1);
     try {
       const response = await fetch(`${API_BASE}/api/admin/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password })
+        body: JSON.stringify({ password, altcha: puzzle })
       });
       if (response.ok) {
         const data = await response.json();
@@ -39,6 +50,8 @@ const Admin: React.FC = () => {
         await fetchLogs(data.token);
       } else if (response.status === 429) {
         setLoginError('Too many failed attempts. Try again later.');
+      } else if (response.status === 403) {
+        setLoginError('The "I\'m not a robot" check expired. Please tick it again.');
       } else {
         setLoginError('Invalid admin password. Please try again.');
       }
@@ -117,6 +130,8 @@ const Admin: React.FC = () => {
                 className="w-full bg-slate-900 border border-slate-700 rounded-xl py-4 pl-12 pr-4 text-white focus:ring-2 focus:ring-nixGreen focus:outline-none transition-all"
               />
             </div>
+
+            <AltchaWidget key={puzzleKey} onChange={setPuzzle} />
 
             {/* ✅ Inline error display — no blocking alert() */}
             {loginError && (

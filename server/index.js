@@ -7,6 +7,7 @@ const nodemailer = require('nodemailer');
 require('dotenv').config();
 const { generateReply, configuredProviders } = require('./ai');
 const nixbot = require('./nixbot');
+const formguard = require('./formguard');
 
 const app = express();
 const PORT = 5000;
@@ -270,8 +271,8 @@ const loginAttempts = new Map();
 const MAX_ATTEMPTS = 5;
 const ATTEMPT_WINDOW_MS = 15 * 60 * 1000;
 
-app.post('/api/admin/login', (req, res) => {
-  const { password } = req.body;
+app.post('/api/admin/login', async (req, res) => {
+  const { password, altcha } = req.body || {};
   const ip = req.ip;
   const now = Date.now();
 
@@ -282,6 +283,12 @@ app.post('/api/admin/login', (req, res) => {
   const current = loginAttempts.get(ip);
   if (current && current.count >= MAX_ATTEMPTS) {
     return res.status(429).json({ error: 'Too many failed attempts. Try again later.' });
+  }
+
+  // Puzzle before the password check: password guessing costs a solved puzzle
+  // per attempt on top of the lockout. Doesn't count as a failed attempt.
+  if (!(await formguard.verifyPuzzle(altcha))) {
+    return res.status(403).json({ error: 'Verification failed', code: 'PUZZLE' });
   }
 
   if (typeof password !== 'string' || !password || !safeEqual(password, ADMIN_PASSWORD)) {
@@ -392,38 +399,109 @@ function validateContact({ name, email, phone, company, message }) {
   return errors;
 }
 
-app.post('/api/contact', async (req, res) => {
-  const transporter = app.locals.transporter;
-  if (!transporter) {
-    return res.status(503).json({ error: 'Email service is not configured' });
+// ─── Form abuse protection (see formguard.js) ────────────────────────────────
+// Puzzles for the forms' ALTCHA widget. Covered by nginx-proxy's /api/ limit.
+app.get('/api/altcha/challenge', async (req, res, next) => {
+  try {
+    res.set('Cache-Control', 'no-store').json(await formguard.newChallenge());
+  } catch (err) {
+    next(err);
   }
+});
 
-  const errors = validateContact(req.body || {});
-  if (errors.length > 0) {
-    return res.status(400).json({ error: 'Validation failed', details: errors });
+/**
+ * Runs the checks every emailing form shares, after field validation:
+ * honeypot, puzzle, per-IP limit, daily cap. Sends the response itself and
+ * returns false when the email must not be sent.
+ */
+async function guardEmailForm(req, res) {
+  const body = req.body || {};
+  // A filled honeypot means a bot. Report success so it moves on; send nothing.
+  if (formguard.isHoneypotFilled(body)) {
+    res.status(200).json({ success: true });
+    return false;
   }
+  if (!(await formguard.verifyPuzzle(body.altcha))) {
+    res.status(403).json({ error: 'Verification failed', code: 'PUZZLE' });
+    return false;
+  }
+  const limit = formguard.emailLimiter.check(req.ip);
+  if (!limit.ok) {
+    res.set('Retry-After', String(limit.retryAfterSec));
+    res.status(429).json({ error: 'Too many messages', code: 'RATE_LIMIT' });
+    return false;
+  }
+  if (!formguard.emailBudget.take()) {
+    console.warn('WARN: daily form email cap reached — rejecting until UTC midnight.');
+    res.status(503).json({ error: 'Email is temporarily unavailable', code: 'DAILY_CAP' });
+    return false;
+  }
+  return true;
+}
 
-  const { name, email, phone, company, message } = req.body;
-
+/** Sends one form notification to CONTACT_EMAIL; responds 200 or 500. */
+async function sendFormEmail(res, { subject, text, replyTo }) {
   const mailOptions = {
     from: `"Nixsoft Website" <${MAIL_FROM}>`,
     to: process.env.CONTACT_EMAIL,
-    replyTo: email,
-    subject: `New Inquiry from ${name} (${company})`,
-    text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone || '-'}\nCompany: ${company}\nMessage: ${message}`,
+    replyTo,
+    subject: formguard.singleLine(subject),
+    text,
   };
   // Extra SendEmail parameters for the SES transport (SMTP ignores this key)
   if (SES_REGION && SES_CONFIGURATION_SET) {
     mailOptions.ses = { ConfigurationSetName: SES_CONFIGURATION_SET };
   }
-
   try {
-    await transporter.sendMail(mailOptions);
+    await app.locals.transporter.sendMail(mailOptions);
     res.status(200).json({ success: true });
   } catch (err) {
     console.error('Email error:', err);
     res.status(500).json({ error: 'Failed to send email' });
   }
+}
+
+app.post('/api/contact', async (req, res) => {
+  if (!app.locals.transporter) {
+    return res.status(503).json({ error: 'Email service is not configured' });
+  }
+
+  const body = req.body || {};
+  const errors = validateContact(body);
+  if (typeof body.message === 'string' && formguard.countLinks(body.message) > formguard.MAX_LINKS) {
+    errors.push(`Too many links (max ${formguard.MAX_LINKS})`);
+  }
+  if (errors.length > 0) {
+    return res.status(400).json({ error: 'Validation failed', details: errors });
+  }
+  if (!(await guardEmailForm(req, res))) return;
+
+  const { name, email, phone, company, message } = body;
+  const line = formguard.singleLine;
+  await sendFormEmail(res, {
+    subject: `New Inquiry from ${line(name)} (${line(company)})`,
+    text: `Name: ${line(name)}\nEmail: ${email}\nPhone: ${phone ? line(phone) : '-'}\nCompany: ${line(company)}\nMessage: ${message}`,
+    replyTo: email,
+  });
+});
+
+// Homepage "work email" lead form
+app.post('/api/lead', async (req, res) => {
+  if (!app.locals.transporter) {
+    return res.status(503).json({ error: 'Email service is not configured' });
+  }
+
+  const { email } = req.body || {};
+  if (typeof email !== 'string' || email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ error: 'Validation failed', details: ['Invalid email'] });
+  }
+  if (!(await guardEmailForm(req, res))) return;
+
+  await sendFormEmail(res, {
+    subject: `New lead from the homepage: ${email}`,
+    text: `Work email: ${email}\nSource: homepage — "Get Your Free Infrastructure Audit"\n\nNo other details were given — reply to this email to reach them.`,
+    replyTo: email,
+  });
 });
 
 // Clean error responses — never leak stack traces to clients
