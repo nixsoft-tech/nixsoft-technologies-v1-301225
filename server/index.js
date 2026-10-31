@@ -37,8 +37,13 @@ const SMTP_CONFIGURED =
 // SES SMTP/API usernames aren't email addresses, so the sender is its own
 // setting; SMTP_USER is the fallback for the Gmail setup, where they match.
 const MAIL_FROM = process.env.SMTP_FROM || process.env.SMTP_USER;
+// The website's own SES configuration set. Naming one on every send overrides
+// the identity's default set — today MailBluster's — so reconnecting or
+// removing MailBluster can't break the contact form.
+const SES_CONFIGURATION_SET = process.env.SES_CONFIGURATION_SET;
 if (SES_REGION) {
-  console.log(`Contact email: Amazon SES (${SES_REGION}), from ${MAIL_FROM}`);
+  console.log(`Contact email: Amazon SES (${SES_REGION}), from ${MAIL_FROM}` +
+    (SES_CONFIGURATION_SET ? `, configuration set ${SES_CONFIGURATION_SET}` : ', identity\'s default configuration set'));
   if (!process.env.SMTP_FROM) {
     console.warn('WARN: SES_REGION is set but SMTP_FROM is not — set it to an address on the verified SES domain.');
   }
@@ -407,6 +412,10 @@ app.post('/api/contact', async (req, res) => {
     subject: `New Inquiry from ${name} (${company})`,
     text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone || '-'}\nCompany: ${company}\nMessage: ${message}`,
   };
+  // Extra SendEmail parameters for the SES transport (SMTP ignores this key)
+  if (SES_REGION && SES_CONFIGURATION_SET) {
+    mailOptions.ses = { ConfigurationSetName: SES_CONFIGURATION_SET };
+  }
 
   try {
     await transporter.sendMail(mailOptions);
