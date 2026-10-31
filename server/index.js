@@ -30,10 +30,20 @@ if (!ADMIN_PASSWORD) {
   }
 }
 
+// Contact-form email goes through Amazon SES when SES_REGION is set, else SMTP.
+const SES_REGION = process.env.SES_REGION;
 const SMTP_CONFIGURED =
   !!process.env.SMTP_PASS && process.env.SMTP_PASS !== 'your_app_password';
-if (!SMTP_CONFIGURED) {
-  console.warn('WARN: SMTP_PASS is missing or still the placeholder — /api/contact is disabled.');
+// SES SMTP/API usernames aren't email addresses, so the sender is its own
+// setting; SMTP_USER is the fallback for the Gmail setup, where they match.
+const MAIL_FROM = process.env.SMTP_FROM || process.env.SMTP_USER;
+if (SES_REGION) {
+  console.log(`Contact email: Amazon SES (${SES_REGION}), from ${MAIL_FROM}`);
+  if (!process.env.SMTP_FROM) {
+    console.warn('WARN: SES_REGION is set but SMTP_FROM is not — set it to an address on the verified SES domain.');
+  }
+} else if (!SMTP_CONFIGURED) {
+  console.warn('WARN: Neither SES_REGION nor SMTP_PASS is set — /api/contact is disabled.');
 }
 
 // ─── CORS: explicit origin allow-list ─────────────────────────────────────────
@@ -330,10 +340,19 @@ app.get('/api/admin/chats', async (req, res) => {
   }
 });
 
-// ─── SMTP Email API ───────────────────────────────────────────────────────────
-// Transporter is created once at startup and reused across requests
-app.locals.transporter = SMTP_CONFIGURED
-  ? nodemailer.createTransport({
+// ─── Contact Email API ────────────────────────────────────────────────────────
+// Transporter is created once at startup and reused across requests.
+function createMailTransport() {
+  if (SES_REGION) {
+    // The AWS SDK finds credentials itself: on EC2, from the instance's IAM
+    // role (no secret stored on the server); elsewhere, AWS_* env vars.
+    const { SESv2Client, SendEmailCommand } = require('@aws-sdk/client-sesv2');
+    return nodemailer.createTransport({
+      SES: { sesClient: new SESv2Client({ region: SES_REGION }), SendEmailCommand },
+    });
+  }
+  if (SMTP_CONFIGURED) {
+    return nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: Number(process.env.SMTP_PORT) || 587,
       secure: process.env.SMTP_SECURE === 'true',
@@ -341,8 +360,11 @@ app.locals.transporter = SMTP_CONFIGURED
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
       },
-    })
-  : null;
+    });
+  }
+  return null;
+}
+app.locals.transporter = createMailTransport();
 
 // Server-side validation mirroring the rules in pages/Contact.tsx
 function validateContact({ name, email, phone, company, message }) {
@@ -379,7 +401,7 @@ app.post('/api/contact', async (req, res) => {
   const { name, email, phone, company, message } = req.body;
 
   const mailOptions = {
-    from: `"Nixsoft Website" <${process.env.SMTP_USER}>`,
+    from: `"Nixsoft Website" <${MAIL_FROM}>`,
     to: process.env.CONTACT_EMAIL,
     replyTo: email,
     subject: `New Inquiry from ${name} (${company})`,
