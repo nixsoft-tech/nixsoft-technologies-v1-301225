@@ -1,0 +1,12 @@
+# The server image builds from this folder (docker-compose: context ./server),
+# so the repo-root .dockerignore doesn't apply here.
+#
+# node_modules: the Dockerfile installs dependencies from package-lock.json;
+# without this, `COPY . .` overwrote them with whatever node_modules sat on the
+# host — which is how an old nodemailer 6 kept running after the upgrade to 10.
+node_modules
+# Chat logs live in the chat_logs volume; never bake them into the image.
+logs
+test
+.env
+npm-debug.log
