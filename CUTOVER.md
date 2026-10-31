@@ -17,7 +17,7 @@ Moves `nixsoftech.in` from the old WordPress site (DigitalOcean droplet,
 | ≥ 1 day before | **DigitalOcean DNS:** set the TTL of the `@` A record to **300**. `www` is a CNAME to `@`, so it follows. |
 | Any time | **DigitalOcean DNS:** add an A record `blog` → `13.232.118.191`. It's a new name, so nothing uses it yet. |
 | Any time | **DigitalOcean → API → Tokens:** create a token with write access and save it on the server as `digitalocean.ini` (gitignored): `dns_digitalocean_token = <token>`. Delete the token after step 3. |
-| Any time | **`.env` on the server:** delete any `ALLOWED_ORIGINS=` line (the default is now `https://nixsoftech.in`). Confirm `SMTP_PASS` is set. |
+| Any time | **`.env` on the server:** delete any `ALLOWED_ORIGINS=` line (the default is now `https://nixsoftech.in`). Confirm `SES_REGION=ap-south-1` and `SMTP_FROM=website@nixsoftech.in` are set: the contact form sends through Amazon SES using the instance's IAM role `nixsoft-website-ses`. |
 | Day before | **Snapshots:** the DigitalOcean droplet (the rollback target) and the EC2 EBS volume. |
 
 **Don't touch any other DNS record.** The zone carries Google Workspace mail
