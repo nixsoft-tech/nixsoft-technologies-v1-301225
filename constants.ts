@@ -13,6 +13,7 @@ export const GA_MEASUREMENT_ID = 'G-MMF22YW499';
 export const ANALYTICS_HOSTS = ['nixsoftech.in', 'www.nixsoftech.in'];
 
 export const NAV_LINKS: NavItem[] = [
+  { label: 'Home', path: '/' },
   { label: 'Services', path: '/services' },
   { label: 'Solutions', path: '/solutions' },
   { label: 'Products', path: '/products' },
