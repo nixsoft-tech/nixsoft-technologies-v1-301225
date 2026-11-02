@@ -22,7 +22,12 @@ services:
   wordpress:
     depends_on:
       - db
-    image: wordpress:6.5.3-php8.3-apache
+    # The tag pins PHP: WordPress core updates itself inside wordpress_data, so
+    # the WP version here only matters for a brand-new volume, but PHP only
+    # changes when this image does. Re-pin to the newest
+    # <wp>-php8.3-apache build every few months (PHP 8.3: security fixes until
+    # 31 Dec 2027). Was 6.5.3 (June 2024 build, PHP 8.3.7) until Nov 2026.
+    image: wordpress:7.1.4-php8.3-apache
     restart: always
     # NO public ports — all traffic routed through nginx-proxy
     expose:
