@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
+import { CALENDLY_URL } from '../constants';
 import { 
   ArrowRight, Building2, Globe, ShieldCheck, TrendingUp, 
   Landmark, RadioTower, ShoppingBag, Cpu, CheckCircle2
@@ -227,8 +228,10 @@ const Clients: React.FC = () => {
             <Link to="/contact" className="bg-nixOrange hover:bg-orange-600 text-white px-8 py-4 rounded-lg font-bold text-lg shadow-lg shadow-orange-900/20 transition-all">
               Request a Consultation
             </Link>
-            <a href="mailto:sales@nixsoftech.in" className="bg-transparent border border-white/20 hover:bg-white/10 text-white px-8 py-4 rounded-lg font-bold text-lg transition-all">
-              Talk to Sales
+            {/* A booking page, not mailto: — mailto opens an "open with app" prompt
+                on machines without a default mail client. */}
+            <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" className="bg-transparent border border-white/20 hover:bg-white/10 text-white px-8 py-4 rounded-lg font-bold text-lg transition-all">
+              Talk to Sales<span className="sr-only"> (book a 30-minute call, opens in a new tab)</span>
             </a>
           </div>
         </div>

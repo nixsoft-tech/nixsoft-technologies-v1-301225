@@ -1,6 +1,8 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Mail, MapPin, Send, Calendar, MessageCircle, ArrowRight, AlertCircle } from 'lucide-react';
 import SEO from '../components/SEO';
+import { useSearchParams } from 'react-router-dom';
+import { CALENDLY_URL } from '../constants';
 // Browser-only (registers a custom element and a web worker): loaded after
 // the page mounts, so the build-time prerender never imports it.
 const AltchaWidget = lazy(() => import('../components/AltchaWidget'));
@@ -33,6 +35,10 @@ function validateForm(data: typeof INITIAL_FORM): Record<string, string> {
   return errors;
 }
 
+const TOPIC_PREFILL: Record<string, string> = {
+  privacy: 'Privacy / data protection question: ',
+};
+
 const INITIAL_FORM = {
   name: '',
   email: '',
@@ -47,6 +53,16 @@ const Contact: React.FC = () => {
   const [showMap, setShowMap] = useState(false);
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
+
+  // Links can open the form for a topic, e.g. /contact?topic=privacy from the
+  // Privacy Policy. Applied after mount so the first render matches the
+  // prerendered page (which has no query string).
+  const [searchParams] = useSearchParams();
+  const topic = searchParams.get('topic');
+  useEffect(() => {
+    const prefill = topic ? TOPIC_PREFILL[topic] : undefined;
+    if (prefill) setFormData((prev) => (prev.message ? prev : { ...prev, message: prefill }));
+  }, [topic]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -149,7 +165,7 @@ const Contact: React.FC = () => {
                          <ArrowRight size={16} className="text-slate-300 group-hover:text-nixBlue transition-colors" />
                       </a>
 
-                      <a href="https://calendly.com/wajid-s-nixsoftech/30min" target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-4 bg-white rounded-xl border border-gray-200 hover:border-nixOrange hover:shadow-md transition-all group">
+                      <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-4 bg-white rounded-xl border border-gray-200 hover:border-nixOrange hover:shadow-md transition-all group">
                          <div className="flex items-center">
                             <div className="w-10 h-10 bg-orange-100 text-nixOrange rounded-full flex items-center justify-center mr-3">
                                <Calendar size={20} />
