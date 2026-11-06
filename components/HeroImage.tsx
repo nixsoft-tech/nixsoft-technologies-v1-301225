@@ -1,4 +1,5 @@
 import React from 'react';
+import { bannerSrcSet, SIZES } from '../lib/images';
 
 interface HeroImageProps {
   /** Path under /public, e.g. "/images/banners/services-hero.webp". */
@@ -15,8 +16,11 @@ interface HeroImageProps {
  */
 const HeroImage: React.FC<HeroImageProps> = ({ src, alt = '' }) => (
   <div className="absolute inset-0 z-0">
+    {/* srcset: phones get a 640/1024 px copy instead of the 1920 px original */}
     <img
       src={src}
+      srcSet={bannerSrcSet(src)}
+      sizes={SIZES.fullWidth}
       alt={alt}
       aria-hidden={alt ? undefined : true}
       className="w-full h-full object-cover"
