@@ -1,4 +1,6 @@
 @import "tailwindcss";
+/* Inter and Poppins, served from /fonts (no third-party font requests). */
+@import "./fonts.css";
 /* Provides the `prose` classes used to style WordPress article HTML. */
 @plugin "@tailwindcss/typography";
 
