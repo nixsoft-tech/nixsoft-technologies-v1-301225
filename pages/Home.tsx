@@ -304,7 +304,8 @@ const Home: React.FC = () => {
       </section>
 
       {/* Why Nixsoft (Enhanced Section) */}
-      <section className="py-32 bg-slate-50 relative border-t border-slate-200">
+      {/* overflow-hidden: the chart's decorative glow is 120% wide and would widen the page on phones */}
+      <section className="py-32 bg-slate-50 relative overflow-hidden border-t border-slate-200">
         <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -382,7 +383,8 @@ const Home: React.FC = () => {
                         </div>
                         
                         <div className="h-72 w-full">
-                            <ResponsiveContainer width="100%" height="100%">
+                            {/* initialDimension: avoids Recharts' "width(-1)/height(-1)" warning on the first render, before the container is measured */}
+                            <ResponsiveContainer width="100%" height="100%" initialDimension={{ width: 480, height: 288 }}>
                             <BarChart
                                 data={data}
                                 layout="vertical"

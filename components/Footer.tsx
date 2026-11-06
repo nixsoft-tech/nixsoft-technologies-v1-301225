@@ -1,6 +1,7 @@
 import React from 'react';
-import { Linkedin, Twitter, Github, Mail, MapPin, Phone, Landmark, RadioTower, ShoppingBag, Factory } from 'lucide-react';
+import { Linkedin, Facebook, Mail, MapPin, Phone, Landmark, RadioTower, ShoppingBag, Factory } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { SOCIAL_LINKS } from '../constants';
 
 const Footer: React.FC = () => {
   return (
@@ -18,9 +19,12 @@ const Footer: React.FC = () => {
               Empowering enterprises with open-source automation, cloud scalability, and military-grade security.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-slate-400 hover:text-nixOrange transition-colors"><Linkedin size={20} /></a>
-              <a href="#" className="text-slate-400 hover:text-nixOrange transition-colors"><Twitter size={20} /></a>
-              <a href="#" className="text-slate-400 hover:text-nixOrange transition-colors"><Github size={20} /></a>
+              <a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer" aria-label="Nixsoft on LinkedIn" className="text-slate-400 hover:text-nixOrange transition-colors"><Linkedin size={20} aria-hidden="true" /></a>
+              <a href={SOCIAL_LINKS.facebook} target="_blank" rel="noopener noreferrer" aria-label="Nixsoft on Facebook" className="text-slate-400 hover:text-nixOrange transition-colors"><Facebook size={20} aria-hidden="true" /></a>
+              <a href={SOCIAL_LINKS.x} target="_blank" rel="noopener noreferrer" aria-label="Nixsoft on X (Twitter)" className="text-slate-400 hover:text-nixOrange transition-colors">
+                {/* X logo (lucide's "X" icon is a close button, not the brand mark) */}
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              </a>
             </div>
           </div>
 

@@ -6,23 +6,44 @@ import ChatWidget from './components/ChatWidget';
 import Schema from './components/Schema';
 import Analytics from './components/Analytics';
 import Home from './pages/Home';
+import NotFound from './pages/NotFound';
 import { getServiceBySlugOrAlias } from './data/services';
 
-const Services = lazy(() => import('./pages/Services'));
-const ServiceDetail = lazy(() => import('./pages/ServiceDetail'));
-const Solutions = lazy(() => import('./pages/Solutions'));
-const SolutionDetail = lazy(() => import('./pages/SolutionDetail'));
-const Products = lazy(() => import('./pages/Products'));
-const ProductDetail = lazy(() => import('./pages/ProductDetail'));
-const Industries = lazy(() => import('./pages/Industries'));
-const IndustryDetail = lazy(() => import('./pages/IndustryDetail'));
-const Contact = lazy(() => import('./pages/Contact'));
-const About = lazy(() => import('./pages/About'));
-const Clients = lazy(() => import('./pages/Clients'));
-const Blog = lazy(() => import('./pages/Blog'));
-const BlogPost = lazy(() => import('./pages/BlogPost'));
-const Admin = lazy(() => import('./pages/Admin'));
-const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
+// A page's code chunk can fail to load: a dropped request, or a visitor still
+// running the previous build after a deploy (its hashed chunk names are gone).
+// Reload once to pick up the current build instead of leaving a blank page; the
+// session flag stops a reload loop if the chunk is genuinely missing.
+const RELOAD_FLAG = 'nix-chunk-reload';
+const lazyPage = <T extends React.ComponentType<any>>(load: () => Promise<{ default: T }>) =>
+  lazy(() =>
+    load().then(
+      (mod) => { sessionStorage.removeItem(RELOAD_FLAG); return mod; },
+      (err) => {
+        if (!sessionStorage.getItem(RELOAD_FLAG)) {
+          sessionStorage.setItem(RELOAD_FLAG, '1');
+          window.location.reload();
+          return new Promise<never>(() => {});
+        }
+        throw err;
+      }
+    )
+  );
+
+const Services = lazyPage(() => import('./pages/Services'));
+const ServiceDetail = lazyPage(() => import('./pages/ServiceDetail'));
+const Solutions = lazyPage(() => import('./pages/Solutions'));
+const SolutionDetail = lazyPage(() => import('./pages/SolutionDetail'));
+const Products = lazyPage(() => import('./pages/Products'));
+const ProductDetail = lazyPage(() => import('./pages/ProductDetail'));
+const Industries = lazyPage(() => import('./pages/Industries'));
+const IndustryDetail = lazyPage(() => import('./pages/IndustryDetail'));
+const Contact = lazyPage(() => import('./pages/Contact'));
+const About = lazyPage(() => import('./pages/About'));
+const Clients = lazyPage(() => import('./pages/Clients'));
+const Blog = lazyPage(() => import('./pages/Blog'));
+const BlogPost = lazyPage(() => import('./pages/BlogPost'));
+const Admin = lazyPage(() => import('./pages/Admin'));
+const PrivacyPolicy = lazyPage(() => import('./pages/PrivacyPolicy'));
 
 // Scroll to top wrapper
 const ScrollToTop = () => {
@@ -31,12 +52,6 @@ const ScrollToTop = () => {
     window.scrollTo(0, 0);
   }, [pathname]);
   return null;
-};
-
-// Client-side catch-all redirect component for root-level blog slugs
-const BlogPostRedirect: React.FC = () => {
-  const { slug } = useParams<{ slug: string }>();
-  return <Navigate to={`/blog/${slug}`} replace />;
 };
 
 // Legacy /service/<slug> URLs now live under /services. Resolve the old slug
@@ -102,8 +117,8 @@ const App: React.FC = () => {
               <Route path="/monitoring" element={<Navigate to="/services" replace />} />
               <Route path="/it-service-management" element={<Navigate to="/services" replace />} />
 
-              {/* Root-Level Blog Redirect Catch-All */}
-              <Route path="/:slug" element={<BlogPostRedirect />} />
+              {/* Anything else: Not Found (old root-level blog slugs are 301'd by nginx) */}
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
         </main>

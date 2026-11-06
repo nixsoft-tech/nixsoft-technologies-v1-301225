@@ -1,5 +1,6 @@
 import React from 'react';
-import { Navigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import NotFound from './NotFound';
 import OfferingDetail from '../components/OfferingDetail';
 import { SERVICES_DATA, getServiceBySlug, getServiceImage, getServiceImageAlt } from '../data/services';
 
@@ -8,7 +9,7 @@ const ServiceDetail: React.FC = () => {
   const service = slug ? getServiceBySlug(slug) : undefined;
 
   if (!service) {
-    return <Navigate to="/services" replace />;
+    return <NotFound />;
   }
 
   // Related: other services in the same category first, then fill to 3.

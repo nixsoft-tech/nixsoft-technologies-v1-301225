@@ -14,6 +14,8 @@ interface SEOProps {
   keywords?: string;
   /** Breadcrumb trail after Home, e.g. [{ name: 'Services', path: '/services' }, …]. */
   breadcrumbs?: { name: string; path: string }[];
+  /** Keep this page out of search results (e.g. the Not Found page). */
+  noindex?: boolean;
 }
 
 const SEO: React.FC<SEOProps> = ({
@@ -24,6 +26,7 @@ const SEO: React.FC<SEOProps> = ({
   ogImage = `${SITE_URL}/og-image.png?v=2`,
   keywords,
   breadcrumbs,
+  noindex = false,
 }) => {
   // Short brand suffix keeps titles inside the ~60 characters Google displays.
   const fullTitle = `${title} | Nixsoft`;
@@ -49,7 +52,8 @@ const SEO: React.FC<SEOProps> = ({
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
       {keywords && <meta name="keywords" content={keywords} />}
-      {canonical && <link rel="canonical" href={canonical} />}
+      {noindex && <meta name="robots" content="noindex, follow" />}
+      {canonical && !noindex && <link rel="canonical" href={canonical} />}
 
       {/* Open Graph */}
       <meta property="og:title" content={socialTitle} />

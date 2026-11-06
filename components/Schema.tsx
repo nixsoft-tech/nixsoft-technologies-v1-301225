@@ -1,6 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import { SITE_URL } from '../constants';
+import { SITE_URL, SOCIAL_LINKS } from '../constants';
 
 const Schema: React.FC = () => {
   const organizationSchema = {
@@ -17,9 +17,7 @@ const Schema: React.FC = () => {
       "areaServed": "IN",
       "availableLanguage": "en"
     },
-    "sameAs": [
-      "https://www.linkedin.com/company/nixsoft-technologies"
-    ]
+    "sameAs": Object.values(SOCIAL_LINKS)
   };
 
   const servicesSchema = {

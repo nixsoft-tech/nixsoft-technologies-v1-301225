@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import DOMPurify from 'dompurify';
 import { Calendar, User, Clock, ChevronLeft, Share2, Twitter, Linkedin, Link as LinkIcon } from 'lucide-react';
 import { getBlogPostBySlug } from '../services/blogService';
 import { BlogPost as BlogPostType } from '../types';
 import SEO from '../components/SEO';
+import NotFound from './NotFound';
 
 const SIZED_IMAGE = /-\d+x\d+(\.(?:jpe?g|png|gif|webp))$/i;
 
@@ -21,7 +22,7 @@ const BlogPost: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const [post, setPost] = useState<BlogPostType | null>(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  const [notFound, setNotFound] = useState(false);
 
   // WordPress content is external HTML — sanitize before rendering
   const safeContent = useMemo(
@@ -50,17 +51,14 @@ const BlogPost: React.FC = () => {
     const fetchPost = async () => {
       if (slug) {
         const data = await getBlogPostBySlug(slug);
-        if (data) {
-          setPost(data);
-        } else {
-          navigate('/blog');
-        }
+        setPost(data ?? null);
+        setNotFound(!data);
         setLoading(false);
       }
     };
     fetchPost();
     window.scrollTo(0, 0);
-  }, [slug, navigate]);
+  }, [slug]);
 
   if (loading) {
     return (
@@ -70,6 +68,7 @@ const BlogPost: React.FC = () => {
     );
   }
 
+  if (notFound) return <NotFound />;
   if (!post) return null;
 
   return (
