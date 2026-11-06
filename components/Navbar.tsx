@@ -55,8 +55,12 @@ const Navbar: React.FC = () => {
           {/* Mobile menu button */}
           <div className="flex lg:hidden">
             <button
+              type="button"
               onClick={() => setIsOpen(!isOpen)}
-              className="text-slate-600 hover:text-nixBlue focus:outline-none"
+              aria-label={isOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={isOpen}
+              aria-controls="mobile-menu"
+              className="text-slate-600 hover:text-nixBlue focus:outline-none focus-visible:ring-2 focus-visible:ring-nixBlue rounded"
             >
               {isOpen ? <X size={28} /> : <Menu size={28} />}
             </button>
@@ -66,7 +70,7 @@ const Navbar: React.FC = () => {
 
       {/* Mobile Nav */}
       {isOpen && (
-        <div className="lg:hidden bg-white border-b border-gray-100 absolute w-full">
+        <div id="mobile-menu" className="lg:hidden bg-white border-b border-gray-100 absolute w-full">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 shadow-xl">
             {NAV_LINKS.map((link) => (
               <NavLink

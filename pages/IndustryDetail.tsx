@@ -1,5 +1,6 @@
 import React from 'react';
-import { Link, Navigate, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+import NotFound from './NotFound';
 import { ArrowLeft, ArrowRight, Cpu, FileKey, Lock, TrendingUp, Building2 } from 'lucide-react';
 import SEO from '../components/SEO';
 import HeroImage from '../components/HeroImage';
@@ -13,7 +14,7 @@ const IndustryDetail: React.FC = () => {
   const industry = slug ? getIndustryBySlug(slug) : undefined;
 
   if (!industry) {
-    return <Navigate to="/industries" replace />;
+    return <NotFound />;
   }
 
   const products = industry.relatedProducts

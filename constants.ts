@@ -12,6 +12,13 @@ export const SITE_URL = (import.meta.env.VITE_SITE_URL ?? 'https://nixsoftech.in
 export const GA_MEASUREMENT_ID = 'G-MMF22YW499';
 export const ANALYTICS_HOSTS = ['nixsoftech.in', 'www.nixsoftech.in'];
 
+// Official social profiles: footer icons and the Organization schema's sameAs.
+export const SOCIAL_LINKS = {
+  linkedin: 'https://in.linkedin.com/company/nixsoftech',
+  facebook: 'https://www.facebook.com/nixsoftech',
+  x: 'https://x.com/nixsoft1',
+};
+
 export const NAV_LINKS: NavItem[] = [
   { label: 'Home', path: '/' },
   { label: 'Services', path: '/services' },

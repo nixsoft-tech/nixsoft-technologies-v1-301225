@@ -1,5 +1,6 @@
 import React from 'react';
-import { Link, Navigate, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+import NotFound from './NotFound';
 import { ArrowLeft, Activity, Check, ChevronRight, Cloud, Zap, Target } from 'lucide-react';
 import SEO from '../components/SEO';
 import ProductVisual from '../components/ProductVisual';
@@ -12,7 +13,7 @@ const ProductDetail: React.FC = () => {
   const product = slug ? getProductBySlug(slug) : undefined;
 
   if (!product) {
-    return <Navigate to="/products" replace />;
+    return <NotFound />;
   }
 
   const others = PRODUCTS_DATA.filter((p) => p.id !== product.id);
