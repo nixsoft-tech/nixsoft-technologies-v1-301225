@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Mail, MapPin, Send, Calendar, MessageCircle, ArrowRight, AlertCircle } from 'lucide-react';
 import SEO from '../components/SEO';
-import AltchaWidget from '../components/AltchaWidget';
+// Browser-only (registers a custom element and a web worker): loaded after
+// the page mounts, so the build-time prerender never imports it.
+const AltchaWidget = lazy(() => import('../components/AltchaWidget'));
 import Honeypot from '../components/Honeypot';
 import { submitForm, HONEYPOT_FIELD } from '../services/formApi';
 
@@ -43,6 +45,8 @@ const Contact: React.FC = () => {
   const [formData, setFormData] = useState(INITIAL_FORM);
   const [submitted, setSubmitted] = useState(false);
   const [showMap, setShowMap] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -320,15 +324,19 @@ const Contact: React.FC = () => {
                          <Honeypot value={honeypot} onChange={setHoneypot} />
 
                          <div>
-                            <AltchaWidget
-                              key={puzzleKey}
-                              onChange={(payload) => {
-                                setPuzzle(payload);
-                                if (payload && fieldErrors.puzzle) {
-                                  setFieldErrors(prev => { const next = { ...prev }; delete next.puzzle; return next; });
-                                }
-                              }}
-                            />
+                            {mounted && (
+                              <Suspense fallback={null}>
+                                <AltchaWidget
+                                  key={puzzleKey}
+                                  onChange={(payload) => {
+                                    setPuzzle(payload);
+                                    if (payload && fieldErrors.puzzle) {
+                                      setFieldErrors(prev => { const next = { ...prev }; delete next.puzzle; return next; });
+                                    }
+                                  }}
+                                />
+                              </Suspense>
+                            )}
                             {fieldErrors.puzzle && <p className="text-red-500 text-xs mt-1">{fieldErrors.puzzle}</p>}
                          </div>
 

@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, User, Clock, ArrowRight, BookOpen } from 'lucide-react';
-import { getBlogPosts } from '../services/blogService';
+import { getBlogPosts, peekBlogPosts } from '../services/blogService';
 import { itemListNode, listId } from '../lib/schema';
 import { BlogPost } from '../types';
 import SEO from '../components/SEO';
 
 const Blog: React.FC = () => {
-  const [posts, setPosts] = useState<BlogPost[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Prerendered pages start with the posts already in the cache.
+  const [posts, setPosts] = useState<BlogPost[]>(() => peekBlogPosts() ?? []);
+  const [loading, setLoading] = useState(() => !peekBlogPosts());
 
   useEffect(() => {
+    if (peekBlogPosts()) return;
     const fetchPosts = async () => {
       const data = await getBlogPosts();
       setPosts(data);

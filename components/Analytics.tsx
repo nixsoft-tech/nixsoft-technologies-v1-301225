@@ -9,7 +9,7 @@ declare global {
   }
 }
 
-const enabled = ANALYTICS_HOSTS.includes(window.location.hostname);
+const enabled = typeof window !== 'undefined' && ANALYTICS_HOSTS.includes(window.location.hostname);
 
 // Load gtag.js once, at startup, on production hosts only.
 if (enabled) {

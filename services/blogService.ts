@@ -45,8 +45,23 @@ const MOCK_POSTS: BlogPost[] = [
 // WordPress returns titles and excerpts as HTML ("Doesn&#8217;t"), but they're
 // rendered as plain text, so convert entities to characters. DOMParser never
 // executes scripts or loads resources, so this is safe on untrusted input.
-const htmlToText = (html: string): string =>
-  new DOMParser().parseFromString(html, 'text/html').body.textContent?.trim() ?? '';
+// In Node (the build-time prerender) there is no DOMParser: strip tags and
+// decode the entities WordPress emits.
+const NAMED_ENTITIES: Record<string, string> = {
+  amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: '\u00a0', hellip: '…',
+  ndash: '–', mdash: '—', lsquo: '‘', rsquo: '’', ldquo: '“', rdquo: '”',
+};
+const htmlToText = (html: string): string => {
+  if (typeof DOMParser !== 'undefined') {
+    return new DOMParser().parseFromString(html, 'text/html').body.textContent?.trim() ?? '';
+  }
+  return html
+    .replace(/<[^>]*>/g, '')
+    .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCodePoint(parseInt(h, 16)))
+    .replace(/&#(\d+);/g, (_, d) => String.fromCodePoint(parseInt(d, 10)))
+    .replace(/&([a-z]+);/gi, (m, n) => NAMED_ENTITIES[n.toLowerCase()] ?? m)
+    .trim();
+};
 
 /**
  * Shorten text to at most `max` characters for a meta description or card.
@@ -66,7 +81,7 @@ export const summarize = (text: string, max = 155): string => {
 const gmtToIso = (gmt?: string): string | undefined =>
   gmt ? new Date(`${gmt}Z`).toISOString() : undefined;
 
-const mapWordPressPost = (wpPost: any): BlogPost => {
+export const mapWordPressPost = (wpPost: any): BlogPost => {
   return {
     id: wpPost.id.toString(),
     slug: wpPost.slug,
@@ -137,3 +152,26 @@ export const getBlogPostBySlug = async (slug: string): Promise<BlogPost | undefi
     return MOCK_POSTS.find(p => p.slug === slug);
   }
 };
+
+/** Blog data embedded in a prerendered page (see scripts/prerender.mjs). */
+export interface BlogSeed {
+  posts?: BlogPost[];
+  post?: BlogPost;
+}
+
+/**
+ * Put prefetched posts in the cache, so the first render of a prerendered
+ * page (on the server, and when the browser hydrates it) already has them.
+ */
+export function seedBlogCache(seed: BlogSeed): void {
+  if (seed.posts) setCachedData('blog_posts_all', seed.posts);
+  if (seed.post) setCachedData(`blog_post_slug_${seed.post.slug}`, seed.post);
+}
+
+/** Cached post list, if any (no network). */
+export const peekBlogPosts = (): BlogPost[] | undefined =>
+  getCachedData<BlogPost[]>('blog_posts_all') ?? undefined;
+
+/** Cached post, if any (no network). */
+export const peekBlogPost = (slug: string): BlogPost | undefined =>
+  getCachedData<BlogPost | undefined>(`blog_post_slug_${slug}`) ?? undefined;

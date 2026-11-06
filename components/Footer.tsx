@@ -90,7 +90,11 @@ const Footer: React.FC = () => {
         </div>
 
         <div className="pt-8 text-center text-slate-500 text-sm flex flex-col md:flex-row justify-between items-center">
-          <p>&copy; 2025 Nixsoft Technologies Pvt. Ltd. All rights reserved.</p>
+          <p>
+            &copy; {new Date().getFullYear()} Nixsoft Technologies Pvt. Ltd. All rights reserved.
+            <span className="mx-2" aria-hidden="true">|</span>
+            <Link to="/privacy-policy" className="hover:text-white">Privacy Policy</Link>
+          </p>
           <p className="mt-2 md:mt-0">ISO 27001 Certified | CMMI Level 3</p>
         </div>
       </div>

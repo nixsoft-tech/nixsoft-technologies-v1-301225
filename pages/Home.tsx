@@ -23,10 +23,12 @@ const TerminalSimulator = lazy(() => import('../components/TerminalSimulator'));
 /** True on screens where the hero's terminal animation is visible (Tailwind md). */
 const useIsDesktop = () => {
   const query = '(min-width: 768px)';
-  const [matches, setMatches] = useState(() => typeof window !== 'undefined' && window.matchMedia(query).matches);
+  // false on the first render (as in the prerendered HTML), then the real value.
+  const [matches, setMatches] = useState(false);
   useEffect(() => {
     const mql = window.matchMedia(query);
     const onChange = () => setMatches(mql.matches);
+    onChange();
     mql.addEventListener('change', onChange);
     return () => mql.removeEventListener('change', onChange);
   }, []);

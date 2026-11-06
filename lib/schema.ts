@@ -131,6 +131,7 @@ export function webPageNode(opts: {
   image?: string;
   datePublished?: string;
   dateModified?: string;
+  reviewedById?: string;
 }): JsonLdNode {
   return {
     '@type': opts.type ?? 'WebPage',
@@ -147,6 +148,7 @@ export function webPageNode(opts: {
     ...(opts.image && { primaryImageOfPage: { '@type': 'ImageObject', url: absUrl(opts.image) } }),
     ...(opts.datePublished && { datePublished: opts.datePublished }),
     ...(opts.dateModified && { dateModified: opts.dateModified }),
+    ...(opts.reviewedById && { reviewedBy: ref(opts.reviewedById) }),
   };
 }
 
