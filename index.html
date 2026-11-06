@@ -32,10 +32,12 @@
     <meta data-default property="twitter:description" content="Nixsoft Technologies is a Mumbai-based DevOps and managed IT services company helping enterprises automate, secure and scale infrastructure with open source." />
     <meta data-default property="twitter:image" content="https://nixsoftech.in/og-image.png?v=2" />
     
-    <!-- Fonts are self-hosted (fonts.css). Preload the two that the first
-         screen needs, so text renders without waiting for the stylesheet. -->
+    <!-- Fonts are self-hosted (fonts.css). Preload the ones the first screen
+         needs (body text, bold and semibold headings), so they don't wait for
+         the stylesheet to be parsed. -->
     <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/fonts/poppins-700-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/fonts/poppins-600-latin.woff2" as="font" type="font/woff2" crossorigin>
     
     <!-- Styles -->
     <link rel="stylesheet" href="/index.css">
