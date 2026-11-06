@@ -201,7 +201,7 @@ export const SERVICES_DATA: OfferingData[] = [
       'Staff redeployed to higher-value work',
     ],
     seoTitle: 'RPA Services: UiPath Bot Development in India',
-    metaDescription: 'Robotic process automation (RPA) services in India: UiPath and Power Automate bots for data entry, reconciliation and reporting, with no changes to your systems.',
+    metaDescription: 'RPA services in India: UiPath and Power Automate bots for data entry, reconciliation and reporting, without changes to your existing systems.',
     keywordPhrase: 'RPA services',
     keywords: ['RPA services', 'robotic process automation services in India', 'UiPath bot development', 'back-office process automation', 'Power Automate implementation'],
     faqs: [
@@ -442,7 +442,7 @@ export const SERVICES_DATA: OfferingData[] = [
       'Zero Trust architecture implementation',
     ],
     seoTitle: 'VAPT & Security Testing Services in India',
-    metaDescription: 'VAPT and security testing services in India: penetration testing for web apps, APIs and cloud, plus DevSecOps and CIS hardening for audit-ready compliance.',
+    metaDescription: 'VAPT services in India: penetration testing for web apps, APIs, networks and cloud, with prioritised findings and clear remediation guidance.',
     keywordPhrase: 'VAPT and security testing',
     keywords: ['VAPT services', 'VAPT service provider in India', 'penetration testing for web apps and APIs', 'DevSecOps services', 'security testing company India'],
     faqs: [

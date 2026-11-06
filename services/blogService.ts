@@ -1,4 +1,5 @@
 import { BlogPost } from '../types';
+import { BLOG_SEO } from '../data/blogSeo';
 
 const WP_API_URL = import.meta.env.VITE_WORDPRESS_API_URL;
 
@@ -86,7 +87,9 @@ export const mapWordPressPost = (wpPost: any): BlogPost => {
     id: wpPost.id.toString(),
     slug: wpPost.slug,
     title: htmlToText(wpPost.title.rendered),
-    excerpt: summarize(htmlToText(wpPost.excerpt.rendered)),
+    // Written summary when there is one; otherwise the WordPress excerpt.
+    seoTitle: BLOG_SEO[wpPost.slug]?.title,
+    excerpt: BLOG_SEO[wpPost.slug]?.description ?? summarize(htmlToText(wpPost.excerpt.rendered)),
     content: wpPost.content.rendered,
     author: wpPost._embedded?.author?.[0]?.name || 'Nixsoft Team',
     date: new Date(wpPost.date).toLocaleDateString('en-US', { 

@@ -12,7 +12,7 @@ const Solutions: React.FC = () => {
     <div className="flex flex-col">
       <SEO
         title="IT Asset Management, Email & Helpdesk Solutions"
-        description="Enterprise IT solutions deployed and managed by Nixsoft: IT asset management software, Zimbra and business email hosting, and an ITIL helpdesk ticketing system."
+        description="IT solutions deployed and managed by Nixsoft: IT asset management software, Zimbra and business email hosting, and an ITIL helpdesk ticketing system."
         path="/solutions"
         keywords="enterprise IT solutions, IT asset management software, enterprise email hosting, Zimbra email hosting India, IT helpdesk ticketing system, ITSM solutions"
         breadcrumbs={[{ name: 'Solutions', path: '/solutions' }]}

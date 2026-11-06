@@ -84,7 +84,7 @@ const BlogPost: React.FC = () => {
   return (
     <div className="pt-24 min-h-screen bg-white">
       <SEO 
-        title={post.title}
+        title={post.seoTitle ?? post.title}
         description={post.excerpt}
         path={`/blog/${post.slug}`}
         ogType="article"

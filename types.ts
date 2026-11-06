@@ -101,6 +101,8 @@ export interface BlogPost {
   id: string;
   slug: string;
   title: string;
+  /** Search title (data/blogSeo.ts); falls back to `title`. */
+  seoTitle?: string;
   excerpt: string;
   content: string;
   author: string;

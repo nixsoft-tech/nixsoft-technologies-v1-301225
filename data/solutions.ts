@@ -106,7 +106,7 @@ export const SOLUTIONS_DATA: OfferingData[] = [
       'Less manual triage through workflow automation',
     ],
     seoTitle: 'IT Helpdesk Ticketing System & Service Desk',
-    metaDescription: 'IT helpdesk ticketing system implementation: ITIL service desk with SLA tracking, automation and self-service, on GLPI, Zammad, Jira Service Management and more.',
+    metaDescription: 'IT helpdesk ticketing system setup: an ITIL service desk with SLA tracking, automation and self-service, on GLPI, Zammad or Jira Service Management.',
     keywordPhrase: 'helpdesk ticketing system',
     keywords: ['IT helpdesk ticketing system', 'ITIL service desk software', 'open-source helpdesk software (GLPI and Zammad)', 'SLA tracking and ticket automation', 'service desk implementation India'],
     faqs: [

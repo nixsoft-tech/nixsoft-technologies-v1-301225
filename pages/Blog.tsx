@@ -25,7 +25,7 @@ const Blog: React.FC = () => {
     <div className="pt-24 min-h-screen bg-slate-50">
       <SEO 
         title="DevOps, Cloud & IT Infrastructure Blog"
-        description="Practical guides on DevOps, cloud, security testing and IT infrastructure from Nixsoft engineers: Kubernetes, CI/CD, monitoring, VAPT and open-source automation."
+        description="Practical guides from Nixsoft engineers on DevOps, cloud, monitoring, databases, security testing and IT service management with open-source tools."
         path="/blog"
         keywords="DevOps blog, cloud infrastructure guides, Kubernetes tutorials, CI/CD best practices, IT infrastructure blog India"
         pageType="CollectionPage"

@@ -71,7 +71,7 @@ export const INDUSTRIES_DATA: IndustryData[] = [
     lightColor: 'bg-blue-50',
     textColor: 'text-blue-600',
     metaTitle: 'IT Infrastructure & Security for BFSI in India',
-    metaDescription: 'IT infrastructure and security services for banks, NBFCs, exchanges and insurers in India: PCI-DSS automation, database management and data-residency compliance.',
+    metaDescription: 'IT infrastructure and security for banks, NBFCs, exchanges and insurers in India: compliance automation, database management and data residency.',
     keywords: 'BFSI IT infrastructure services, IT infrastructure services for banks and NBFCs, PCI-DSS compliance automation, database management for stock exchanges, fintech DevOps India',
   },
   {
