@@ -8,6 +8,7 @@ import SEO from './SEO';
 import HeroImage from './HeroImage';
 import FaqList from './FaqList';
 import type { OfferingData } from '../types';
+import { SITE_URL, ORG_ID } from '../constants';
 
 interface OfferingDetailProps {
   offering: OfferingData;
@@ -41,6 +42,15 @@ const OfferingDetail: React.FC<OfferingDetailProps> = ({
           { name: sectionName, path: basePath },
           { name: offering.title, path: `${basePath}/${offering.slug}` },
         ]}
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'Service',
+          name: offering.title,
+          description: offering.metaDescription,
+          url: `${SITE_URL}${basePath}/${offering.slug}`,
+          provider: { '@id': ORG_ID },
+          areaServed: { '@type': 'Country', name: 'India' },
+        }}
       />
 
       {/* Hero */}

@@ -105,6 +105,9 @@ export interface BlogPost {
   content: string;
   author: string;
   date: string;
+  /** ISO 8601 timestamps for structured data (absent on mock posts). */
+  datePublished?: string;
+  dateModified?: string;
   category: string;
   image: string;
   readTime: string;

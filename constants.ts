@@ -13,6 +13,9 @@ export const GA_MEASUREMENT_ID = 'G-MMF22YW499';
 export const ANALYTICS_HOSTS = ['nixsoftech.in', 'www.nixsoftech.in'];
 
 // Official social profiles: footer icons and the Organization schema's sameAs.
+/** JSON-LD @id of the Organization (components/Schema.tsx); page schema links to it. */
+export const ORG_ID = `${SITE_URL}/#organization`;
+
 export const SOCIAL_LINKS = {
   linkedin: 'https://in.linkedin.com/company/nixsoftech',
   facebook: 'https://www.facebook.com/nixsoftech',

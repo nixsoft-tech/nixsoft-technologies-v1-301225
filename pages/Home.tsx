@@ -1,13 +1,11 @@
-import React, { useState, lazy, Suspense } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   ArrowRight, ShieldCheck, Database, Cloud, Infinity, 
   Terminal, Server, Users, BarChart3, ChevronRight,
   Code2, Zap, Lock, CheckCircle2, Cpu
 } from 'lucide-react';
-import { SERVICES, INDUSTRIES, PRODUCTS } from '../constants';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import TerminalSimulator from '../components/TerminalSimulator';
+import { SERVICES, INDUSTRIES, PRODUCTS, SITE_URL, ORG_ID } from '../constants';
 import SEO from '../components/SEO';
 import Honeypot from '../components/Honeypot';
 import { submitForm, HONEYPOT_FIELD } from '../services/formApi';
@@ -16,10 +14,24 @@ import { submitForm, HONEYPOT_FIELD } from '../services/formApi';
 // so it never weighs on the home page's first paint.
 const AltchaWidget = lazy(() => import('../components/AltchaWidget'));
 
-const data = [
-  { name: 'Traditional IT', efficiency: 40, cost: 100 },
-  { name: 'Nixsoft Ops', efficiency: 95, cost: 60 },
-];
+// Below-the-fold chart and the desktop-only terminal animation are split out of
+// the main bundle (the home page is not lazy-loaded, so its imports ship to
+// every visitor on first load).
+const ImpactChart = lazy(() => import('../components/ImpactChart'));
+const TerminalSimulator = lazy(() => import('../components/TerminalSimulator'));
+
+/** True on screens where the hero's terminal animation is visible (Tailwind md). */
+const useIsDesktop = () => {
+  const query = '(min-width: 768px)';
+  const [matches, setMatches] = useState(() => typeof window !== 'undefined' && window.matchMedia(query).matches);
+  useEffect(() => {
+    const mql = window.matchMedia(query);
+    const onChange = () => setMatches(mql.matches);
+    mql.addEventListener('change', onChange);
+    return () => mql.removeEventListener('change', onChange);
+  }, []);
+  return matches;
+};
 
 const TECH_STACK = [
   "Kubernetes", "Terraform", "Docker", "Ansible", "Prometheus", "Grafana", "Vault", "Python", "PostgreSQL", "Jenkins"
@@ -97,6 +109,7 @@ const HeroBackground = () => (
 );
 
 const Home: React.FC = () => {
+  const isDesktop = useIsDesktop();
   const [email, setEmail] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSending, setIsSending] = useState(false);
@@ -136,6 +149,14 @@ const Home: React.FC = () => {
         description="Nixsoft Technologies is a Mumbai-based DevOps and managed IT services company helping enterprises automate, secure and scale infrastructure with open source."
         path="/"
         keywords="DevOps and managed IT services company in India, DevOps consulting company in Mumbai, open-source infrastructure automation, 24x7 managed IT support, Kubernetes consulting"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'WebSite',
+          name: 'Nixsoft Technologies',
+          alternateName: 'Nixsoftech',
+          url: `${SITE_URL}/`,
+          publisher: { '@id': ORG_ID },
+        }}
       />
       {/* Hero Section */}
       <section className="relative min-h-[90vh] flex items-center bg-nixNavy overflow-hidden pt-20">
@@ -151,8 +172,8 @@ const Home: React.FC = () => {
               
               <h1 className="text-5xl md:text-6xl font-display font-bold text-white leading-tight">
                 Open-Source <br/>
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-nixGreen to-blue-400">Automation</span> & <br/>
-                DevOps Consulting & Training
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-nixGreen to-blue-400">DevOps</span> & <br/>
+                Managed IT Services
               </h1>
               
               <div className="space-y-4">
@@ -182,7 +203,11 @@ const Home: React.FC = () => {
 
             {/* Hero Visual/Graphic */}
             <div className="hidden md:block relative transform rotate-1 hover:rotate-0 transition-all duration-700">
-               <TerminalSimulator />
+               {isDesktop && (
+                 <Suspense fallback={null}>
+                   <TerminalSimulator />
+                 </Suspense>
+               )}
             </div>
           </div>
         </div>
@@ -225,7 +250,7 @@ const Home: React.FC = () => {
                 <h4 className="text-xl font-bold text-slate-900 mb-3">{service.title}</h4>
                 <p className="text-slate-500 leading-relaxed mb-4">{service.description}</p>
                 <Link to={`/services/${service.slug}`} className="text-nixBlue font-semibold flex items-center text-sm group-hover:underline">
-                  Learn more <ArrowRight size={14} className="ml-1" />
+                  Learn more<span className="sr-only"> about {service.title}</span> <ArrowRight size={14} className="ml-1" aria-hidden="true" />
                 </Link>
               </div>
             ))}
@@ -383,30 +408,10 @@ const Home: React.FC = () => {
                         </div>
                         
                         <div className="h-72 w-full">
-                            {/* initialDimension: avoids Recharts' "width(-1)/height(-1)" warning on the first render, before the container is measured */}
-                            <ResponsiveContainer width="100%" height="100%" initialDimension={{ width: 480, height: 288 }}>
-                            <BarChart
-                                data={data}
-                                layout="vertical"
-                                margin={{ top: 5, right: 30, left: 40, bottom: 5 }}
-                                barSize={32}
-                            >
-                                <XAxis type="number" hide />
-                                <YAxis 
-                                    dataKey="name" 
-                                    type="category" 
-                                    width={100} 
-                                    tick={{fontSize: 11, fill: '#64748b', fontWeight: 600}} 
-                                    interval={0}
-                                />
-                                <Tooltip 
-                                    cursor={{fill: 'transparent'}} 
-                                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} 
-                                />
-                                <Bar dataKey="efficiency" name="Deployment Speed" fill="#39FF14" radius={[0, 4, 4, 0]} animationDuration={1500} />
-                                <Bar dataKey="cost" name="Cost Savings" fill="#0A4A8F" radius={[0, 4, 4, 0]} animationDuration={1500} />
-                            </BarChart>
-                            </ResponsiveContainer>
+                            {/* Recharts (~100 KB) loads in its own chunk, after the page is up */}
+                            <Suspense fallback={null}>
+                              <ImpactChart />
+                            </Suspense>
                         </div>
                         
                         <div className="mt-6 flex items-center justify-between text-xs text-slate-400 border-t border-gray-100 pt-4">

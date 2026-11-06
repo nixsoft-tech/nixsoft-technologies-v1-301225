@@ -5,6 +5,12 @@ import AltchaWidget from '../components/AltchaWidget';
 import Honeypot from '../components/Honeypot';
 import { submitForm, HONEYPOT_FIELD } from '../services/formApi';
 
+// Office map. TODO: replace both with the embed and share links from the
+// business's own Google Business Profile listing once it is verified (the
+// embed below shows the IJMIMA Complex building, not a Nixsoft listing).
+const MAP_EMBED_URL = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3768.665798440816!2d72.83328967498013!3d19.166104082057305!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7b64d0d1b1c6d%3A0x6b4f7e1b1c6d1c6d!2sIJMIMA%20Complex!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin';
+const MAP_LINK_URL = 'https://www.google.com/maps/search/?api=1&query=IJMIMA+Complex+Mindspace+Malad+West+Mumbai+400064';
+
 // ─── Validation helpers ────────────────────────────────────────────────────────
 function validateForm(data: typeof INITIAL_FORM): Record<string, string> {
   const errors: Record<string, string> = {};
@@ -36,6 +42,7 @@ const INITIAL_FORM = {
 const Contact: React.FC = () => {
   const [formData, setFormData] = useState(INITIAL_FORM);
   const [submitted, setSubmitted] = useState(false);
+  const [showMap, setShowMap] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -162,18 +169,41 @@ const Contact: React.FC = () => {
                       </p>
                    </div>
 
-                   {/* Map Embed */}
+                   {/* Map: click to load. The Google Maps embed pulls in ~400 KB of
+                       script, so it loads only when someone asks for it. */}
                    <div className="rounded-xl overflow-hidden h-48 border border-gray-200 shadow-sm relative bg-slate-200">
-                     <iframe
-                       src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3768.665798440816!2d72.83328967498013!3d19.166104082057305!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7b64d0d1b1c6d%3A0x6b4f7e1b1c6d1c6d!2sIJMIMA%20Complex!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
-                       width="100%"
-                       height="100%"
-                       style={{border:0}}
-                       allowFullScreen
-                       loading="lazy"
-                       referrerPolicy="no-referrer-when-downgrade"
-                       title="Nixsoft Office Location"
-                     ></iframe>
+                     {showMap ? (
+                       <iframe
+                         src={MAP_EMBED_URL}
+                         width="100%"
+                         height="100%"
+                         style={{border:0}}
+                         allowFullScreen
+                         referrerPolicy="no-referrer-when-downgrade"
+                         title="Nixsoft Office Location"
+                       ></iframe>
+                     ) : (
+                       <div className="h-full flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-slate-100 to-slate-200 text-center px-4">
+                         <MapPin size={28} className="text-nixBlue" aria-hidden="true" />
+                         <div className="flex flex-wrap justify-center gap-2">
+                           <button
+                             type="button"
+                             onClick={() => setShowMap(true)}
+                             className="px-4 py-2 rounded-lg bg-white border border-gray-300 text-sm font-semibold text-slate-700 hover:border-nixBlue hover:text-nixBlue transition-colors"
+                           >
+                             Show map
+                           </button>
+                           <a
+                             href={MAP_LINK_URL}
+                             target="_blank"
+                             rel="noopener noreferrer"
+                             className="px-4 py-2 rounded-lg bg-nixBlue text-white text-sm font-semibold hover:bg-blue-900 transition-colors"
+                           >
+                             Open in Google Maps
+                           </a>
+                         </div>
+                       </div>
+                     )}
                    </div>
                 </div>
 
