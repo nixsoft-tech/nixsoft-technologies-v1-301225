@@ -1,12 +1,11 @@
 import React, { useEffect, lazy, Suspense } from 'react';
-import { BrowserRouter, Routes, Route, useLocation, Navigate, useParams } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ChatWidget from './components/ChatWidget';
 import Analytics from './components/Analytics';
 import Home from './pages/Home';
 import NotFound from './pages/NotFound';
-import { getServiceBySlugOrAlias } from './data/services';
 
 // A page's code chunk can fail to load: a dropped request, or a visitor still
 // running the previous build after a deploy (its hashed chunk names are gone).
@@ -54,13 +53,9 @@ const ScrollToTop = () => {
   return null;
 };
 
-// Legacy /service/<slug> URLs now live under /services. Resolve the old slug
-// (canonical or alias) to the current service and 301 there; unknown → /services.
-const LegacyServiceRedirect: React.FC = () => {
-  const { slug } = useParams<{ slug: string }>();
-  const service = slug ? getServiceBySlugOrAlias(slug) : undefined;
-  return <Navigate to={service ? `/services/${service.slug}` : '/services'} replace />;
-};
+// Legacy /service/<slug> URLs (nginx 301s them first; this is the in-app
+// fallback). Lazy, so the service catalogue isn't in the main bundle.
+const LegacyServiceRedirect = lazyPage(() => import('./pages/LegacyServiceRedirect'));
 
 /**
  * The site's layout and routes, without a router. The browser wraps it in

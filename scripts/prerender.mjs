@@ -133,6 +133,8 @@ const jsonForScript = (data) => JSON.stringify(data).replace(/</g, '\\u003c');
 // manifest (build.manifest), which is removed from dist afterwards.
 const manifestFile = path.join(dist, '.vite', 'manifest.json');
 const manifest = fs.existsSync(manifestFile) ? JSON.parse(fs.readFileSync(manifestFile, 'utf8')) : null;
+// The home page is in the main bundle (lazy-loading it made / slower:
+// an extra chunk plus its icon chunks before it could render).
 const PAGE_MODULES = [
   [/^\/about$/, 'pages/About.tsx'],
   [/^\/services$/, 'pages/Services.tsx'],

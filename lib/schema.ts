@@ -21,7 +21,6 @@ import type { OfferingData } from '../types';
 import type { ProductData } from '../data/products';
 import type { IndustryData } from '../data/industries';
 import type { TeamMember } from '../data/team';
-import { getServiceBySlug } from '../data/services';
 
 export type JsonLdNode = Record<string, unknown>;
 
@@ -221,7 +220,7 @@ export function offeringServiceNode(
  */
 export function industryServiceNode(
   industry: IndustryData,
-  relatedServiceSlugs: string[],
+  relatedServices: Pick<OfferingData, 'slug' | 'title'>[],
 ): JsonLdNode {
   const path = `/industries/${industry.slug}`;
   return {
@@ -235,11 +234,8 @@ export function industryServiceNode(
     provider: ref(ORG_ID),
     areaServed: INDIA,
     audience: { '@type': 'BusinessAudience', audienceType: industry.fullName },
-    ...(relatedServiceSlugs.length && {
-      isRelatedTo: relatedServiceSlugs
-        .map(getServiceBySlug)
-        .filter((s): s is OfferingData => !!s)
-        .map((s) => serviceStub(`/services/${s.slug}`, s.title)),
+    ...(relatedServices.length && {
+      isRelatedTo: relatedServices.map((s) => serviceStub(`/services/${s.slug}`, s.title)),
     }),
   };
 }
