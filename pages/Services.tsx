@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Cpu } from 'lucide-react';
 import SEO from '../components/SEO';
+import { itemListNode, listId } from '../lib/schema';
 import HeroImage from '../components/HeroImage';
 import { SERVICE_CATEGORIES, getServicesByCategory } from '../data/services';
 
@@ -14,6 +15,9 @@ const Services: React.FC = () => {
         path="/services"
         keywords="IT infrastructure services India, DevOps services, managed IT services, 24x7 NOC services, VAPT services, cloud managed services, remote DBA services, test automation services"
         breadcrumbs={[{ name: 'Services', path: '/services' }]}
+        pageType="CollectionPage"
+        mainEntityId={listId('/services')}
+        entities={[itemListNode('/services', SERVICE_CATEGORIES.flatMap((c) => getServicesByCategory(c.id)).map((s) => ({ name: s.title, path: `/services/${s.slug}` })))]}
       />
 
       {/* Hero */}

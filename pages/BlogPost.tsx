@@ -6,7 +6,7 @@ import { getBlogPostBySlug } from '../services/blogService';
 import { BlogPost as BlogPostType } from '../types';
 import SEO from '../components/SEO';
 import NotFound from './NotFound';
-import { SITE_URL, ORG_ID } from '../constants';
+import { blogPostingNode, articleId } from '../lib/schema';
 
 const SIZED_IMAGE = /-\d+x\d+(\.(?:jpe?g|png|gif|webp))$/i;
 
@@ -85,22 +85,10 @@ const BlogPost: React.FC = () => {
           { name: 'Blog', path: '/blog' },
           { name: post.title, path: `/blog/${post.slug}` },
         ]}
-        jsonLd={{
-          '@context': 'https://schema.org',
-          '@type': 'BlogPosting',
-          headline: post.title,
-          description: post.excerpt,
-          image: [post.image],
-          url: `${SITE_URL}/blog/${post.slug}`,
-          mainEntityOfPage: `${SITE_URL}/blog/${post.slug}`,
-          ...(post.datePublished && { datePublished: post.datePublished }),
-          ...(post.dateModified && { dateModified: post.dateModified }),
-          // Posts are bylined "Nixsoft Team" (the company), not a person.
-          author: post.author === 'Nixsoft Team'
-            ? { '@id': ORG_ID }
-            : { '@type': 'Person', name: post.author },
-          publisher: { '@id': ORG_ID },
-        }}
+        datePublished={post.datePublished}
+        dateModified={post.dateModified}
+        mainEntityId={articleId(`/blog/${post.slug}`)}
+        entities={[blogPostingNode(post)]}
       />
       {/* Article Header */}
       <header className="py-12 bg-slate-50 border-b border-slate-100">

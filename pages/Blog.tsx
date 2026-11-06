@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, User, Clock, ArrowRight, BookOpen } from 'lucide-react';
 import { getBlogPosts } from '../services/blogService';
+import { itemListNode, listId } from '../lib/schema';
 import { BlogPost } from '../types';
 import SEO from '../components/SEO';
 
@@ -25,6 +26,11 @@ const Blog: React.FC = () => {
         description="Practical guides on DevOps, cloud, security testing and IT infrastructure from Nixsoft engineers: Kubernetes, CI/CD, monitoring, VAPT and open-source automation."
         path="/blog"
         keywords="DevOps blog, cloud infrastructure guides, Kubernetes tutorials, CI/CD best practices, IT infrastructure blog India"
+        pageType="CollectionPage"
+        {...(posts.length > 0 && {
+          mainEntityId: listId('/blog'),
+          entities: [itemListNode('/blog', posts.map((p) => ({ name: p.title, path: `/blog/${p.slug}` })))],
+        })}
       />
       {/* Header */}
       <section className="bg-nixDark py-20 relative overflow-hidden">

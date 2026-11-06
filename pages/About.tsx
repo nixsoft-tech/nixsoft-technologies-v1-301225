@@ -7,6 +7,9 @@ import {
   Globe, Server
 } from 'lucide-react';
 import SEO from '../components/SEO';
+import { TEAM } from '../data/team';
+import { personNode } from '../lib/schema';
+import { ORG_ID } from '../constants';
 import HeroImage from '../components/HeroImage';
 
 const EXPERTISE = [
@@ -46,24 +49,6 @@ const EXPERTISE = [
 // but Infinity/Cloud were missing in top import. Adding them now.
 import { Cloud, Infinity, Mail } from 'lucide-react';
 
-const TEAM = [
-  {
-    name: 'Wajid Shaikh',
-    role: 'Director',
-    photo: '/images/team/wajid-shaikh.webp',
-    email: 'wajid@nixsoftech.in',
-    bio: 'With more than 20 years in the IT industry, Wajid leads Nixsoft’s strategy and client relationships. He has worked at every level across organisations in different industry verticals, and focuses on understanding what clients need, guiding delivery teams to meet it, and measuring the results.',
-    focus: ['Business Strategy', 'Client Success', 'IT Leadership']
-  },
-  {
-    name: 'Pravin Kore',
-    role: 'Director',
-    photo: '/images/team/pravin-kore.webp',
-    email: 'pravin@nixsoftech.in',
-    bio: 'Pravin brings 15+ years of experience leading IT infrastructure management, architecture and design. He has run server, cloud and data-centre operations across Linux, UNIX, Solaris and virtualisation platforms, and leads Nixsoft’s technical delivery in DevOps, cloud and open-source architecture.',
-    focus: ['Infrastructure Architecture', 'Cloud & DevOps', 'Open Source']
-  }
-];
 
 const About: React.FC = () => {
   const { hash } = useLocation();
@@ -85,6 +70,10 @@ const About: React.FC = () => {
         description="Founded in 2019, Nixsoft Technologies is a Mumbai-based DevOps and IT infrastructure company serving enterprises across India and Asia with open-source expertise."
         path="/about"
         keywords="Nixsoft Technologies, DevOps company in Mumbai, IT infrastructure company India, open-source consulting, IT modernisation partner"
+        pageType="AboutPage"
+        aboutOrganization
+        mainEntityId={ORG_ID}
+        entities={TEAM.map(personNode)}
       />
       {/* Hero Section */}
       <section className="bg-nixDark py-32 px-4 relative overflow-hidden">
@@ -241,7 +230,7 @@ const About: React.FC = () => {
 
           <div className="grid md:grid-cols-2 gap-8">
             {TEAM.map((member) => (
-              <article key={member.name} className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-shadow duration-300 p-8 flex flex-col items-center text-center">
+              <article key={member.name} id={member.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-shadow duration-300 p-8 flex flex-col items-center text-center">
                 <img
                   src={member.photo}
                   alt={`${member.name}, ${member.role} at Nixsoft Technologies`}

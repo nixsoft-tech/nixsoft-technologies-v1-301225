@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Check, ChevronRight } from 'lucide-react';
 import SEO from '../components/SEO';
+import { itemListNode, listId } from '../lib/schema';
 import HeroImage from '../components/HeroImage';
 import { PRODUCTS_DATA } from '../data/products';
 
@@ -14,6 +15,9 @@ const Products: React.FC = () => {
         path="/products"
         keywords="vulnerability management platform, CIS benchmark automation tool, AIOps platform, VulnGuard, SecureBench, NixOps AI Agents, security automation products"
         breadcrumbs={[{ name: 'Products', path: '/products' }]}
+        pageType="CollectionPage"
+        mainEntityId={listId('/products')}
+        entities={[itemListNode('/products', PRODUCTS_DATA.map((p) => ({ name: p.name, path: `/products/${p.slug}` })))]}
       />
       {/* Hero Section */}
       <section className="bg-nixDark py-32 px-4 relative overflow-hidden">

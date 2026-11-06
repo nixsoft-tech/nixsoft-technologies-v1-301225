@@ -94,6 +94,8 @@ const Contact: React.FC = () => {
         description="Talk to Nixsoft's DevOps and IT infrastructure experts in Mumbai. Book a free consultation on managed IT, cloud, security testing or automation for your business."
         path="/contact"
         keywords="contact Nixsoft Technologies, DevOps consultation Mumbai, free IT infrastructure consultation, managed IT services enquiry"
+        pageType="ContactPage"
+        aboutOrganization
       />
        {/* Hero / Header */}
        <section className="bg-nixDark pt-32 pb-24 px-4">

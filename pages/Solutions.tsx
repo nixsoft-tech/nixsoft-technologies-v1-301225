@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Cpu } from 'lucide-react';
 import SEO from '../components/SEO';
+import { itemListNode, listId } from '../lib/schema';
 import HeroImage from '../components/HeroImage';
 import { SOLUTIONS_DATA } from '../data/solutions';
 
@@ -14,6 +15,9 @@ const Solutions: React.FC = () => {
         path="/solutions"
         keywords="enterprise IT solutions, IT asset management software, enterprise email hosting, Zimbra email hosting India, IT helpdesk ticketing system, ITSM solutions"
         breadcrumbs={[{ name: 'Solutions', path: '/solutions' }]}
+        pageType="CollectionPage"
+        mainEntityId={listId('/solutions')}
+        entities={[itemListNode('/solutions', SOLUTIONS_DATA.map((s) => ({ name: s.title, path: `/solutions/${s.slug}` })))]}
       />
 
       {/* Hero */}

@@ -8,12 +8,13 @@ import SEO from './SEO';
 import HeroImage from './HeroImage';
 import FaqList from './FaqList';
 import type { OfferingData } from '../types';
-import { SITE_URL, ORG_ID } from '../constants';
+import { offeringServiceNode, serviceId } from '../lib/schema';
+import { SERVICE_CATEGORIES } from '../data/services';
 
 interface OfferingDetailProps {
   offering: OfferingData;
-  /** Base path for this offering type, e.g. "/services" or "/solutions". */
-  basePath: string;
+  /** Base path for this offering type. */
+  basePath: '/services' | '/solutions';
   /** Back-link target and label, e.g. { path: "/services", label: "All Services" }. */
   back: { path: string; label: string };
   /** Related offerings to show at the bottom. */
@@ -30,6 +31,7 @@ const OfferingDetail: React.FC<OfferingDetailProps> = ({
   // Headings reuse the page's primary keyword phrase, e.g. "VAPT and security testing".
   const phrase = offering.keywordPhrase;
   const sectionName = back.label.replace(/^All /, '');
+  const categoryName = SERVICE_CATEGORIES.find((c) => c.id === offering.category)?.name;
 
   return (
     <div className="flex flex-col">
@@ -42,15 +44,8 @@ const OfferingDetail: React.FC<OfferingDetailProps> = ({
           { name: sectionName, path: basePath },
           { name: offering.title, path: `${basePath}/${offering.slug}` },
         ]}
-        jsonLd={{
-          '@context': 'https://schema.org',
-          '@type': 'Service',
-          name: offering.title,
-          description: offering.metaDescription,
-          url: `${SITE_URL}${basePath}/${offering.slug}`,
-          provider: { '@id': ORG_ID },
-          areaServed: { '@type': 'Country', name: 'India' },
-        }}
+        mainEntityId={serviceId(`${basePath}/${offering.slug}`)}
+        entities={[offeringServiceNode(offering, basePath, { category: categoryName, related })]}
       />
 
       {/* Hero */}

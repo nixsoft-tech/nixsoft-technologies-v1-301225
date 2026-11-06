@@ -1,6 +1,10 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { SITE_URL } from '../constants';
+import {
+  organizationNode, websiteNode, webPageNode, breadcrumbNode,
+  type JsonLdNode, type PageType,
+} from '../lib/schema';
 
 interface SEOProps {
   /** Page title without the brand; " | Nixsoft" is appended. Aim for <= 50 chars. */
@@ -16,8 +20,16 @@ interface SEOProps {
   breadcrumbs?: { name: string; path: string }[];
   /** Keep this page out of search results (e.g. the Not Found page). */
   noindex?: boolean;
-  /** Page-specific structured data (one object or several), emitted as JSON-LD. */
-  jsonLd?: object | object[];
+  /** schema.org type of the page itself (default WebPage). */
+  pageType?: PageType;
+  /** The page is about the company (home, about, contact). */
+  aboutOrganization?: boolean;
+  /** Page-specific entities from lib/schema.ts (Service, BlogPosting, Person …). */
+  entities?: JsonLdNode[];
+  /** @id of the entity the page is mainly about (one of `entities`). */
+  mainEntityId?: string;
+  datePublished?: string;
+  dateModified?: string;
 }
 
 const SEO: React.FC<SEOProps> = ({
@@ -29,23 +41,41 @@ const SEO: React.FC<SEOProps> = ({
   keywords,
   breadcrumbs,
   noindex = false,
-  jsonLd,
+  pageType,
+  aboutOrganization,
+  entities = [],
+  mainEntityId,
+  datePublished,
+  dateModified,
 }) => {
   // Short brand suffix keeps titles inside the ~60 characters Google displays.
   const fullTitle = `${title} | Nixsoft`;
   const socialTitle = `${title} | Nixsoft Technologies`;
   const canonical = path === undefined ? undefined : `${SITE_URL}${path}`;
 
-  const breadcrumbLd = breadcrumbs && breadcrumbs.length > 0
+  // One connected @graph per indexable page (see lib/schema.ts). Not-found and
+  // other noindex pages get none.
+  const hasBreadcrumb = !!(breadcrumbs && breadcrumbs.length > 0);
+  const graph = path !== undefined && !noindex
     ? {
         '@context': 'https://schema.org',
-        '@type': 'BreadcrumbList',
-        itemListElement: [{ name: 'Home', path: '/' }, ...breadcrumbs].map((crumb, i) => ({
-          '@type': 'ListItem',
-          position: i + 1,
-          name: crumb.name,
-          item: `${SITE_URL}${crumb.path}`,
-        })),
+        '@graph': [
+          organizationNode,
+          websiteNode,
+          webPageNode({
+            path,
+            name: title,
+            description,
+            type: pageType,
+            hasBreadcrumb,
+            mainEntityId,
+            aboutOrganization,
+            datePublished,
+            dateModified,
+          }),
+          ...(hasBreadcrumb ? [breadcrumbNode(path, breadcrumbs!)] : []),
+          ...entities,
+        ],
       }
     : undefined;
 
@@ -71,12 +101,7 @@ const SEO: React.FC<SEOProps> = ({
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={ogImage} />
 
-      {breadcrumbLd && (
-        <script type="application/ld+json">{JSON.stringify(breadcrumbLd)}</script>
-      )}
-      {jsonLd && ([] as object[]).concat(jsonLd).map((ld, i) => (
-        <script key={i} type="application/ld+json">{JSON.stringify(ld)}</script>
-      ))}
+      {graph && <script type="application/ld+json">{JSON.stringify(graph)}</script>}
     </Helmet>
   );
 };

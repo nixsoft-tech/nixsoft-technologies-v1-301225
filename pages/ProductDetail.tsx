@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import NotFound from './NotFound';
 import { ArrowLeft, Activity, Check, ChevronRight, Cloud, Zap, Target } from 'lucide-react';
 import SEO from '../components/SEO';
+import { productSoftwareNode, softwareId } from '../lib/schema';
 import ProductVisual from '../components/ProductVisual';
 import FaqList from '../components/FaqList';
 import RelatedServices from '../components/RelatedServices';
@@ -29,6 +30,8 @@ const ProductDetail: React.FC = () => {
           { name: 'Products', path: '/products' },
           { name: product.name, path: `/products/${product.slug}` },
         ]}
+        mainEntityId={softwareId(`/products/${product.slug}`)}
+        entities={[productSoftwareNode(product)]}
       />
 
       {/* Hero */}

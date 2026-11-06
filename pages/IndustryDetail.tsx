@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import NotFound from './NotFound';
 import { ArrowLeft, ArrowRight, Cpu, FileKey, Lock, TrendingUp, Building2 } from 'lucide-react';
 import SEO from '../components/SEO';
+import { industryServiceNode, serviceId } from '../lib/schema';
 import HeroImage from '../components/HeroImage';
 import FaqList from '../components/FaqList';
 import RelatedServices from '../components/RelatedServices';
@@ -33,6 +34,8 @@ const IndustryDetail: React.FC = () => {
           { name: 'Industries', path: '/industries' },
           { name: industry.fullName, path: `/industries/${industry.slug}` },
         ]}
+        mainEntityId={serviceId(`/industries/${industry.slug}`)}
+        entities={[industryServiceNode(industry, industry.relatedServices)]}
       />
 
       {/* Hero */}
