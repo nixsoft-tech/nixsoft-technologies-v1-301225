@@ -98,6 +98,9 @@ export const mapWordPressPost = (wpPost: any): BlogPost => {
     dateModified: gmtToIso(wpPost.modified_gmt),
     category: wpPost._embedded?.['wp:term']?.[0]?.[0]?.name || 'Technology',
     image: wpPost._embedded?.['wp:featuredmedia']?.[0]?.source_url || 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1000',
+    imageWidth: wpPost._embedded?.['wp:featuredmedia']?.[0]?.media_details?.width,
+    imageHeight: wpPost._embedded?.['wp:featuredmedia']?.[0]?.media_details?.height,
+    wordCount: htmlToText(wpPost.content.rendered).split(/\s+/).filter(Boolean).length,
     readTime: `${Math.ceil(wpPost.content.rendered.split(' ').length / 200)} min read`
   };
 };

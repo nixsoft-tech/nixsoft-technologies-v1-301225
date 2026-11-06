@@ -278,33 +278,52 @@ export function personNode(member: TeamMember): JsonLdNode {
   };
 }
 
-/** A blog post (/blog/<slug>). */
+/**
+ * A blog post (/blog/<slug>), typed as both Article and BlogPosting
+ * (BlogPosting is schema.org's Article subtype for blog posts; Google reports
+ * either under "Articles"). Properties follow Google's Article guidelines:
+ * headline, image with size, dates, author and publisher. Author and publisher
+ * reference the Organization / Person defined once in the same @graph, so the
+ * page declares each entity only once.
+ */
 export function blogPostingNode(post: {
   slug: string;
   title: string;
   excerpt: string;
   image: string;
+  imageWidth?: number;
+  imageHeight?: number;
+  wordCount?: number;
   author: string;
   category?: string;
   datePublished?: string;
   dateModified?: string;
-}, authorId?: string): JsonLdNode {
+}, author?: TeamMember): JsonLdNode {
   const path = `/blog/${post.slug}`;
   return {
-    '@type': 'BlogPosting',
+    '@type': ['Article', 'BlogPosting'],
     '@id': articleId(path),
     headline: post.title,
     description: post.excerpt,
     url: absUrl(path),
     mainEntityOfPage: ref(pageId(path)),
     isPartOf: ref(pageId(path)),
-    image: { '@type': 'ImageObject', url: post.image },
+    image: {
+      '@type': 'ImageObject',
+      url: post.image,
+      contentUrl: post.image,
+      ...(post.imageWidth && post.imageHeight && { width: post.imageWidth, height: post.imageHeight }),
+    },
+    thumbnailUrl: post.image,
     ...(post.datePublished && { datePublished: post.datePublished }),
     ...(post.dateModified && { dateModified: post.dateModified }),
     ...(post.category && { articleSection: post.category }),
+    ...(post.wordCount && { wordCount: post.wordCount }),
     inLanguage: 'en-IN',
-    // Posts are bylined "Nixsoft Team" (the company) until a named author is set.
-    author: ref(authorId ?? ORG_ID),
+    // Posts are bylined "Nixsoft Team" (the company) unless a named author is passed.
+    // The Person node must also be in the page's graph when an author is set.
+    author: ref(author ? personId(author) : ORG_ID),
     publisher: ref(ORG_ID),
+    copyrightHolder: ref(ORG_ID),
   };
 }
