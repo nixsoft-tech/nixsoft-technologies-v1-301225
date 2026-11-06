@@ -136,7 +136,7 @@ const Contact: React.FC = () => {
                          <ArrowRight size={16} className="text-slate-300 group-hover:text-nixBlue transition-colors" />
                       </a>
 
-                      <button className="w-full flex items-center justify-between p-4 bg-white rounded-xl border border-gray-200 hover:border-nixOrange hover:shadow-md transition-all group text-left">
+                      <a href="https://calendly.com/wajid-s-nixsoftech/30min" target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-4 bg-white rounded-xl border border-gray-200 hover:border-nixOrange hover:shadow-md transition-all group">
                          <div className="flex items-center">
                             <div className="w-10 h-10 bg-orange-100 text-nixOrange rounded-full flex items-center justify-center mr-3">
                                <Calendar size={20} />
@@ -147,7 +147,7 @@ const Contact: React.FC = () => {
                             </div>
                          </div>
                          <ArrowRight size={16} className="text-slate-300 group-hover:text-nixOrange transition-colors" />
-                      </button>
+                      </a>
                    </div>
 
                    {/* Location */}
