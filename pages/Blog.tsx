@@ -67,9 +67,13 @@ const Blog: React.FC = () => {
               {posts.map((post) => (
                 <article key={post.id} className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col group">
                   <Link to={`/blog/${post.slug}`} className="block overflow-hidden h-48 relative">
-                    <img 
-                      src={post.image} 
-                      alt={post.title} 
+                    <img
+                      src={post.image}
+                      srcSet={post.imageSrcSet}
+                      sizes="(min-width: 1280px) 400px, (min-width: 1024px) 33vw, (min-width: 768px) 50vw, calc(100vw - 32px)"
+                      alt={post.title}
+                      loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
                     <div className="absolute top-4 left-4">
