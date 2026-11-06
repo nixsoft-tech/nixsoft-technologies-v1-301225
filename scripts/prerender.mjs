@@ -16,8 +16,10 @@
  * Blog posts come from the WordPress API at build time
  * (VITE_WORDPRESS_API_URL). If it is unreachable, blog pages are skipped and
  * fall back to the app shell; every other page must render or the build fails.
- * Posts published after a build are served by the app shell until the next
- * build (`docker compose up -d --build app`).
+ * Posts published or edited after a build show their old (or no) static
+ * page until the next build. The Dockerfile ADDs a snapshot of the posts
+ * before building, so `docker compose up -d --build app` re-runs the build
+ * whenever any post has changed (and reuses the cache when none has).
  */
 import fs from 'node:fs';
 import path from 'node:path';
