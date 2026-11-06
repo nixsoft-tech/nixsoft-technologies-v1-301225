@@ -89,7 +89,9 @@ const SEO: React.FC<SEOProps> = ({
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
       {keywords && <meta name="keywords" content={keywords} />}
-      {noindex && <meta name="robots" content="noindex, follow" />}
+      {/* max-image-preview:large lets Google Discover and Search show the large
+          image (Discover's guidelines); without it they may use a thumbnail. */}
+      <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large'} />
       {canonical && !noindex && <link rel="canonical" href={canonical} />}
 
       {/* Open Graph */}
