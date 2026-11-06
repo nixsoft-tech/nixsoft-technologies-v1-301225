@@ -16,6 +16,8 @@ interface SEOProps {
   breadcrumbs?: { name: string; path: string }[];
   /** Keep this page out of search results (e.g. the Not Found page). */
   noindex?: boolean;
+  /** Page-specific structured data (one object or several), emitted as JSON-LD. */
+  jsonLd?: object | object[];
 }
 
 const SEO: React.FC<SEOProps> = ({
@@ -27,6 +29,7 @@ const SEO: React.FC<SEOProps> = ({
   keywords,
   breadcrumbs,
   noindex = false,
+  jsonLd,
 }) => {
   // Short brand suffix keeps titles inside the ~60 characters Google displays.
   const fullTitle = `${title} | Nixsoft`;
@@ -71,6 +74,9 @@ const SEO: React.FC<SEOProps> = ({
       {breadcrumbLd && (
         <script type="application/ld+json">{JSON.stringify(breadcrumbLd)}</script>
       )}
+      {jsonLd && ([] as object[]).concat(jsonLd).map((ld, i) => (
+        <script key={i} type="application/ld+json">{JSON.stringify(ld)}</script>
+      ))}
     </Helmet>
   );
 };

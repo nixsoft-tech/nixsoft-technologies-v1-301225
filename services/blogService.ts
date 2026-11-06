@@ -48,12 +48,30 @@ const MOCK_POSTS: BlogPost[] = [
 const htmlToText = (html: string): string =>
   new DOMParser().parseFromString(html, 'text/html').body.textContent?.trim() ?? '';
 
+/**
+ * Shorten text to at most `max` characters for a meta description or card.
+ * Prefers ending at a sentence, then at a word, and adds "…" only when cut.
+ */
+export const summarize = (text: string, max = 155): string => {
+  const clean = text.replace(/\s+/g, ' ').replace(/\s*\[(?:&hellip;|…|\.\.\.)\]\s*$/, '').trim();
+  if (clean.length <= max) return clean;
+  const cut = clean.slice(0, max - 1);
+  const sentenceEnd = Math.max(cut.lastIndexOf('. '), cut.lastIndexOf('? '), cut.lastIndexOf('! '));
+  if (sentenceEnd >= max * 0.6) return cut.slice(0, sentenceEnd + 1);
+  const wordEnd = cut.lastIndexOf(' ');
+  return `${cut.slice(0, wordEnd > 0 ? wordEnd : cut.length).replace(/[\s,;:.\-–—]+$/, '')}…`;
+};
+
+// WordPress *_gmt fields carry no zone suffix; mark them as UTC.
+const gmtToIso = (gmt?: string): string | undefined =>
+  gmt ? new Date(`${gmt}Z`).toISOString() : undefined;
+
 const mapWordPressPost = (wpPost: any): BlogPost => {
   return {
     id: wpPost.id.toString(),
     slug: wpPost.slug,
     title: htmlToText(wpPost.title.rendered),
-    excerpt: htmlToText(wpPost.excerpt.rendered).substring(0, 160) + '...',
+    excerpt: summarize(htmlToText(wpPost.excerpt.rendered)),
     content: wpPost.content.rendered,
     author: wpPost._embedded?.author?.[0]?.name || 'Nixsoft Team',
     date: new Date(wpPost.date).toLocaleDateString('en-US', { 
@@ -61,6 +79,8 @@ const mapWordPressPost = (wpPost: any): BlogPost => {
       month: 'long', 
       day: 'numeric' 
     }),
+    datePublished: gmtToIso(wpPost.date_gmt),
+    dateModified: gmtToIso(wpPost.modified_gmt),
     category: wpPost._embedded?.['wp:term']?.[0]?.[0]?.name || 'Technology',
     image: wpPost._embedded?.['wp:featuredmedia']?.[0]?.source_url || 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1000',
     readTime: `${Math.ceil(wpPost.content.rendered.split(' ').length / 200)} min read`
