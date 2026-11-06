@@ -504,6 +504,71 @@ app.post('/api/lead', async (req, res) => {
   });
 });
 
+// ─── NixBot lead capture ──────────────────────────────────────────────────────
+// After two answers the chat widget asks for name + email (phone optional)
+// before it continues. The details go to sales@ together with the
+// conversation so far, read from the server's own chat log (not from the
+// browser), and are added to the log so the admin viewer shows them.
+const CHAT_LEAD_TRANSCRIPT_MAX = 40; // most recent turns included in the email
+
+function validateChatLead({ name, email, phone, sessionId }) {
+  const errors = [];
+  if (typeof name !== 'string' || name.trim().length < 2 || name.length > 100) errors.push('Invalid name');
+  if (typeof email !== 'string' || email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.push('Invalid email');
+  if (phone !== undefined && phone !== '' && (typeof phone !== 'string' || !/^\+?[0-9 ()-]{7,20}$/.test(phone))) errors.push('Invalid phone');
+  if (typeof sessionId !== 'string' || !/^[A-Za-z0-9_-]{1,64}$/.test(sessionId)) errors.push('Invalid session');
+  return errors;
+}
+
+/** This session's logged turns (today's and yesterday's log files, UTC). */
+async function sessionTranscript(sessionId) {
+  await logQueue; // include the reply that was just logged
+  const day = (offset) => new Date(Date.now() - offset * 86400000).toISOString().split('T')[0];
+  const entries = [];
+  for (const d of [day(1), day(0)]) {
+    const file = path.join(LOGS_DIR, `${d}.json`);
+    if (await fs.pathExists(file)) {
+      const logs = await fs.readJson(file).catch(() => []);
+      entries.push(...logs.filter((e) => e.sessionId === sessionId && (e.role === 'user' || e.role === 'model')));
+    }
+  }
+  return entries.slice(-CHAT_LEAD_TRANSCRIPT_MAX);
+}
+
+app.post('/api/chat/lead', async (req, res) => {
+  if (!app.locals.transporter) {
+    return res.status(503).json({ error: 'Email service is not configured' });
+  }
+  const body = req.body || {};
+  const errors = validateChatLead(body);
+  if (errors.length > 0) {
+    return res.status(400).json({ error: 'Validation failed', details: errors });
+  }
+  if (!(await guardEmailForm(req, res))) return;
+
+  const line = formguard.singleLine;
+  const name = line(body.name.trim());
+  const phone = body.phone ? line(body.phone) : '';
+  const details = `Name: ${name}\nEmail: ${body.email}\nPhone: ${phone || '-'}`;
+
+  const transcript = await sessionTranscript(body.sessionId);
+  await appendChatLog([{
+    timestamp: new Date().toISOString(),
+    sessionId: body.sessionId,
+    role: 'lead',
+    text: details.replace(/\n/g, ' | '),
+  }]);
+
+  const conversation = transcript.length
+    ? transcript.map((e) => `${e.role === 'user' ? 'Visitor' : 'NixBot'}: ${String(e.text).slice(0, 1500)}`).join('\n\n')
+    : '(not found in the chat log)';
+  await sendFormEmail(res, {
+    subject: `NixBot lead: ${name} (${line(body.email)})`,
+    text: `${details}\nSource: NixBot chat (session ${body.sessionId})\n\nConversation so far:\n\n${conversation}`,
+    replyTo: body.email,
+  });
+});
+
 // Clean error responses — never leak stack traces to clients
 app.use((err, req, res, next) => {
   if (err && err.message === 'Not allowed by CORS') {
