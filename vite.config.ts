@@ -18,6 +18,13 @@ export default defineConfig({
       '@': path.resolve(__dirname, '.'),
     }
   },
+  ssr: {
+    // The build-time prerender (entry-server.tsx) runs on the Docker image's
+    // Node 20, which can't import react-helmet-async's CommonJS build with
+    // named imports. Bundle it into the SSR build instead of importing it
+    // from node_modules at run time. (Client builds are unaffected.)
+    noExternal: ['react-helmet-async'],
+  },
   build: {
     outDir: 'dist',
     sourcemap: false,
