@@ -16,9 +16,9 @@ const RELOAD_FLAG = 'nix-chunk-reload';
 const lazyPage = <T extends React.ComponentType<any>>(load: () => Promise<{ default: T }>) =>
   lazy(() =>
     load().then(
-      (mod) => { sessionStorage.removeItem(RELOAD_FLAG); return mod; },
+      (mod) => { if (typeof window !== 'undefined') sessionStorage.removeItem(RELOAD_FLAG); return mod; },
       (err) => {
-        if (!sessionStorage.getItem(RELOAD_FLAG)) {
+        if (typeof window !== 'undefined' && !sessionStorage.getItem(RELOAD_FLAG)) {
           sessionStorage.setItem(RELOAD_FLAG, '1');
           window.location.reload();
           return new Promise<never>(() => {});
@@ -61,9 +61,13 @@ const LegacyServiceRedirect: React.FC = () => {
   return <Navigate to={service ? `/services/${service.slug}` : '/services'} replace />;
 };
 
-const App: React.FC = () => {
+/**
+ * The site's layout and routes, without a router. The browser wraps it in
+ * BrowserRouter (App, below); the build-time prerender (entry-server.tsx)
+ * wraps it in StaticRouter to produce static HTML for every page.
+ */
+export const AppShell: React.FC = () => {
   return (
-    <BrowserRouter>
       <div className="flex flex-col min-h-screen">
         <ScrollToTop />
         <Analytics />
@@ -124,8 +128,13 @@ const App: React.FC = () => {
         <Footer />
         <ChatWidget />
       </div>
-    </BrowserRouter>
   );
 };
+
+const App: React.FC = () => (
+  <BrowserRouter>
+    <AppShell />
+  </BrowserRouter>
+);
 
 export default App;

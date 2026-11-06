@@ -1,12 +1,17 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import DOMPurify from 'dompurify';
 import { Calendar, User, Clock, ChevronLeft, Share2, Twitter, Linkedin, Link as LinkIcon } from 'lucide-react';
-import { getBlogPostBySlug } from '../services/blogService';
+import { getBlogPostBySlug, peekBlogPost } from '../services/blogService';
+import { sanitizeHtml } from '../services/sanitize';
+import { TEAM } from '../data/team';
+import { personId, personNode } from '../lib/schema';
 import { BlogPost as BlogPostType } from '../types';
 import SEO from '../components/SEO';
 import NotFound from './NotFound';
 import { blogPostingNode, articleId } from '../lib/schema';
+
+// Technical reviewer shown on every post (and in its structured data).
+const REVIEWER = TEAM.find((m) => m.id === 'pravin-kore')!;
 
 const SIZED_IMAGE = /-\d+x\d+(\.(?:jpe?g|png|gif|webp))$/i;
 
@@ -21,13 +26,15 @@ function restoreOriginalImage(img: HTMLImageElement) {
 
 const BlogPost: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
-  const [post, setPost] = useState<BlogPostType | null>(null);
-  const [loading, setLoading] = useState(true);
+  // Prerendered pages start with the post already in the cache.
+  const initial = slug ? peekBlogPost(slug) : undefined;
+  const [post, setPost] = useState<BlogPostType | null>(initial ?? null);
+  const [loading, setLoading] = useState(!initial);
   const [notFound, setNotFound] = useState(false);
 
   // WordPress content is external HTML — sanitize before rendering
   const safeContent = useMemo(
-    () => (post ? DOMPurify.sanitize(post.content) : ''),
+    () => (post ? sanitizeHtml(post.content) : ''),
     [post]
   );
 
@@ -50,6 +57,8 @@ const BlogPost: React.FC = () => {
 
   useEffect(() => {
     const fetchPost = async () => {
+      // Already have it (prerendered page): nothing to fetch.
+      if (slug && post?.slug === slug) return;
       if (slug) {
         const data = await getBlogPostBySlug(slug);
         setPost(data ?? null);
@@ -88,7 +97,8 @@ const BlogPost: React.FC = () => {
         datePublished={post.datePublished}
         dateModified={post.dateModified}
         mainEntityId={articleId(`/blog/${post.slug}`)}
-        entities={[blogPostingNode(post)]}
+        reviewedById={personId(REVIEWER)}
+        entities={[blogPostingNode(post), personNode(REVIEWER)]}
       />
       {/* Article Header */}
       <header className="py-12 bg-slate-50 border-b border-slate-100">
@@ -115,7 +125,10 @@ const BlogPost: React.FC = () => {
               </div>
               <div>
                 <p className="text-slate-900 font-bold">{post.author}</p>
-                <p className="text-xs">Technical Advisor</p>
+                <p className="text-xs">
+                  Technically reviewed by{' '}
+                  <Link to={`/about#${REVIEWER.id}`} className="text-nixBlue hover:underline">{REVIEWER.name}</Link>, {REVIEWER.role}
+                </p>
               </div>
             </div>
             

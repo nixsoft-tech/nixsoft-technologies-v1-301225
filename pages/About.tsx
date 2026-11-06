@@ -47,7 +47,7 @@ const EXPERTISE = [
 
 // Re-importing specific icons needed for the grid that aren't in the top import if needed,
 // but Infinity/Cloud were missing in top import. Adding them now.
-import { Cloud, Infinity, Mail } from 'lucide-react';
+import { Cloud, Infinity, Mail, Linkedin } from 'lucide-react';
 
 
 const About: React.FC = () => {
@@ -247,9 +247,16 @@ const About: React.FC = () => {
                     <li key={f} className="text-xs font-semibold text-nixBlue bg-blue-50 px-3 py-1 rounded-full">{f}</li>
                   ))}
                 </ul>
-                <a href={`mailto:${member.email}`} className="mt-auto inline-flex items-center text-sm font-semibold text-slate-700 hover:text-nixBlue transition-colors">
-                  <Mail size={16} className="mr-2" /> {member.email}
-                </a>
+                <div className="mt-auto flex flex-col items-center gap-2">
+                  <a href={`mailto:${member.email}`} className="inline-flex items-center text-sm font-semibold text-slate-700 hover:text-nixBlue transition-colors">
+                    <Mail size={16} className="mr-2" /> {member.email}
+                  </a>
+                  {member.sameAs?.filter((u) => u.includes('linkedin.com')).map((u) => (
+                    <a key={u} href={u} target="_blank" rel="noopener noreferrer me" className="inline-flex items-center text-sm font-semibold text-slate-700 hover:text-nixBlue transition-colors">
+                      <Linkedin size={16} className="mr-2" aria-hidden="true" /> LinkedIn<span className="sr-only">: {member.name}</span>
+                    </a>
+                  ))}
+                </div>
               </article>
             ))}
           </div>

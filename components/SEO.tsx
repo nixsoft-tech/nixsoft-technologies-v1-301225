@@ -30,6 +30,8 @@ interface SEOProps {
   mainEntityId?: string;
   datePublished?: string;
   dateModified?: string;
+  /** Person @id of the page's technical reviewer (WebPage.reviewedBy). */
+  reviewedById?: string;
 }
 
 const SEO: React.FC<SEOProps> = ({
@@ -47,6 +49,7 @@ const SEO: React.FC<SEOProps> = ({
   mainEntityId,
   datePublished,
   dateModified,
+  reviewedById,
 }) => {
   // Short brand suffix keeps titles inside the ~60 characters Google displays.
   const fullTitle = `${title} | Nixsoft`;
@@ -72,6 +75,7 @@ const SEO: React.FC<SEOProps> = ({
             aboutOrganization,
             datePublished,
             dateModified,
+            reviewedById,
           }),
           ...(hasBreadcrumb ? [breadcrumbNode(path, breadcrumbs!)] : []),
           ...entities,
