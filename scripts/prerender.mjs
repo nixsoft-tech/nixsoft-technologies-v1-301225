@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Build-time prerender: writes real HTML for every page in public/sitemap.xml,
+ * Build-time prerender: writes real HTML for every indexable page,
  * so crawlers that don't run JavaScript (ChatGPT's, Claude's and Perplexity's
  * crawlers, link previews) see the full page, its <title>/<meta> tags and its
  * structured data. The browser then hydrates the same markup (index.tsx).
@@ -8,11 +8,19 @@
  * Runs after `vite build` (client, into dist/) and `vite build --ssr`
  * (entry-server.tsx, into dist-ssr/). See the "build" script in package.json.
  *
+ * Pages: staticRoutes() from entry-server.tsx (built from the site's data)
+ * plus one page per WordPress post.
+ *
  * Output
  *   dist/index.html                   home page
- *   dist/<path>/index.html            every other sitemap page
+ *   dist/<path>/index.html            every other page
  *   dist/app.html                     the plain app shell, for URLs that are
  *                                     not prerendered (nginx @app, 404s)
+ *   dist/sitemap.xml                  generated from the pages written: each
+ *                                     URL with the images it shows
+ *                                     (<image:loc>), and <lastmod> only where
+ *                                     the date is real (WordPress's modified
+ *                                     date for posts and the blog index)
  * Blog posts come from the WordPress API at build time
  * (VITE_WORDPRESS_API_URL). If it is unreachable, blog pages are skipped and
  * fall back to the app shell; every other page must render or the build fails.
@@ -35,19 +43,18 @@ const started = Date.now();
 const purify = createDOMPurify(new JSDOM('').window);
 globalThis.__nixSanitize = (html) => purify.sanitize(html);
 
-const { render, mapWordPressPost, seedBlogCache } = await import(
+const { render, mapWordPressPost, seedBlogCache, staticRoutes } = await import(
   pathToFileURL(path.join(root, 'dist-ssr', 'entry-server.js')).href
 );
 
-const template = fs.readFileSync(path.join(dist, 'index.html'), 'utf8');
-if (!template.includes('<div id="root"></div>')) throw new Error('prerender: dist/index.html has no empty #root');
+// The shell from `vite build`. On a re-run (dist/index.html is already the
+// prerendered home page) start again from the saved shell.
+const shellFile = fs.existsSync(path.join(dist, 'app.html')) ? 'app.html' : 'index.html';
+const template = fs.readFileSync(path.join(dist, shellFile), 'utf8');
+if (!template.includes('<div id="root"></div>')) throw new Error(`prerender: dist/${shellFile} has no empty #root`);
 
 // The untouched shell, for everything that isn't prerendered.
 fs.writeFileSync(path.join(dist, 'app.html'), template);
-
-// Pages to render: every <loc> in the sitemap.
-const sitemap = fs.readFileSync(path.join(dist, 'sitemap.xml'), 'utf8');
-const routes = [...sitemap.matchAll(/<loc>https?:\/\/[^/<]+(\/[^<]*)?<\/loc>/g)].map((m) => m[1] || '/');
 
 // Blog posts from WordPress (same request and mapping as the app).
 let posts = null;
@@ -63,6 +70,42 @@ if (api) {
 } else {
   console.warn('prerender: VITE_WORDPRESS_API_URL not set; blog pages fall back to the app shell');
 }
+
+// Pages to render: the site's pages, with the blog posts right after /blog.
+const statics = staticRoutes();
+const postRoutes = (posts ?? []).map((p) => `/blog/${p.slug}`);
+const blogAt = statics.indexOf('/blog');
+const routes = [...statics.slice(0, blogAt + 1), ...postRoutes, ...statics.slice(blogAt + 1)];
+
+// ---- Sitemap helpers -------------------------------------------------------
+const SITE = 'https://nixsoftech.in';
+// Images listed in the sitemap: content images on our own hosts. Logos and
+// icons (SVG), data: URIs and images hotlinked from other sites are left out.
+const IMAGE_HOSTS = new Set(['nixsoftech.in', 'blog.nixsoftech.in']);
+const MAX_IMAGES_PER_URL = 1000; // sitemap protocol limit
+const decodeAttr = (v) => v.replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#x27;|&#39;/g, "'");
+const xmlEscape = (v) => v.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+
+function pageImages(html) {
+  // From the app's <main> to the last </main> (blog posts nest a second
+  // <main> around the article body): page content, without header and footer.
+  const start = html.search(/<main\b/);
+  const main = start < 0 ? '' : html.slice(start, html.lastIndexOf('</main>'));
+  const urls = new Set();
+  for (const [, raw] of main.matchAll(/<img\b[^>]*?\ssrc="([^"]+)"/g)) {
+    const src = decodeAttr(raw);
+    if (src.startsWith('data:') || /\.svg(\?|$)/i.test(src)) continue;
+    let url;
+    try { url = new URL(src, SITE); } catch { continue; }
+    if (!IMAGE_HOSTS.has(url.hostname) || /logo/i.test(url.pathname)) continue;
+    urls.add(url.href);
+    if (urls.size >= MAX_IMAGES_PER_URL) break;
+  }
+  return [...urls];
+}
+
+const isoDate = (iso) => (iso ? iso.slice(0, 10) : undefined);
+const sitemapEntries = [];
 
 // React 19 emits hoisted <title>/<meta>/<link> tags first. Split them off so
 // they go into <head>; the rest is the app's markup for #root.
@@ -124,6 +167,32 @@ for (const route of routes) {
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, page(html, seed));
   written++;
+
+  // lastmod only where it's real: a post's WordPress "modified" date, and
+  // for /blog the latest of them. Other pages get none rather than a guess.
+  let lastmod;
+  if (seed?.post) lastmod = isoDate(seed.post.dateModified);
+  else if (route === '/blog' && posts) lastmod = isoDate(posts.map((p) => p.dateModified ?? '').sort().at(-1));
+  sitemapEntries.push({ loc: route === '/' ? `${SITE}/` : `${SITE}${route}`, lastmod, images: pageImages(html) });
 }
+
+// ---- Write the sitemap -------------------------------------------------------
+const xml = [
+  '<?xml version="1.0" encoding="UTF-8"?>',
+  '<!-- Generated by scripts/prerender.mjs at build time. Do not edit. -->',
+  '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">',
+  ...sitemapEntries.map(({ loc, lastmod, images }) => [
+    '  <url>',
+    `    <loc>${xmlEscape(loc)}</loc>`,
+    ...(lastmod ? [`    <lastmod>${lastmod}</lastmod>`] : []),
+    ...images.map((src) => `    <image:image><image:loc>${xmlEscape(src)}</image:loc></image:image>`),
+    '  </url>',
+  ].join('\n')),
+  '</urlset>',
+  '',
+].join('\n');
+fs.writeFileSync(path.join(dist, 'sitemap.xml'), xml);
+const imageCount = sitemapEntries.reduce((n, e) => n + e.images.length, 0);
+console.log(`prerender: sitemap.xml with ${sitemapEntries.length} URLs and ${imageCount} images`);
 
 console.log(`prerender: ${written} pages written${skipped.length ? `, ${skipped.length} skipped (${skipped.join(', ')})` : ''} in ${((Date.now() - started) / 1000).toFixed(1)}s`);

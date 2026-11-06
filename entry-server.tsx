@@ -11,6 +11,36 @@ import { HelmetProvider } from 'react-helmet-async';
 import { AppShell } from './App';
 
 export { mapWordPressPost, seedBlogCache } from './services/blogService';
+import { SERVICE_CATEGORIES, getServicesByCategory } from './data/services';
+import { SOLUTIONS_DATA } from './data/solutions';
+import { PRODUCTS_DATA } from './data/products';
+import { INDUSTRIES_DATA } from './data/industries';
+
+/**
+ * Every indexable page except blog posts (those come from WordPress at build
+ * time), in sitemap order. Built from the same data the pages render, so a
+ * new service, solution, product or industry is listed automatically.
+ * Add a route here when you add a new standalone page.
+ */
+export function staticRoutes(): string[] {
+  return [
+    '/',
+    '/about',
+    '/services',
+    ...SERVICE_CATEGORIES.flatMap((c) => getServicesByCategory(c.id)).map((s) => `/services/${s.slug}`),
+    '/solutions',
+    ...SOLUTIONS_DATA.map((s) => `/solutions/${s.slug}`),
+    '/products',
+    ...PRODUCTS_DATA.map((p) => `/products/${p.slug}`),
+    '/industries',
+    ...INDUSTRIES_DATA.map((i) => `/industries/${i.slug}`),
+    '/clients',
+    '/blog',
+    '/contact',
+    '/privacy-policy',
+    '/terms-and-conditions',
+  ];
+}
 
 async function renderOnce(url: string): Promise<string> {
   const { prelude } = await prerenderToNodeStream(
