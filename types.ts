@@ -110,5 +110,10 @@ export interface BlogPost {
   dateModified?: string;
   category: string;
   image: string;
+  /** Featured image size in pixels, when WordPress reports it. */
+  imageWidth?: number;
+  imageHeight?: number;
+  /** Words in the article body (for Article structured data). */
+  wordCount?: number;
   readTime: string;
 }
