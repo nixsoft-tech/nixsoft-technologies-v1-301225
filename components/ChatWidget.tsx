@@ -1,5 +1,7 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo, lazy, Suspense } from 'react';
 import { MessageSquare, X, Send, Bot, Loader2 } from 'lucide-react';
+import Honeypot from './Honeypot';
+import { submitForm, HONEYPOT_FIELD } from '../services/formApi';
 import DOMPurify from 'dompurify';
 import { sendChatMessage } from '../services/chatService';
 
@@ -9,6 +11,79 @@ import { sendChatMessage } from '../services/chatService';
 type Message = { role: 'user' | 'model'; text: string; sig?: string };
 
 const MAX_MESSAGE_CHARS = 1000; // matches the server limit
+
+// Lead capture: after this many real answers NixBot asks for name and email
+// (phone optional) before the chat continues. Sent to sales@ with the
+// conversation (POST /api/chat/lead). Remembered in this browser so a
+// returning visitor isn't asked again.
+const LEAD_AFTER_REPLIES = 2;
+const LEAD_STORAGE_KEY = 'nixbot-lead-given';
+const LEAD_PROMPT =
+  'Happy to keep helping! Before we continue, could you share your **name** and **email**? Your phone number is optional. Our team may follow up if you need more detail.';
+
+// The puzzle widget (~90 KB) loads only when the details form appears.
+const AltchaWidget = lazy(() => import('./AltchaWidget'));
+
+/** In-chat form for name, email and optional phone. */
+const LeadForm: React.FC<{ sessionId: string; onDone: (name: string) => void }> = ({ sessionId, onDone }) => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [honeypot, setHoneypot] = useState('');
+  const [puzzle, setPuzzle] = useState<string | null>(null);
+  const [puzzleKey, setPuzzleKey] = useState(0);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+  const nameRef = useRef<HTMLInputElement>(null);
+
+  // Bring the whole form into view (the puzzle widget loads a moment later
+  // and makes it taller) and put the cursor in the name field.
+  useEffect(() => {
+    nameRef.current?.focus({ preventScroll: true });
+    const timers = [100, 600].map((ms) => setTimeout(() => formRef.current?.scrollIntoView({ block: 'end' }), ms));
+    return () => timers.forEach(clearTimeout);
+  }, []);
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    if (name.trim().length < 2) return setError('Please enter your name.');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) return setError('Please enter a valid email address.');
+    if (phone.trim() && !/^\+?[0-9 ()-]{7,20}$/.test(phone.trim())) return setError('Please check the phone number, or leave it empty.');
+    if (!puzzle) return setError("Please tick \"I'm not a robot\" first.");
+    setSending(true);
+    const result = await submitForm('/api/chat/lead', {
+      name: name.trim(), email: email.trim(), phone: phone.trim(), sessionId, altcha: puzzle, [HONEYPOT_FIELD]: honeypot,
+    });
+    setSending(false);
+    if (result.ok) return onDone(name.trim());
+    // Each solved puzzle works once: start a fresh one.
+    setPuzzle(null);
+    setPuzzleKey((k) => k + 1);
+    setError(result.message);
+  };
+
+  const field = 'w-full text-sm p-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-nixBlue/20';
+  return (
+    <form ref={formRef} onSubmit={submit} noValidate className="relative bg-white border border-gray-200 rounded-xl p-3 shadow-sm space-y-2" aria-label="Your details to continue the chat">
+      <Honeypot value={honeypot} onChange={setHoneypot} />
+      <input ref={nameRef} className={field} value={name} onChange={(e) => setName(e.target.value)} placeholder="Name *" aria-label="Name" autoComplete="name" maxLength={100} />
+      <input className={field} type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email *" aria-label="Email" autoComplete="email" maxLength={254} />
+      <input className={field} type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Phone (optional)" aria-label="Phone (optional)" autoComplete="tel" maxLength={20} />
+      <Suspense fallback={null}>
+        <AltchaWidget key={puzzleKey} onChange={setPuzzle} />
+      </Suspense>
+      {error && <p className="text-xs text-red-500" role="alert">{error}</p>}
+      <button type="submit" disabled={sending} className="w-full p-2 bg-nixBlue text-white text-sm font-semibold rounded-lg hover:bg-blue-800 disabled:opacity-50">
+        {sending ? 'Sending…' : 'Continue chat'}
+      </button>
+      <p className="text-[11px] text-slate-400 leading-snug">
+        We use these details only to reply to you. See our <a href="/privacy-policy" className="underline">Privacy Policy</a>.
+      </p>
+    </form>
+  );
+};
 
 // ─── Formatting helper (defined outside component — no recreation on render) ──
 // Bot text is untrusted: escape any HTML first, then apply the small markdown
@@ -51,6 +126,29 @@ const ChatWidget: React.FC = () => {
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Lead capture state. The stored flag is read after mount (the prerendered
+  // HTML has no localStorage).
+  const [leadGiven, setLeadGiven] = useState(false);
+  useEffect(() => {
+    try { setLeadGiven(localStorage.getItem(LEAD_STORAGE_KEY) === '1'); } catch { /* storage blocked */ }
+  }, []);
+  // Real answers carry the server's signature; error and rate-limit messages don't count.
+  const answered = messages.filter((m) => m.role === 'model' && m.sig).length;
+  const needLead = !leadGiven && answered >= LEAD_AFTER_REPLIES;
+  const askedRef = useRef(false);
+  useEffect(() => {
+    if (needLead && !askedRef.current && !isLoading) {
+      askedRef.current = true;
+      setMessages((prev) => [...prev, { role: 'model', text: LEAD_PROMPT }]);
+    }
+  }, [needLead, isLoading]);
+
+  const handleLeadDone = (name: string) => {
+    try { localStorage.setItem(LEAD_STORAGE_KEY, '1'); } catch { /* storage blocked */ }
+    setLeadGiven(true);
+    setMessages((prev) => [...prev, { role: 'model', text: `Thanks, ${name.split(' ')[0]}! What else would you like to know?` }]);
+  };
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Keep a mutable ref in sync with state to fix the stale-closure bug.
@@ -66,7 +164,7 @@ const ChatWidget: React.FC = () => {
 
   const handleSend = async () => {
     const userMessage = input.trim();
-    if (!userMessage) return;
+    if (!userMessage || needLead) return;
 
     setInput('');
     setError(null);
@@ -160,6 +258,8 @@ const ChatWidget: React.FC = () => {
               <p className="text-center text-xs text-red-400">{error}</p>
             )}
 
+            {needLead && !isLoading && <LeadForm sessionId={sessionId} onDone={handleLeadDone} />}
+
             <div ref={messagesEndRef} />
           </div>
 
@@ -171,15 +271,15 @@ const ChatWidget: React.FC = () => {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && !isLoading && handleSend()}
-                placeholder="Ask about DevOps or Security..."
+                placeholder={needLead ? 'Share your details above to continue' : 'Ask about DevOps or Security...'}
                 maxLength={MAX_MESSAGE_CHARS}
                 className="flex-1 text-sm p-2 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-nixBlue/20"
                 aria-label="Chat input"
-                disabled={isLoading}
+                disabled={isLoading || needLead}
               />
               <button
                 onClick={handleSend}
-                disabled={isLoading || !input.trim()}
+                disabled={isLoading || needLead || !input.trim()}
                 className="p-2 bg-nixBlue text-white rounded-lg hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed"
                 aria-label="Send message"
               >
