@@ -17,6 +17,14 @@ ARG VITE_API_BASE_URL
 ENV VITE_WORDPRESS_API_URL=$VITE_WORDPRESS_API_URL
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 
+# The build prerenders the blog from WordPress (scripts/prerender.mjs), but
+# Docker reuses the cached build step when the code hasn't changed, so edited
+# or new posts would stay stale. ADD downloads the current posts on every
+# build and invalidates the cache whenever their content differs, so the next
+# step re-runs exactly when the blog has changed. (If WordPress can't be
+# reached, the build stops here and the running site is left untouched.)
+ADD ${VITE_WORDPRESS_API_URL}/posts?per_page=100 /tmp/wp-posts-snapshot.json
+
 # Build the application
 RUN npm run build
 
