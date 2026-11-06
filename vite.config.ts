@@ -26,6 +26,9 @@ export default defineConfig({
     noExternal: ['react-helmet-async'],
   },
   build: {
+    // Chunk map for the prerender, which adds <link rel="modulepreload"> for
+    // each page's code (scripts/prerender.mjs). Removed from dist afterwards.
+    manifest: true,
     outDir: 'dist',
     sourcemap: false,
     cssCodeSplit: true,

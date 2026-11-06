@@ -125,13 +125,63 @@ function splitHead(html) {
 // JSON inside <script>: escape "<" so "</script>" in content can't end it.
 const jsonForScript = (data) => JSON.stringify(data).replace(/</g, '\\u003c');
 
-function page(html, blogSeed) {
+// ---- Page code preloads -------------------------------------------------------
+// Each page's code is a lazy chunk that the browser only discovers after the
+// main bundle runs (main bundle -> page chunk -> shared chunks), a chain
+// PageSpeed flags. <link rel="modulepreload"> in the HTML lets the browser
+// fetch them in parallel with the main bundle. Chunk names come from Vite's
+// manifest (build.manifest), which is removed from dist afterwards.
+const manifestFile = path.join(dist, '.vite', 'manifest.json');
+const manifest = fs.existsSync(manifestFile) ? JSON.parse(fs.readFileSync(manifestFile, 'utf8')) : null;
+const PAGE_MODULES = [
+  [/^\/about$/, 'pages/About.tsx'],
+  [/^\/services$/, 'pages/Services.tsx'],
+  [/^\/services\//, 'pages/ServiceDetail.tsx'],
+  [/^\/solutions$/, 'pages/Solutions.tsx'],
+  [/^\/solutions\//, 'pages/SolutionDetail.tsx'],
+  [/^\/products$/, 'pages/Products.tsx'],
+  [/^\/products\//, 'pages/ProductDetail.tsx'],
+  [/^\/industries$/, 'pages/Industries.tsx'],
+  [/^\/industries\//, 'pages/IndustryDetail.tsx'],
+  [/^\/clients$/, 'pages/Clients.tsx'],
+  [/^\/blog$/, 'pages/Blog.tsx'],
+  [/^\/blog\//, 'pages/BlogPost.tsx'],
+  [/^\/contact$/, 'pages/Contact.tsx'],
+  [/^\/privacy-policy$/, 'pages/PrivacyPolicy.tsx'],
+  [/^\/terms-and-conditions$/, 'pages/Terms.tsx'],
+];
+// Everything the entry already loads (no need to preload it again).
+const entryKey = manifest && Object.keys(manifest).find((k) => manifest[k].isEntry);
+const inEntry = new Set();
+(function collect(key) {
+  if (!manifest || !key || inEntry.has(key)) return;
+  inEntry.add(key);
+  (manifest[key].imports ?? []).forEach(collect);
+})(entryKey);
+
+/** JS files a route's page needs beyond the entry bundle (static imports only). */
+function pageChunks(route) {
+  const key = PAGE_MODULES.find(([re]) => re.test(route))?.[1];
+  if (!manifest || !key || !manifest[key]) return [];
+  const files = [];
+  const seen = new Set();
+  (function walk(k) {
+    if (seen.has(k) || inEntry.has(k) || !manifest[k]) return;
+    seen.add(k);
+    files.push(`/${manifest[k].file}`);
+    (manifest[k].imports ?? []).forEach(walk);
+  })(key);
+  return files;
+}
+
+function page(html, blogSeed, chunks = []) {
   const { head, body } = splitHead(html);
+  const preloads = chunks.map((f) => `<link rel="modulepreload" crossorigin href="${f}">`).join('');
   let out = template
     // The page's own tags replace index.html's homepage defaults.
     .replace(/\s*<title data-default>[\s\S]*?<\/title>/, '')
     .replace(/\s*<meta data-default [^>]*>/g, '')
-    .replace('</head>', `    ${head}\n  </head>`)
+    .replace('</head>', `    ${preloads}${head}\n  </head>`)
     .replace('<div id="root"></div>', `<div id="root">${body}</div>`);
   if (blogSeed) {
     out = out.replace(
@@ -167,7 +217,7 @@ for (const route of routes) {
 
   const file = route === '/' ? path.join(dist, 'index.html') : path.join(dist, route.slice(1), 'index.html');
   fs.mkdirSync(path.dirname(file), { recursive: true });
-  fs.writeFileSync(file, page(html, seed));
+  fs.writeFileSync(file, page(html, seed, pageChunks(route)));
   written++;
 
   // lastmod only where it's real: a post's WordPress "modified" date, and
@@ -194,6 +244,9 @@ const xml = [
   '',
 ].join('\n');
 fs.writeFileSync(path.join(dist, 'sitemap.xml'), xml);
+
+// The chunk map is only for this script; don't publish it.
+fs.rmSync(path.join(dist, '.vite'), { recursive: true, force: true });
 const imageCount = sitemapEntries.reduce((n, e) => n + e.images.length, 0);
 console.log(`prerender: sitemap.xml with ${sitemapEntries.length} URLs and ${imageCount} images`);
 
