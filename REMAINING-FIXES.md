@@ -10,7 +10,7 @@
 
 | # | Item | Why | Owner |
 |---|------|-----|-------|
-| 1 | **Rotate the exposed Gemini API key** (`AIzaSy…6IE`) | It was committed in `docker-compose.yml` and `.env.local` — treat as compromised. Regenerate in Google AI Studio, put the new key in `.env` as `GEMINI_API_KEY`. | You |
+| 1 | **Delete the exposed Gemini API key** (`AIzaSy…6IE`) and **set the new AI keys** | The chat no longer uses Gemini (it now runs on Grok with DeepSeek as fallback), but the old key was committed in `docker-compose.yml` and `.env.local`, so delete it in Google AI Studio. Then add `XAI_API_KEY` and/or `DEEPSEEK_API_KEY` to `.env`. | You |
 | 2 | **Set fresh production credentials in `.env`** | `cp .env.example .env`, then set strong values for `ADMIN_PASSWORD`, `MYSQL_PASSWORD`, `MYSQL_ROOT_PASSWORD`, and the real `SMTP_PASS`. The old values (`Nixsoft@2026`, `wp_password`, `root_password`) were committed — do not reuse them. | You |
 | 3 | **Supply `og-image.png`, `logo.png`, `favicon.ico`** | All three are referenced by `index.html`, `SEO.tsx`, and `Schema.tsx` but do not exist in `public/` — they 404 today. Social shares render blank and the Organization schema's required `logo` field fails the Rich Results Test. Needs real brand assets from design; not something code can generate. | You / Design |
 | 4 | **Re-create the `www` → apex 301 in nginx at cutover** | `https://www.nixsoftech.in` currently 301s to the apex, but that redirect is served by the **old WordPress/Apache** stack (`X-Redirect-By: WordPress`). It is not in `nginx-proxy/conf.d/default.conf`. When DNS moves to the new stack the redirect vanishes, and www + apex both serve 200 → duplicate content against the canonicals now pointing at the apex. | DevOps |
@@ -94,27 +94,15 @@ existed. The two genuinely critical defects below were **not** in the report.
 > ⚠️ The nginx changes were **not** machine-verified — Docker was unavailable in
 > that session. Run `nginx -t` before reloading the proxy.
 
-### 🚀 Production cutover checklist (UAT `new.nixsoftech.in` → prod `nixsoftech.in`)
+### 🚀 Production cutover (UAT `new.nixsoftech.in` → prod `nixsoftech.in`)
 
-The UAT hostname is baked into six places. This list is file-specific — unlike
-the generic checklist in the review report, which misses most of them.
-
-| # | File | Change |
-|---|------|--------|
-| 1 | `nginx-proxy/conf.d/default.conf` | **Delete both UAT noindex blocks** — the `X-Robots-Tag` server headers, the repeat inside the static-asset location, and both `location = /robots.txt` overrides. Leaving any in place silently deindexes production. |
-| 2 | `nginx-proxy/conf.d/default.conf` | `server_name` → `nixsoftech.in` (L24, L43) and `blog.nixsoftech.in` (L142). |
-| 3 | `nginx-proxy/conf.d/default.conf` | **Add a `www.nixsoftech.in` → apex 301 server block.** Today's www→apex redirect is served by the old WordPress/Apache stack and is lost the moment DNS moves. Without it, www and apex both serve 200. |
-| 4 | `nginx-proxy/conf.d/default.conf` | CSP (L67): swap `new.nixsoftech.in` / `blog.new.nixsoftech.in` in `img-src` and `connect-src` for the production hosts. Missing this breaks the blog fetch and the CSP report. |
-| 5 | `docker-compose.yml` | `VITE_WORDPRESS_API_URL` (L74) → production blog. `ALLOWED_ORIGINS` default (L61) → `https://nixsoftech.in`, or the contact form and chat 403. Leave `VITE_SITE_URL` **unset**. |
-| 6 | `init-letsencrypt.sh` | `DOMAINS` (L17) → the production hostnames, incl. `www.nixsoftech.in` so the redirect block has a cert. |
-| 7 | `public/robots.txt` | Already correct for production (`Allow: /` + apex sitemap) — the UAT block is at the nginx layer, so **no revert needed here**. |
-
-Verify after cutover:
-```bash
-curl -sI https://nixsoftech.in | grep -i x-robots-tag   # expect: no output
-curl -sI https://www.nixsoftech.in | grep -i location   # expect: 301 → apex
-curl -s  https://nixsoftech.in/robots.txt               # expect: Allow: /, not Disallow: /
-```
+Done on branch `feat/production-cutover`. Follow **[CUTOVER.md](CUTOVER.md)** on
+swap day. The branch covers every item that used to be listed here: production
+`server_name`s, no UAT noindex, the www → apex 301, CSP, `VITE_WORDPRESS_API_URL`,
+`ALLOWED_ORIGINS` and the certificate domains. It adds a `blog.nixsoftech.in`
+vhost, redirects from the retired UAT hosts, DNS-based certificate issuance so
+the certificates exist before DNS moves, and a WP-CLI container for the
+WordPress URL change. Verify with `scripts/post-cutover-check.sh`.
 
 ### Still open from that review
 

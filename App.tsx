@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ChatWidget from './components/ChatWidget';
 import Schema from './components/Schema';
+import Analytics from './components/Analytics';
 import Home from './pages/Home';
 import { getServiceBySlugOrAlias } from './data/services';
 
@@ -12,7 +13,9 @@ const ServiceDetail = lazy(() => import('./pages/ServiceDetail'));
 const Solutions = lazy(() => import('./pages/Solutions'));
 const SolutionDetail = lazy(() => import('./pages/SolutionDetail'));
 const Products = lazy(() => import('./pages/Products'));
+const ProductDetail = lazy(() => import('./pages/ProductDetail'));
 const Industries = lazy(() => import('./pages/Industries'));
+const IndustryDetail = lazy(() => import('./pages/IndustryDetail'));
 const Contact = lazy(() => import('./pages/Contact'));
 const About = lazy(() => import('./pages/About'));
 const Clients = lazy(() => import('./pages/Clients'));
@@ -49,6 +52,7 @@ const App: React.FC = () => {
     <BrowserRouter>
       <div className="flex flex-col min-h-screen">
         <ScrollToTop />
+        <Analytics />
         <Schema />
         <Navbar />
         
@@ -65,7 +69,9 @@ const App: React.FC = () => {
               <Route path="/solutions" element={<Solutions />} />
               <Route path="/solutions/:slug" element={<SolutionDetail />} />
               <Route path="/products" element={<Products />} />
+              <Route path="/products/:slug" element={<ProductDetail />} />
               <Route path="/industries" element={<Industries />} />
+              <Route path="/industries/:slug" element={<IndustryDetail />} />
               <Route path="/clients" element={<Clients />} />
               <Route path="/about" element={<About />} />
               <Route path="/blog" element={<Blog />} />

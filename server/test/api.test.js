@@ -1,6 +1,11 @@
 process.env.ADMIN_PASSWORD = 'test_admin_password';
-process.env.GEMINI_API_KEY = ''; // Force demo mode
+// Chat logs go to a throwaway folder, not server/logs.
+process.env.CHAT_LOGS_DIR = require('fs').mkdtempSync(require('path').join(require('os').tmpdir(), 'nixsoft-api-logs-'));
+process.env.XAI_API_KEY = ''; // No AI provider keys → demo mode
+process.env.DEEPSEEK_API_KEY = '';
 process.env.ALLOWED_ORIGINS = 'http://localhost:3000';
+const { EASY_PUZZLE_ENV, solvedPuzzle } = require('./puzzle');
+Object.assign(process.env, EASY_PUZZLE_ENV);
 
 const test = require('node:test');
 const assert = require('node:assert');
@@ -89,7 +94,7 @@ test('Nixsoft Backend API Integration Tests', async (t) => {
     const dataInvalid = await resInvalid.json();
     assert.ok(dataInvalid.error);
 
-    // 3. Valid contact form submission -> 200 OK
+    // 3. Valid contact form submission with a solved puzzle -> 200 OK
     const resValid = await fetch(`${baseUrl}/api/contact`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -97,7 +102,8 @@ test('Nixsoft Backend API Integration Tests', async (t) => {
         name: 'John Doe',
         email: 'john@example.com',
         company: 'ACME',
-        message: 'Hello, I need DevOps support.'
+        message: 'Hello, I need DevOps support.',
+        altcha: await solvedPuzzle(baseUrl)
       })
     });
     assert.strictEqual(resValid.status, 200);
@@ -110,7 +116,7 @@ test('Nixsoft Backend API Integration Tests', async (t) => {
     const resLoginFail = await fetch(`${baseUrl}/api/admin/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: 'wrong_password' })
+      body: JSON.stringify({ password: 'wrong_password', altcha: await solvedPuzzle(baseUrl) })
     });
     assert.strictEqual(resLoginFail.status, 401);
 
@@ -122,7 +128,7 @@ test('Nixsoft Backend API Integration Tests', async (t) => {
     const resLoginSuccess = await fetch(`${baseUrl}/api/admin/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: 'test_admin_password' })
+      body: JSON.stringify({ password: 'test_admin_password', altcha: await solvedPuzzle(baseUrl) })
     });
     assert.strictEqual(resLoginSuccess.status, 200);
     const loginData = await resLoginSuccess.json();

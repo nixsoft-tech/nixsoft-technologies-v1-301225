@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { 
   Building2, Users, Trophy, Target, 
   Code2, Database, ShieldCheck, Zap, 
@@ -7,6 +7,7 @@ import {
   Globe, Server
 } from 'lucide-react';
 import SEO from '../components/SEO';
+import HeroImage from '../components/HeroImage';
 
 const EXPERTISE = [
   {
@@ -41,24 +42,53 @@ const EXPERTISE = [
   }
 ];
 
-// Re-importing specific icons needed for the grid that aren't in the top import if needed, 
+// Re-importing specific icons needed for the grid that aren't in the top import if needed,
 // but Infinity/Cloud were missing in top import. Adding them now.
-import { Cloud, Infinity } from 'lucide-react';
+import { Cloud, Infinity, Mail } from 'lucide-react';
+
+const TEAM = [
+  {
+    name: 'Wajid Shaikh',
+    role: 'Director',
+    photo: '/images/team/wajid-shaikh.webp',
+    email: 'wajid@nixsoftech.in',
+    bio: 'With more than 20 years in the IT industry, Wajid leads Nixsoft’s strategy and client relationships. He has worked at every level across organisations in different industry verticals, and focuses on understanding what clients need, guiding delivery teams to meet it, and measuring the results.',
+    focus: ['Business Strategy', 'Client Success', 'IT Leadership']
+  },
+  {
+    name: 'Pravin Kore',
+    role: 'Director',
+    photo: '/images/team/pravin-kore.webp',
+    email: 'pravin@nixsoftech.in',
+    bio: 'Pravin brings 15+ years of experience leading IT infrastructure management, architecture and design. He has run server, cloud and data-centre operations across Linux, UNIX, Solaris and virtualisation platforms, and leads Nixsoft’s technical delivery in DevOps, cloud and open-source architecture.',
+    focus: ['Infrastructure Architecture', 'Cloud & DevOps', 'Open Source']
+  }
+];
 
 const About: React.FC = () => {
+  const { hash } = useLocation();
+
+  // Old-site /team/* URLs redirect to /about#team. ScrollToTop in App.tsx
+  // resets the scroll on every route change, so jump after it has run. An
+  // instant jump, not a smooth one: on a full page load the smooth scroll
+  // got interrupted part-way and left the visitor near the top of the page.
+  useEffect(() => {
+    if (hash !== '#team') return;
+    const id = setTimeout(() => document.getElementById('team')?.scrollIntoView(), 100);
+    return () => clearTimeout(id);
+  }, [hash]);
+
   return (
     <div className="flex flex-col">
       <SEO 
-        title="About Our DevOps & Automation Journey"
-        description="Founded in 2019, Nixsoft Technologies is Mumbai's premier DevOps consulting firm, serving Pan-Asia with open-source first infrastructure excellence."
+        title="About Nixsoft: DevOps & IT Company in Mumbai"
+        description="Founded in 2019, Nixsoft Technologies is a Mumbai-based DevOps and IT infrastructure company serving enterprises across India and Asia with open-source expertise."
         path="/about"
-        keywords="Nixsoft Technologies, DevOps Mumbai, Open Source Consulting, IT Modernization"
+        keywords="Nixsoft Technologies, DevOps company in Mumbai, IT infrastructure company India, open-source consulting, IT modernisation partner"
       />
       {/* Hero Section */}
       <section className="bg-nixDark py-32 px-4 relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-full opacity-10" 
-             style={{ backgroundImage: 'linear-gradient(45deg, #0A4A8F 25%, transparent 25%, transparent 75%, #0A4A8F 75%, #0A4A8F), linear-gradient(45deg, #0A4A8F 25%, transparent 25%, transparent 75%, #0A4A8F 75%, #0A4A8F)', backgroundSize: '60px 60px', backgroundPosition: '0 0, 30px 30px' }}>
-        </div>
+        <HeroImage src="/images/banners/about-hero.webp" alt="Modern open-plan office workspace" />
         <div className="max-w-7xl mx-auto text-center relative z-10">
           <h1 className="text-4xl md:text-6xl font-display font-bold text-white mb-6">
             Engineering Trust Through <br/>
@@ -191,6 +221,47 @@ const About: React.FC = () => {
                   {item.desc}
                 </p>
               </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Leadership Team */}
+      <section id="team" className="py-24 bg-slate-50 scroll-mt-20">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <h2 className="text-nixBlue font-bold tracking-wide uppercase text-sm mb-2">Our Team</h2>
+            <h3 className="text-3xl font-display font-bold text-slate-900 mb-4">
+              The People Behind Nixsoft
+            </h3>
+            <p className="text-slate-600 leading-relaxed">
+              Nixsoft is led by two directors with more than 35 years of combined experience in enterprise IT, infrastructure and open-source delivery.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            {TEAM.map((member) => (
+              <article key={member.name} className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-shadow duration-300 p-8 flex flex-col items-center text-center">
+                <img
+                  src={member.photo}
+                  alt={`${member.name}, ${member.role} at Nixsoft Technologies`}
+                  width={160}
+                  height={160}
+                  loading="lazy"
+                  className="w-40 h-40 rounded-full object-cover object-top ring-4 ring-white shadow-lg mb-6 bg-slate-100"
+                />
+                <h4 className="text-2xl font-display font-bold text-slate-900">{member.name}</h4>
+                <p className="mt-1 mb-5 text-sm font-semibold uppercase tracking-wide text-nixOrange">{member.role}</p>
+                <p className="text-slate-600 leading-relaxed text-sm mb-6">{member.bio}</p>
+                <ul className="flex flex-wrap justify-center gap-2 mb-6">
+                  {member.focus.map((f) => (
+                    <li key={f} className="text-xs font-semibold text-nixBlue bg-blue-50 px-3 py-1 rounded-full">{f}</li>
+                  ))}
+                </ul>
+                <a href={`mailto:${member.email}`} className="mt-auto inline-flex items-center text-sm font-semibold text-slate-700 hover:text-nixBlue transition-colors">
+                  <Mail size={16} className="mr-2" /> {member.email}
+                </a>
+              </article>
             ))}
           </div>
         </div>

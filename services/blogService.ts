@@ -42,12 +42,18 @@ const MOCK_POSTS: BlogPost[] = [
   }
 ];
 
+// WordPress returns titles and excerpts as HTML ("Doesn&#8217;t"), but they're
+// rendered as plain text, so convert entities to characters. DOMParser never
+// executes scripts or loads resources, so this is safe on untrusted input.
+const htmlToText = (html: string): string =>
+  new DOMParser().parseFromString(html, 'text/html').body.textContent?.trim() ?? '';
+
 const mapWordPressPost = (wpPost: any): BlogPost => {
   return {
     id: wpPost.id.toString(),
     slug: wpPost.slug,
-    title: wpPost.title.rendered,
-    excerpt: wpPost.excerpt.rendered.replace(/<[^>]*>?/gm, '').substring(0, 160) + '...',
+    title: htmlToText(wpPost.title.rendered),
+    excerpt: htmlToText(wpPost.excerpt.rendered).substring(0, 160) + '...',
     content: wpPost.content.rendered,
     author: wpPost._embedded?.author?.[0]?.name || 'Nixsoft Team',
     date: new Date(wpPost.date).toLocaleDateString('en-US', { 
@@ -72,7 +78,9 @@ export const getBlogPosts = async (): Promise<BlogPost[]> => {
   if (cached) return cached;
 
   try {
-    const response = await fetch(`${WP_API_URL}/posts?_embed&per_page=9`);
+    // 100 is the WordPress REST maximum per request; the /blog page has no
+    // pagination, so fetch them all (the migrated archive is 17 posts).
+    const response = await fetch(`${WP_API_URL}/posts?_embed&per_page=100`);
     if (!response.ok) throw new Error('Failed to fetch posts');
     const data = await response.json();
     const mapped = data.map(mapWordPressPost);

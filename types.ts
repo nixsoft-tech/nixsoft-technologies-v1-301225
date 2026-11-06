@@ -21,6 +21,10 @@ export interface OfferingCategory {
   id: ServiceCategoryId;
   name: string;
   blurb: string;
+  /** Banner photo shared by every service in this category. */
+  image: string;
+  /** Descriptive alt text for the banner photo. */
+  imageAlt: string;
 }
 
 /**
@@ -42,6 +46,10 @@ export interface OfferingData {
   icon: LucideIcon;
   iconColor: string;
   iconBg: string;
+  /** Banner photo. Services fall back to their category's image. */
+  image?: string;
+  /** Descriptive alt text for the banner photo. */
+  imageAlt?: string;
   /** Opening paragraph on the detail page. */
   overview: string;
   /** "What we do" — concrete deliverables / scope of work. */
@@ -52,8 +60,19 @@ export interface OfferingData {
   stack: string[];
   /** Measurable outcomes. */
   outcomes: string[];
-  /** SEO meta description for the detail page. */
+  /** SEO <title> (brand suffix is added automatically). Keep <= 50 chars. */
+  seoTitle: string;
+  /** SEO meta description for the detail page. 140-160 chars. */
   metaDescription: string;
+  /**
+   * Primary keyword as a natural noun phrase, used inside H2s — e.g.
+   * "VAPT and security testing" → "How we deliver VAPT and security testing".
+   */
+  keywordPhrase: string;
+  /** Primary + long-tail keywords for this page (keyword map). */
+  keywords: string[];
+  /** Question-style FAQs that target long-tail searches. */
+  faqs?: { q: string; a: string }[];
   /** Old-site slugs that should 301-redirect to this page. */
   legacyAliases?: string[];
 }

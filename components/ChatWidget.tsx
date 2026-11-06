@@ -1,27 +1,37 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { MessageSquare, X, Send, Bot, Loader2 } from 'lucide-react';
 import DOMPurify from 'dompurify';
-import { sendMessageToGemini } from '../services/geminiService';
+import { sendChatMessage } from '../services/chatService';
 
-// Move type outside component to avoid redefinition on each render
-type Message = { role: 'user' | 'model'; text: string };
+// Move type outside component to avoid redefinition on each render.
+// `sig` is the server's signature on a bot reply; it's sent back with the
+// history so the server can tell real earlier replies from forged ones.
+type Message = { role: 'user' | 'model'; text: string; sig?: string };
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5000';
+const MAX_MESSAGE_CHARS = 1000; // matches the server limit
 
 // ─── Formatting helper (defined outside component — no recreation on render) ──
+// Bot text is untrusted: escape any HTML first, then apply the small markdown
+// subset NixBot is told to use. The sanitizer below only lets through the tags
+// this function itself produces — no links, images, or other markup.
+const escapeHtml = (s: string) =>
+  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
 function formatBotText(raw: string): string {
-  return raw
+  return escapeHtml(raw)
     .replace(/### (.*?)\n/g, '<h3 class="font-bold text-nixBlue mt-2 mb-1">$1</h3>')
     .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-slate-900">$1</strong>')
     .replace(/\*(.*?)\*/g, '<em class="italic">$1</em>')
-    .replace(/\n\* (.*?)(?=\n|$)/g, '<li class="ml-4 list-disc">$1</li>')
+    .replace(/\n[*-] (.*?)(?=\n|$)/g, '<li class="ml-4 list-disc">$1</li>')
     .replace(/\n/g, '<br />');
 }
+
+const SANITIZE_OPTIONS = { ALLOWED_TAGS: ['h3', 'strong', 'em', 'li', 'br'], ALLOWED_ATTR: ['class'] };
 
 // ─── Individual bot message bubble with memoized formatting ──────────────────
 const BotBubble: React.FC<{ text: string }> = React.memo(({ text }) => {
   const html = useMemo(
-    () => DOMPurify.sanitize(formatBotText(text)),
+    () => DOMPurify.sanitize(formatBotText(text), SANITIZE_OPTIONS),
     [text]
   );
   return (
@@ -44,21 +54,9 @@ const ChatWidget: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Keep a mutable ref in sync with state to fix the stale-closure bug.
-  // We always read from this ref when building the history to send to Gemini.
+  // We always read from this ref when building the history to send to the AI.
   const messagesRef = useRef<Message[]>(messages);
   useEffect(() => { messagesRef.current = messages; }, [messages]);
-
-  const logMessage = async (role: string, text: string) => {
-    try {
-      await fetch(`${API_BASE}/api/chat/log`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId, role, text })
-      });
-    } catch {
-      // Non-fatal: logging failure should not interrupt the UX
-    }
-  };
 
   const toggleChat = () => setIsOpen(prev => !prev);
 
@@ -77,17 +75,17 @@ const ChatWidget: React.FC = () => {
     setMessages(prev => [...prev, newUserMsg]);
     setIsLoading(true);
 
-    // Build history from the ref (always up-to-date, no stale-closure issue)
+    // Build history from the ref (always up-to-date, no stale-closure issue).
+    // The server logs the conversation itself.
     const history = messagesRef.current.map(m => ({
       role: m.role,
-      parts: [{ text: m.text }]
+      parts: [{ text: m.text }],
+      ...(m.sig ? { sig: m.sig } : {}),
     }));
 
     try {
-      await logMessage('user', userMessage);
-      const response = await sendMessageToGemini(history, userMessage);
-      setMessages(prev => [...prev, { role: 'model', text: response }]);
-      await logMessage('model', response);
+      const { reply, sig } = await sendChatMessage(history, userMessage, sessionId);
+      setMessages(prev => [...prev, { role: 'model', text: reply, sig }]);
     } catch (err) {
       console.error('Chat error:', err);
       setError('Something went wrong. Please try again.');
@@ -129,7 +127,7 @@ const ChatWidget: React.FC = () => {
             </div>
             <div>
               <h3 className="text-white font-semibold text-sm">NixBot Assistant</h3>
-              <p className="text-blue-200 text-xs">Powered by Gemini AI</p>
+              <p className="text-blue-200 text-xs">AI-powered assistant</p>
             </div>
           </div>
 
@@ -174,6 +172,7 @@ const ChatWidget: React.FC = () => {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && !isLoading && handleSend()}
                 placeholder="Ask about DevOps or Security..."
+                maxLength={MAX_MESSAGE_CHARS}
                 className="flex-1 text-sm p-2 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-nixBlue/20"
                 aria-label="Chat input"
                 disabled={isLoading}

@@ -165,12 +165,22 @@ else
   # Prompt for the remaining secrets (both may be skipped — the backend
   # degrades gracefully: chat runs in demo mode, contact form returns 503)
   echo ""
-  read -r -p "    Enter GEMINI_API_KEY (blank to configure later): " GEMINI_KEY
-  if [ -n "$GEMINI_KEY" ]; then
-    set_env_var "GEMINI_API_KEY" "$GEMINI_KEY"
-    echo "    GEMINI_API_KEY saved."
-  else
-    echo "    [!] Skipped — NixBot chat will run in demo mode until set in .env."
+  # NixBot chat: Grok is tried first, DeepSeek is the automatic fallback.
+  # Either key may be skipped; with neither, chat runs in demo mode.
+  read -r -s -p "    Enter XAI_API_KEY for Grok (blank to skip): " XAI_KEY
+  echo ""
+  if [ -n "$XAI_KEY" ]; then
+    set_env_var "XAI_API_KEY" "$XAI_KEY"
+    echo "    XAI_API_KEY saved."
+  fi
+  read -r -s -p "    Enter DEEPSEEK_API_KEY (blank to skip): " DEEPSEEK_KEY
+  echo ""
+  if [ -n "$DEEPSEEK_KEY" ]; then
+    set_env_var "DEEPSEEK_API_KEY" "$DEEPSEEK_KEY"
+    echo "    DEEPSEEK_API_KEY saved."
+  fi
+  if [ -z "$XAI_KEY" ] && [ -z "$DEEPSEEK_KEY" ]; then
+    echo "    [!] No AI key set — NixBot chat will run in demo mode until one is added to .env."
   fi
 
   read -r -s -p "    Enter SMTP_PASS / app password (blank to configure later): " SMTP_PASS_VAL

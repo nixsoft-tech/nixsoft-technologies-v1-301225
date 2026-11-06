@@ -1,10 +1,21 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import DOMPurify from 'dompurify';
 import { Calendar, User, Clock, ChevronLeft, Share2, Twitter, Linkedin, Link as LinkIcon } from 'lucide-react';
 import { getBlogPostBySlug } from '../services/blogService';
 import { BlogPost as BlogPostType } from '../types';
 import SEO from '../components/SEO';
+
+const SIZED_IMAGE = /-\d+x\d+(\.(?:jpe?g|png|gif|webp))$/i;
+
+/** Swap a missing resized WordPress image ("photo-750x510.jpg") for its original. */
+function restoreOriginalImage(img: HTMLImageElement) {
+  const src = img.getAttribute('src') || '';
+  if (!SIZED_IMAGE.test(src)) return; // already the original — don't loop
+  img.removeAttribute('srcset');
+  img.removeAttribute('sizes');
+  img.src = src.replace(SIZED_IMAGE, '$1');
+}
 
 const BlogPost: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -17,6 +28,23 @@ const BlogPost: React.FC = () => {
     () => (post ? DOMPurify.sanitize(post.content) : ''),
     [post]
   );
+
+  // Posts imported from the old site reference resized copies (e.g.
+  // "photo-750x510.jpg") from the old theme that the new WordPress never
+  // generated. When one fails, fall back to the original upload.
+  // A capturing listener on the container catches every image error
+  // (error events don't bubble), whenever it happens and for any post shown
+  // in this element, so there's no timing dependency on when images fail.
+  const contentRef = useCallback((root: HTMLDivElement | null) => {
+    if (!root) return;
+    root.addEventListener('error', (e) => {
+      if (e.target instanceof HTMLImageElement) restoreOriginalImage(e.target);
+    }, true);
+    // Images that already failed before the listener was attached
+    root.querySelectorAll('img').forEach((img) => {
+      if (img.complete && img.naturalWidth === 0) restoreOriginalImage(img);
+    });
+  }, []);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -107,8 +135,9 @@ const BlogPost: React.FC = () => {
                 <img src={post.image} alt={post.title} className="w-full h-full object-cover" />
               </div>
               
-              <div 
-                className="prose prose-lg max-w-none prose-slate prose-headings:font-display prose-headings:font-bold prose-a:text-nixBlue prose-strong:text-slate-900"
+              <div
+                ref={contentRef}
+                className="wp-content prose prose-lg max-w-none prose-slate prose-headings:font-display prose-headings:font-bold prose-headings:scroll-mt-28 prose-a:text-nixBlue prose-strong:text-slate-900 prose-img:rounded-xl prose-table:my-0"
                 dangerouslySetInnerHTML={{ __html: safeContent }}
               />
               

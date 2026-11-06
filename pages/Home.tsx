@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   ArrowRight, ShieldCheck, Database, Cloud, Infinity, 
@@ -9,6 +9,12 @@ import { SERVICES, INDUSTRIES, PRODUCTS } from '../constants';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import TerminalSimulator from '../components/TerminalSimulator';
 import SEO from '../components/SEO';
+import Honeypot from '../components/Honeypot';
+import { submitForm, HONEYPOT_FIELD } from '../services/formApi';
+
+// The puzzle widget (~90 KB) loads only once someone starts on the audit form,
+// so it never weighs on the home page's first paint.
+const AltchaWidget = lazy(() => import('../components/AltchaWidget'));
 
 const data = [
   { name: 'Traditional IT', efficiency: 40, cost: 100 },
@@ -93,21 +99,43 @@ const HeroBackground = () => (
 const Home: React.FC = () => {
   const [email, setEmail] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [leadError, setLeadError] = useState<string | null>(null);
+  // Abuse protection: the puzzle appears once the visitor starts on the form
+  const [showPuzzle, setShowPuzzle] = useState(false);
+  const [puzzle, setPuzzle] = useState<string | null>(null);
+  const [puzzleKey, setPuzzleKey] = useState(0);
+  const [honeypot, setHoneypot] = useState('');
 
-  const handleLeadSubmit = (e: React.FormEvent) => {
+  const handleLeadSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitted(true);
-    setTimeout(() => setIsSubmitted(false), 3000);
-    setEmail('');
+    if (!puzzle) {
+      setShowPuzzle(true);
+      setLeadError('Please tick "I\'m not a robot" first.');
+      return;
+    }
+    setLeadError(null);
+    setIsSending(true);
+    const result = await submitForm('/api/lead', { email, altcha: puzzle, [HONEYPOT_FIELD]: honeypot });
+    setIsSending(false);
+    // Each solved puzzle works once, so start a fresh one whatever happened.
+    setPuzzle(null);
+    setPuzzleKey((k) => k + 1);
+    if (result.ok) {
+      setIsSubmitted(true);
+      setEmail('');
+    } else {
+      setLeadError(result.message);
+    }
   };
 
   return (
     <div className="flex flex-col">
       <SEO 
-        title="Open-Source Automation & DevOps Consulting & Training"
-        description="Nixsoft Technologies helps Pan-Asia enterprises modernize infrastructure and automate operations using Kubernetes, Terraform, and battle-tested open-source tech."
+        title="Open-Source DevOps & Managed IT Services in India"
+        description="Nixsoft Technologies is a Mumbai-based DevOps and managed IT services company helping enterprises automate, secure and scale infrastructure with open source."
         path="/"
-        keywords="DevOps Consulting, Open-Source Automation, Kubernetes Experts, Infrastructure as Code, Cloud Security"
+        keywords="DevOps and managed IT services company in India, DevOps consulting company in Mumbai, open-source infrastructure automation, 24x7 managed IT support, Kubernetes consulting"
       />
       {/* Hero Section */}
       <section className="relative min-h-[90vh] flex items-center bg-nixNavy overflow-hidden pt-20">
@@ -178,7 +206,7 @@ const Home: React.FC = () => {
           <div className="text-center max-w-3xl mx-auto mb-16">
             <h2 className="text-nixBlue font-bold tracking-wide uppercase text-sm mb-2">Our DevOps & Automation Services</h2>
             <h3 className="text-3xl md:text-4xl font-display font-bold text-slate-900 mb-6">
-              Enterprise-Grade Engineering Solutions
+              Managed IT, DevOps &amp; Cloud Services for Enterprises
             </h3>
             <p className="text-slate-600 text-lg">
               We bridge the gap between development agility and operational stability.
@@ -230,7 +258,7 @@ const Home: React.FC = () => {
                 ))}
               </ul>
 
-              <Link to="/products" className="inline-flex items-center bg-white text-nixDark px-6 py-3 rounded-lg font-bold hover:bg-gray-100 transition-colors">
+              <Link to="/products/vulnguard" className="inline-flex items-center bg-white text-nixDark px-6 py-3 rounded-lg font-bold hover:bg-gray-100 transition-colors">
                 Request Demo <ChevronRight size={18} className="ml-2" />
               </Link>
             </div>
@@ -399,10 +427,10 @@ const Home: React.FC = () => {
           <h2 className="text-3xl font-display font-bold mb-12">Trusted Across Critical Industries</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {INDUSTRIES.map((ind) => (
-              <div key={ind.name} className="p-6 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition-colors">
+              <Link key={ind.name} to={`/industries/${ind.slug}`} className="block p-6 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition-colors">
                  <h3 className="font-bold text-xl text-nixGreen mb-2">{ind.name}</h3>
                  <p className="text-sm text-blue-100">{ind.desc}</p>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -426,19 +454,38 @@ const Home: React.FC = () => {
                 Thank you! Our team will be in touch shortly.
               </div>
             ) : (
-              <div className="flex flex-col sm:flex-row gap-3">
-                <input 
-                  type="email" 
-                  placeholder="Enter your work email" 
-                  className="flex-1 px-5 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-nixBlue focus:ring-1 focus:ring-nixBlue"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-                <button type="submit" className="bg-nixOrange hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-lg transition-colors whitespace-nowrap">
-                  Get Started
-                </button>
-              </div>
+              <>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <input
+                    type="email"
+                    placeholder="Enter your work email"
+                    aria-label="Work email"
+                    className="flex-1 px-5 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-nixBlue focus:ring-1 focus:ring-nixBlue"
+                    required
+                    value={email}
+                    onFocus={() => setShowPuzzle(true)}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                  <button type="submit" disabled={isSending} className="bg-nixOrange hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-lg transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed">
+                    {isSending ? 'Sending...' : 'Get Started'}
+                  </button>
+                </div>
+                <Honeypot value={honeypot} onChange={setHoneypot} />
+                {showPuzzle && (
+                  <div className="mt-3 min-h-[60px]">
+                    <Suspense fallback={null}>
+                      <AltchaWidget
+                        key={puzzleKey}
+                        onChange={(payload) => {
+                          setPuzzle(payload);
+                          if (payload) setLeadError(null);
+                        }}
+                      />
+                    </Suspense>
+                  </div>
+                )}
+                {leadError && <p role="alert" className="text-red-600 text-sm mt-3 text-center">{leadError}</p>}
+              </>
             )}
             <p className="text-center text-xs text-slate-400 mt-4">
               No spam. Unsubscribe anytime.

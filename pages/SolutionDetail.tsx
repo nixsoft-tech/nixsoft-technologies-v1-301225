@@ -20,6 +20,8 @@ const SolutionDetail: React.FC = () => {
       back={{ path: '/solutions', label: 'All Solutions' }}
       related={related}
       relatedHeading="Other Solutions"
+      image={solution.image}
+      imageAlt={solution.imageAlt}
     />
   );
 };

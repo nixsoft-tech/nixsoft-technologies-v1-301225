@@ -30,11 +30,13 @@ const Navbar: React.FC = () => {
           </div>
 
           {/* Desktop Nav */}
-          <div className="hidden lg:flex space-x-5 xl:space-x-7 items-center">
+          <div className="hidden lg:flex space-x-3.5 xl:space-x-7 items-center">
             {NAV_LINKS.map((link) => (
               <NavLink
                 key={link.path}
                 to={link.path}
+                // Without `end`, "/" (Home) would match — and highlight — on every page
+                end={link.path === '/'}
                 className={({ isActive }) =>
                   `text-sm font-medium transition-colors duration-200 ${
                     isActive ? 'text-nixBlue font-semibold' : 'text-slate-600 hover:text-nixBlue'
@@ -67,7 +69,7 @@ const Navbar: React.FC = () => {
 
       {/* Mobile Nav */}
       {isOpen && (
-        <div className="md:hidden bg-white border-b border-gray-100 absolute w-full">
+        <div className="lg:hidden bg-white border-b border-gray-100 absolute w-full">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 shadow-xl">
             {NAV_LINKS.map((link) => (
               <NavLink

@@ -1,3 +1,8 @@
+# Production robots.txt for https://nixsoftech.in
+#
+# UAT (new.nixsoftech.in, blog.new.nixsoftech.in) never serves this file:
+# nginx-proxy answers /robots.txt there with "Disallow: /" and adds an
+# X-Robots-Tag: noindex header, so this file can stay production-ready.
 User-agent: *
 Allow: /
 Disallow: /admin

@@ -1,4 +1,6 @@
 @import "tailwindcss";
+/* Provides the `prose` classes used to style WordPress article HTML. */
+@plugin "@tailwindcss/typography";
 
 @theme {
   --color-nixBlue: #0A4A8F;
@@ -30,6 +32,31 @@
     backdrop-filter: blur(10px);
   }
 }
+
+/* ─── WordPress block content (blog articles) ────────────────────────────────
+   The headless site doesn't load WordPress's block stylesheet, so the classes
+   its editor writes into post HTML need these minimal equivalents. Scoped to
+   .wp-content, the article body wrapper in pages/BlogPost.tsx. */
+.wp-content .has-text-align-center { text-align: center; }
+.wp-content .has-text-align-right { text-align: right; }
+.wp-content .has-text-align-left { text-align: left; }
+
+.wp-content .wp-block-image,
+.wp-content figure { margin: 2rem 0; }
+.wp-content .wp-block-image img { margin: 0 auto; border-radius: 0.75rem; height: auto; }
+.wp-content .wp-block-image.aligncenter,
+.wp-content .aligncenter { text-align: center; margin-left: auto; margin-right: auto; }
+.wp-content figcaption { text-align: center; font-size: 0.875rem; color: #64748b; margin-top: 0.5rem; }
+
+/* Tables: scroll sideways on phones instead of overflowing the page. */
+.wp-content .wp-block-table { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.wp-content table { width: 100%; border-collapse: collapse; font-size: 0.95em; }
+.wp-content .has-fixed-layout { table-layout: fixed; }
+.wp-content th,
+.wp-content td { border: 1px solid #e2e8f0; padding: 0.6rem 0.75rem; vertical-align: top; }
+.wp-content thead th,
+.wp-content tr:first-child td strong { color: #0f172a; }
+.wp-content tbody tr:nth-child(odd) { background: #f8fafc; }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {

@@ -6,7 +6,14 @@ import { ServiceItem, ProductItem, NavItem } from './types';
 // so callers can safely concatenate a leading-slash path.
 export const SITE_URL = (import.meta.env.VITE_SITE_URL ?? 'https://nixsoftech.in').replace(/\/+$/, '');
 
+// Google Analytics 4 — the "nixsoftech.in - GA4" property, which holds the
+// site's full history since Apr 2023. Loaded only on the production hosts, so
+// UAT (new.nixsoftech.in) and localhost visits never reach the reports.
+export const GA_MEASUREMENT_ID = 'G-MMF22YW499';
+export const ANALYTICS_HOSTS = ['nixsoftech.in', 'www.nixsoftech.in'];
+
 export const NAV_LINKS: NavItem[] = [
+  { label: 'Home', path: '/' },
   { label: 'Services', path: '/services' },
   { label: 'Solutions', path: '/solutions' },
   { label: 'Products', path: '/products' },
@@ -77,10 +84,10 @@ export const PRODUCTS: ProductItem[] = [
 ];
 
 export const INDUSTRIES = [
-  { name: 'BFSI', icon: 'Landmark', desc: 'Secure, compliant infrastructure for banking and fintech.' },
-  { name: 'Telecom', icon: 'RadioTower', desc: 'High-throughput, low-latency network automation.' },
-  { name: 'Retail', icon: 'ShoppingBag', desc: 'Scalable platforms for high-traffic e-commerce events.' },
-  { name: 'Manufacturing', icon: 'Factory', desc: 'IoT integration and supply chain system reliability.' }
+  { name: 'BFSI', slug: 'bfsi', icon: 'Landmark', desc: 'Secure, compliant infrastructure for banking and fintech.' },
+  { name: 'Telecom', slug: 'telecom', icon: 'RadioTower', desc: 'High-throughput, low-latency network automation.' },
+  { name: 'Retail', slug: 'retail', icon: 'ShoppingBag', desc: 'Scalable platforms for high-traffic e-commerce events.' },
+  { name: 'Manufacturing', slug: 'manufacturing', icon: 'Factory', desc: 'IoT integration and supply chain system reliability.' }
 ];
 
 export const ROI_CONSTANTS = {
