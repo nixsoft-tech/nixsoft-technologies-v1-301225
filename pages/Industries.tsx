@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Globe } from 'lucide-react';
 import SEO from '../components/SEO';
+import { itemListNode, listId } from '../lib/schema';
 import HeroImage from '../components/HeroImage';
 import { INDUSTRIES_DATA } from '../data/industries';
 
@@ -14,6 +15,9 @@ const Industries: React.FC = () => {
         path="/industries"
         keywords="industry IT solutions, IT infrastructure for BFSI, telecom IT infrastructure, retail IT services, manufacturing IT OT security, DevOps for regulated industries"
         breadcrumbs={[{ name: 'Industries', path: '/industries' }]}
+        pageType="CollectionPage"
+        mainEntityId={listId('/industries')}
+        entities={[itemListNode('/industries', INDUSTRIES_DATA.map((i) => ({ name: i.fullName, path: `/industries/${i.slug}` })))]}
       />
       {/* Hero Section */}
       <section className="bg-nixDark py-32 px-4 relative overflow-hidden">

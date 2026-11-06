@@ -5,7 +5,7 @@ import {
   Terminal, Server, Users, BarChart3, ChevronRight,
   Code2, Zap, Lock, CheckCircle2, Cpu
 } from 'lucide-react';
-import { SERVICES, INDUSTRIES, PRODUCTS, SITE_URL, ORG_ID } from '../constants';
+import { SERVICES, INDUSTRIES, PRODUCTS } from '../constants';
 import SEO from '../components/SEO';
 import Honeypot from '../components/Honeypot';
 import { submitForm, HONEYPOT_FIELD } from '../services/formApi';
@@ -149,14 +149,7 @@ const Home: React.FC = () => {
         description="Nixsoft Technologies is a Mumbai-based DevOps and managed IT services company helping enterprises automate, secure and scale infrastructure with open source."
         path="/"
         keywords="DevOps and managed IT services company in India, DevOps consulting company in Mumbai, open-source infrastructure automation, 24x7 managed IT support, Kubernetes consulting"
-        jsonLd={{
-          '@context': 'https://schema.org',
-          '@type': 'WebSite',
-          name: 'Nixsoft Technologies',
-          alternateName: 'Nixsoftech',
-          url: `${SITE_URL}/`,
-          publisher: { '@id': ORG_ID },
-        }}
+        aboutOrganization
       />
       {/* Hero Section */}
       <section className="relative min-h-[90vh] flex items-center bg-nixNavy overflow-hidden pt-20">
