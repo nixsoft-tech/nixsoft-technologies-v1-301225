@@ -67,7 +67,7 @@ const About: React.FC = () => {
     <div className="flex flex-col">
       <SEO 
         title="About Nixsoft: DevOps & IT Company in Mumbai"
-        description="Founded in 2019, Nixsoft Technologies is a Mumbai-based DevOps and IT infrastructure company serving enterprises across India and Asia with open-source expertise."
+        description="Nixsoft Technologies, founded in 2019, is a Mumbai DevOps and IT infrastructure company serving enterprises in India and Asia with open-source expertise."
         path="/about"
         keywords="Nixsoft Technologies, DevOps company in Mumbai, IT infrastructure company India, open-source consulting, IT modernisation partner"
         pageType="AboutPage"

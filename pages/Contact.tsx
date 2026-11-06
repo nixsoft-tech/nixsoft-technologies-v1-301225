@@ -111,7 +111,7 @@ const Contact: React.FC = () => {
     <div className="flex flex-col">
       <SEO 
         title="Contact Our DevOps & IT Experts in Mumbai"
-        description="Talk to Nixsoft's DevOps and IT infrastructure experts in Mumbai. Book a free consultation on managed IT, cloud, security testing or automation for your business."
+        description="Talk to Nixsoft's DevOps and IT infrastructure team in Mumbai. Book a free 30-minute consultation on managed IT, cloud, security testing or automation."
         path="/contact"
         keywords="contact Nixsoft Technologies, DevOps consultation Mumbai, free IT infrastructure consultation, managed IT services enquiry"
         pageType="ContactPage"

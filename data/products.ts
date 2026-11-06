@@ -168,7 +168,7 @@ export const PRODUCTS_DATA: ProductData[] = [
     accentText: 'text-orange-600',
     accentBg: 'bg-orange-50',
     accentBorder: 'border-orange-200',
-    metaTitle: 'NixOps AI Agents: AIOps & Self-Healing Infra',
+    metaTitle: 'NixOps AI Agents: AIOps & Self-Healing Servers',
     metaDescription: 'NixOps AI Agents use local machine learning to predict failures, analyse logs, and self-heal common issues across Linux, Windows, and Kubernetes.',
     keywords: 'NixOps AI Agents, AIOps platform, self-healing infrastructure, predictive anomaly detection agents, automated log analysis, cloud cost optimisation',
   },

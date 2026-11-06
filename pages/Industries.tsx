@@ -12,7 +12,7 @@ const Industries: React.FC = () => {
     <div className="flex flex-col">
       <SEO
         title="Industry IT Solutions: BFSI, Telecom & Retail"
-        description="Industry-specific IT infrastructure and DevOps solutions for BFSI, telecom, retail and manufacturing: compliant, high-availability systems across India and Asia."
+        description="IT infrastructure and DevOps services for BFSI, telecom, retail and manufacturing: secure, highly available systems built around each industry's needs."
         path="/industries"
         keywords="industry IT solutions, IT infrastructure for BFSI, telecom IT infrastructure, retail IT services, manufacturing IT OT security, DevOps for regulated industries"
         breadcrumbs={[{ name: 'Industries', path: '/industries' }]}

@@ -8,7 +8,7 @@ const PrivacyPolicy: React.FC = () => {
     <div className="flex flex-col">
       <SEO 
         title="Privacy Policy"
-        description="Privacy policy and data protection terms for Nixsoft Technologies. Learn how we collect, use, and protect your information."
+        description="How Nixsoft Technologies collects, uses and protects your data: contact forms, NixBot chat transcripts (deleted after 90 days), analytics and your choices."
         path="/privacy-policy"
         keywords="Privacy Policy, Data Protection, Nixsoft Privacy, Security Terms"
       />
