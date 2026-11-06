@@ -9,7 +9,7 @@ const Schema: React.FC = () => {
     "name": "Nixsoft Technologies",
     "alternateName": "Nixsoftech",
     "url": `${SITE_URL}/`,
-    "logo": `${SITE_URL}/logo.png`,
+    "logo": `${SITE_URL}/logo.png?v=2`,
     "contactPoint": {
       "@type": "ContactPoint",
       "telephone": "+91-97698-88498",

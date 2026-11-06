@@ -12,11 +12,8 @@ const Navbar: React.FC = () => {
         <div className="flex justify-between h-20 items-center">
           {/* Logo */}
           <div className="flex items-center space-x-6">
-            <Link to="/" className="flex-shrink-0 flex items-center space-x-2">
-              <img src="/logo.svg" alt="Nixsoft Technologies" className="w-11 h-11" width={44} height={44} />
-              <span className="font-display font-bold text-2xl text-nixBlue tracking-tight">
-                Nixsoft<span className="text-gray-400 font-normal">ech</span>
-              </span>
+            <Link to="/" className="flex-shrink-0 flex items-center">
+              <img src="/logo.svg?v=2" alt="Nixsoft Technologies" className="h-10 w-auto" width={153} height={40} />
             </Link>
             
             {/* System Status Badge — only on very wide screens to avoid crowding the nav */}

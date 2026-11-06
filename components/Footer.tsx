@@ -9,9 +9,10 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-5 gap-8 border-b border-slate-800 pb-12">
           {/* Brand */}
           <div className="col-span-1 md:col-span-1">
-            <div className="flex items-center space-x-2 mb-4">
-              <img src="/logo.svg" alt="Nixsoft Technologies" className="w-10 h-10" width={40} height={40} />
-              <span className="font-display font-bold text-xl tracking-tight">Nixsoftech</span>
+            <div className="mb-4">
+              <img src="/logo.svg?v=2" alt="Nixsoft Technologies" className="h-10 w-auto" width={153} height={40} />
+              {/* Brand tagline as text: the tagline inside the logo artwork is too small to read at footer size */}
+              <p className="mt-2 text-xs font-medium tracking-wide text-slate-400">availability · reliability · commitment</p>
             </div>
             <p className="text-slate-400 text-sm leading-relaxed mb-6">
               Empowering enterprises with open-source automation, cloud scalability, and military-grade security.

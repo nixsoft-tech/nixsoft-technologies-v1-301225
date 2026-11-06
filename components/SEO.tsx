@@ -21,7 +21,7 @@ const SEO: React.FC<SEOProps> = ({
   description,
   path,
   ogType = 'website',
-  ogImage = `${SITE_URL}/og-image.png`,
+  ogImage = `${SITE_URL}/og-image.png?v=2`,
   keywords,
   breadcrumbs,
 }) => {
