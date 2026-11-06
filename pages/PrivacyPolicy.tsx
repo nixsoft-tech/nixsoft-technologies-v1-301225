@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
 import { ShieldCheck, Eye, Lock, FileText, Globe } from 'lucide-react';
 
@@ -98,9 +99,15 @@ const PrivacyPolicy: React.FC = () => {
             <div className="pt-8 border-t border-slate-100 text-center">
               <h3 className="font-bold text-slate-900 mb-2">Have questions about our Privacy Policy?</h3>
               <p className="text-sm mb-4">Feel free to reach out to our data compliance team.</p>
-              <a href="mailto:info@nixsoftech.in" className="inline-block bg-nixBlue text-white font-semibold px-6 py-2.5 rounded-lg hover:bg-blue-900 transition-colors">
+              {/* The contact form, not mailto: — mailto opens an "open with app"
+                  prompt on machines without a default mail client. */}
+              <Link to="/contact?topic=privacy" className="inline-block bg-nixBlue text-white font-semibold px-6 py-2.5 rounded-lg hover:bg-blue-900 transition-colors no-underline">
                 Contact Privacy Team
-              </a>
+              </Link>
+              <p className="text-sm mt-4">
+                Or email <span className="font-semibold text-slate-800">info@nixsoftech.in</span>. See also our{' '}
+                <Link to="/terms-and-conditions" className="text-nixBlue">Terms and Conditions</Link>.
+              </p>
             </div>
 
           </div>

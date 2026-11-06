@@ -94,6 +94,8 @@ const Footer: React.FC = () => {
             &copy; {new Date().getFullYear()} Nixsoft Technologies Pvt. Ltd. All rights reserved.
             <span className="mx-2" aria-hidden="true">|</span>
             <Link to="/privacy-policy" className="hover:text-white">Privacy Policy</Link>
+            <span className="mx-2" aria-hidden="true">|</span>
+            <Link to="/terms-and-conditions" className="hover:text-white">Terms and Conditions</Link>
           </p>
           <p className="mt-2 md:mt-0">ISO 27001 Certified | CMMI Level 3</p>
         </div>

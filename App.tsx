@@ -43,6 +43,7 @@ const Blog = lazyPage(() => import('./pages/Blog'));
 const BlogPost = lazyPage(() => import('./pages/BlogPost'));
 const Admin = lazyPage(() => import('./pages/Admin'));
 const PrivacyPolicy = lazyPage(() => import('./pages/PrivacyPolicy'));
+const Terms = lazyPage(() => import('./pages/Terms'));
 
 // Scroll to top wrapper
 const ScrollToTop = () => {
@@ -96,6 +97,7 @@ export const AppShell: React.FC = () => {
               <Route path="/contact" element={<Contact />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms-and-conditions" element={<Terms />} />
 
               {/* Core Page Redirects */}
               <Route path="/about-us" element={<Navigate to="/about" replace />} />

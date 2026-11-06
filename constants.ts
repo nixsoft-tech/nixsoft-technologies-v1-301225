@@ -16,6 +16,9 @@ export const ANALYTICS_HOSTS = ['nixsoftech.in', 'www.nixsoftech.in'];
 /** JSON-LD @id of the Organization (components/Schema.tsx); page schema links to it. */
 export const ORG_ID = `${SITE_URL}/#organization`;
 
+/** 30-minute call booking (Wajid). Used by /contact and the Clients page. */
+export const CALENDLY_URL = 'https://calendly.com/wajid-s-nixsoftech/30min';
+
 export const SOCIAL_LINKS = {
   linkedin: 'https://in.linkedin.com/company/nixsoftech',
   facebook: 'https://www.facebook.com/nixsoftech',
