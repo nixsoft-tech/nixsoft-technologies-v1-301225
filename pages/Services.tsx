@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Cpu } from 'lucide-react';
 import SEO from '../components/SEO';
+import { bannerSrcSet, SIZES } from '../lib/images';
 import { itemListNode, listId } from '../lib/schema';
 import HeroImage from '../components/HeroImage';
 import { SERVICE_CATEGORIES, getServicesByCategory } from '../data/services';
@@ -44,6 +45,8 @@ const Services: React.FC = () => {
                 <div className="relative mb-8 rounded-2xl overflow-hidden bg-nixDark">
                   <img
                     src={category.image}
+                    srcSet={bannerSrcSet(category.image)}
+                    sizes={SIZES.container}
                     alt={category.imageAlt}
                     loading="lazy"
                     decoding="async"

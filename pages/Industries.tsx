@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Globe } from 'lucide-react';
 import SEO from '../components/SEO';
+import { bannerSrcSet, SIZES } from '../lib/images';
 import { itemListNode, listId } from '../lib/schema';
 import HeroImage from '../components/HeroImage';
 import { INDUSTRIES_DATA } from '../data/industries';
@@ -44,6 +45,8 @@ const Industries: React.FC = () => {
               <div className="-mx-8 -mt-8 mb-6 h-52 overflow-hidden">
                 <img
                   src={industry.image}
+                  srcSet={bannerSrcSet(industry.image)}
+                  sizes={SIZES.halfFromMd}
                   alt={industry.imageAlt}
                   loading="lazy"
                   decoding="async"

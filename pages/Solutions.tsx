@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Cpu } from 'lucide-react';
 import SEO from '../components/SEO';
+import { bannerSrcSet, SIZES } from '../lib/images';
 import { itemListNode, listId } from '../lib/schema';
 import HeroImage from '../components/HeroImage';
 import { SOLUTIONS_DATA } from '../data/solutions';
@@ -47,6 +48,8 @@ const Solutions: React.FC = () => {
                   <div className="-mx-8 -mt-8 mb-6 h-44 overflow-hidden">
                     <img
                       src={solution.image}
+                      srcSet={bannerSrcSet(solution.image)}
+                      sizes={SIZES.thirdFromMd}
                       alt={solution.imageAlt ?? solution.title}
                       loading="lazy"
                       decoding="async"
