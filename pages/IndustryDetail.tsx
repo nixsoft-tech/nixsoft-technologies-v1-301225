@@ -9,6 +9,8 @@ import FaqList from '../components/FaqList';
 import RelatedServices from '../components/RelatedServices';
 import { INDUSTRIES_DATA, getIndustryBySlug } from '../data/industries';
 import { getProductBySlug, type ProductData } from '../data/products';
+import { getServiceBySlug } from '../data/services';
+import type { OfferingData } from '../types';
 
 const IndustryDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -35,7 +37,10 @@ const IndustryDetail: React.FC = () => {
           { name: industry.fullName, path: `/industries/${industry.slug}` },
         ]}
         mainEntityId={serviceId(`/industries/${industry.slug}`)}
-        entities={[industryServiceNode(industry, industry.relatedServices)]}
+        entities={[industryServiceNode(
+          industry,
+          industry.relatedServices.map(getServiceBySlug).filter((s): s is OfferingData => !!s),
+        )]}
       />
 
       {/* Hero */}
