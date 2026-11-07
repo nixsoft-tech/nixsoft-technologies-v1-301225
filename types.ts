@@ -115,6 +115,8 @@ export interface BlogPost {
   /** Featured image size in pixels, when WordPress reports it. */
   imageWidth?: number;
   imageHeight?: number;
+  /** srcset of the featured image's smaller WordPress copies (+ the original). */
+  imageSrcSet?: string;
   /** Words in the article body (for Article structured data). */
   wordCount?: number;
   readTime: string;

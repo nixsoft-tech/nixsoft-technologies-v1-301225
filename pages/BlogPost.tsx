@@ -15,6 +15,10 @@ const REVIEWER = TEAM.find((m) => m.id === 'pravin-kore')!;
 
 const SIZED_IMAGE = /-\d+x\d+(\.(?:jpe?g|png|gif|webp))$/i;
 
+/** Add loading="lazy" decoding="async" to <img> tags that don't set loading. */
+const lazyImages = (html: string): string =>
+  html.replace(/<img\b(?![^>]*\sloading=)/gi, '<img loading="lazy" decoding="async"');
+
 /** Swap a missing resized WordPress image ("photo-750x510.jpg") for its original. */
 function restoreOriginalImage(img: HTMLImageElement) {
   const src = img.getAttribute('src') || '';
@@ -33,8 +37,12 @@ const BlogPost: React.FC = () => {
   const [notFound, setNotFound] = useState(false);
 
   // WordPress content is external HTML — sanitize before rendering
+  // Images inside the article sit below the featured image, so they load
+  // lazily: imported posts had no loading attribute, and phones downloaded
+  // all 7-10 full-size images (~1.7 MB) at once, competing with the featured
+  // image (the page's LCP). Same string on the server and in the browser.
   const safeContent = useMemo(
-    () => (post ? sanitizeHtml(post.content) : ''),
+    () => (post ? lazyImages(sanitizeHtml(post.content)) : ''),
     [post]
   );
 
@@ -153,7 +161,18 @@ const BlogPost: React.FC = () => {
             {/* Main Content */}
             <div className="lg:col-span-8">
               <div className="aspect-video mb-12 rounded-3xl overflow-hidden shadow-2xl">
-                <img src={post.image} alt={post.title} className="w-full h-full object-cover" />
+                {/* The page's Largest Contentful Paint: high priority, and a
+                    WordPress-sized copy for the screen instead of the original. */}
+                <img
+                  src={post.image}
+                  srcSet={post.imageSrcSet}
+                  sizes="(min-width: 1280px) 800px, (min-width: 1024px) 66vw, calc(100vw - 32px)"
+                  alt={post.title}
+                  width={post.imageWidth}
+                  height={post.imageHeight}
+                  fetchPriority="high"
+                  className="w-full h-full object-cover"
+                />
               </div>
               
               <div

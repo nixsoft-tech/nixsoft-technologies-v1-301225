@@ -82,6 +82,25 @@ export const summarize = (text: string, max = 155): string => {
 const gmtToIso = (gmt?: string): string | undefined =>
   gmt ? new Date(`${gmt}Z`).toISOString() : undefined;
 
+/**
+ * srcset for a featured image from WordPress's generated copies (300, 768,
+ * 1024, 1536 px …) plus the original. Cropped sizes (the square thumbnail)
+ * are skipped: only copies with the original's aspect ratio are listed, so
+ * the browser can swap them freely.
+ */
+function featuredSrcSet(media: any): string | undefined {
+  const md = media?.media_details;
+  if (!md?.width || !md?.height || !media?.source_url) return undefined;
+  const ratio = md.width / md.height;
+  const candidates = Object.values<any>(md.sizes ?? {})
+    .filter((s) => s?.source_url && s.width && s.height && Math.abs(s.width / s.height - ratio) < 0.02)
+    .map((s) => ({ url: s.source_url as string, w: s.width as number }));
+  candidates.push({ url: media.source_url, w: md.width });
+  const byWidth = new Map(candidates.map((c) => [c.w, c.url]));
+  if (byWidth.size < 2) return undefined;
+  return [...byWidth.entries()].sort((a, b) => a[0] - b[0]).map(([w, url]) => `${url} ${w}w`).join(', ');
+}
+
 export const mapWordPressPost = (wpPost: any): BlogPost => {
   return {
     id: wpPost.id.toString(),
@@ -103,6 +122,7 @@ export const mapWordPressPost = (wpPost: any): BlogPost => {
     image: wpPost._embedded?.['wp:featuredmedia']?.[0]?.source_url || 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1000',
     imageWidth: wpPost._embedded?.['wp:featuredmedia']?.[0]?.media_details?.width,
     imageHeight: wpPost._embedded?.['wp:featuredmedia']?.[0]?.media_details?.height,
+    imageSrcSet: featuredSrcSet(wpPost._embedded?.['wp:featuredmedia']?.[0]),
     wordCount: htmlToText(wpPost.content.rendered).split(/\s+/).filter(Boolean).length,
     readTime: `${Math.ceil(wpPost.content.rendered.split(' ').length / 200)} min read`
   };
