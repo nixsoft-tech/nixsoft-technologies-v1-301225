@@ -15,7 +15,8 @@ export type ServiceCategoryId =
   | 'devops'
   | 'monitoring'
   | 'quality'
-  | 'cloud-infra';
+  | 'cloud-infra'
+  | 'ai-infra';
 
 export interface OfferingCategory {
   id: ServiceCategoryId;
@@ -75,6 +76,8 @@ export interface OfferingData {
   faqs?: { q: string; a: string }[];
   /** Old-site slugs that should 301-redirect to this page. */
   legacyAliases?: string[];
+  /** Services to list first under "Related Services" (cross-category links). */
+  relatedSlugs?: string[];
 }
 
 export interface ProductItem {

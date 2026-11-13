@@ -59,7 +59,7 @@ export const INDUSTRIES_DATA: IndustryData[] = [
     ],
     compliance: ['PCI-DSS', 'ISO 27001', 'SOC 2', 'GDPR'],
     stats: { label: 'Faster Compliance Audits', value: '70%' },
-    relatedServices: ['security-testing', 'db-management-services', 'infrastructure-monitoring', 'it-managed-services'],
+    relatedServices: ['security-testing', 'db-management-services', 'infrastructure-monitoring', 'it-managed-services', 'private-llm-deployment'],
     relatedProducts: ['vulnguard', 'securebench'],
     clients: ['NCDEX', 'NCCL', 'IndusInd Bank', 'Zero Mass'],
     faqs: [

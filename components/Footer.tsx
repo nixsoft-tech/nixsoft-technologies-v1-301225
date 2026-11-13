@@ -37,6 +37,7 @@ const Footer: React.FC = () => {
               <li><Link to="/services/security-testing" className="hover:text-white transition-colors">Security Testing (VAPT)</Link></li>
               <li><Link to="/services/infrastructure-monitoring" className="hover:text-white transition-colors">Infrastructure Monitoring</Link></li>
               <li><Link to="/services/it-managed-services" className="hover:text-white transition-colors">IT Managed Services</Link></li>
+              <li><Link to="/services/ai-infrastructure-services" className="hover:text-white transition-colors">AI Infrastructure</Link></li>
               <li><Link to="/services" className="hover:text-white transition-colors font-medium text-slate-300">View all services →</Link></li>
             </ul>
             <h4 className="font-display font-semibold text-lg mt-6 mb-4 text-nixGreen">Solutions</h4>

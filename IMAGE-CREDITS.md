@@ -23,3 +23,4 @@ Downloaded October 2026 as 1920px-wide WebP. Sources are listed here so each pho
 | `sol-asset.webp` | /solutions/asset-management | https://unsplash.com/photos/women-walking-through-warehouse-aisle-ZlOlRnWk8zU |
 | `sol-email.webp` | /solutions/email-collaboration | https://unsplash.com/photos/diverse-team-collaborating-around-a-computer-screen-Y32qbykD69g |
 | `sol-ticketing.webp` | /solutions/ticketing-system | https://unsplash.com/photos/man-in-white-button-up-shirt-smiling-WaGMKmJ2F0Y |
+| `cat-ai.webp` | AI Infrastructure & MLOps services (added Nov 2026) | https://unsplash.com/photos/a-computer-motherboard-with-a-cpu-and-green-light-beam-pJNuCjn4A5s (Brecht Corbeel) |
