@@ -11,10 +11,13 @@ import { HelmetProvider } from 'react-helmet-async';
 import { AppShell } from './App';
 
 export { mapWordPressPost, seedBlogCache } from './services/blogService';
+/** Profile page that lists every blog post (needs the post list at prerender). */
+export const REVIEWER_PROFILE = `/team/${BLOG_REVIEWER_ID}`;
 import { SERVICE_CATEGORIES, getServicesByCategory } from './data/services';
 import { SOLUTIONS_DATA } from './data/solutions';
 import { PRODUCTS_DATA } from './data/products';
 import { INDUSTRIES_DATA } from './data/industries';
+import { TEAM, teamPath, BLOG_REVIEWER_ID } from './data/team';
 
 /**
  * Every indexable page except blog posts (those come from WordPress at build
@@ -26,6 +29,7 @@ export function staticRoutes(): string[] {
   return [
     '/',
     '/about',
+    ...TEAM.map((m) => teamPath(m)),
     '/services',
     ...SERVICE_CATEGORIES.flatMap((c) => getServicesByCategory(c.id)).map((s) => `/services/${s.slug}`),
     '/solutions',

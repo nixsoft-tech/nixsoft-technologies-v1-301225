@@ -43,6 +43,7 @@ const BlogPost = lazyPage(() => import('./pages/BlogPost'));
 const Admin = lazyPage(() => import('./pages/Admin'));
 const PrivacyPolicy = lazyPage(() => import('./pages/PrivacyPolicy'));
 const Terms = lazyPage(() => import('./pages/Terms'));
+const TeamMember = lazyPage(() => import('./pages/TeamMember'));
 
 // Scroll to top wrapper
 const ScrollToTop = () => {
@@ -93,6 +94,8 @@ export const AppShell: React.FC = () => {
               <Route path="/admin" element={<Admin />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/terms-and-conditions" element={<Terms />} />
+              <Route path="/team/:slug" element={<TeamMember />} />
+              <Route path="/team" element={<Navigate to="/about#team" replace />} />
 
               {/* Core Page Redirects */}
               <Route path="/about-us" element={<Navigate to="/about" replace />} />
@@ -113,7 +116,7 @@ export const AppShell: React.FC = () => {
               <Route path="/get-quote" element={<Navigate to="/contact" replace />} />
               <Route path="/raise-ticket" element={<Navigate to="/contact" replace />} />
               <Route path="/testing" element={<Navigate to="/services" replace />} />
-              <Route path="/monitoring" element={<Navigate to="/services" replace />} />
+              <Route path="/monitoring" element={<Navigate to="/services/infrastructure-monitoring" replace />} />
               <Route path="/it-service-management" element={<Navigate to="/services" replace />} />
 
               {/* Anything else: Not Found (old root-level blog slugs are 301'd by nginx) */}

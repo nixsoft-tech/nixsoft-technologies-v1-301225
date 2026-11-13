@@ -5,11 +5,11 @@
  * components/SEO.tsx) containing:
  *   Organization  https://nixsoftech.in/#organization  (same node on every page)
  *   WebSite       https://nixsoftech.in/#website
- *   WebPage       <page url>#webpage   (or AboutPage / ContactPage / CollectionPage)
+ *   WebPage       <page url>#webpage   (or AboutPage / ContactPage / CollectionPage / ProfilePage)
  *   BreadcrumbList <page url>#breadcrumb  (sub-pages)
  *   + the page's main entity, from the helpers below:
  *     Service <url>#service, SoftwareApplication <url>#software,
- *     BlogPosting <url>#article, Person /about#<slug>, ItemList <url>#list
+ *     BlogPosting <url>#article, Person /team/<slug>#person, ItemList <url>#list
  * Nodes reference each other by @id, so search engines see one connected graph.
  *
  * RULE: only facts that are visible on the site and verified. No prices,
@@ -20,7 +20,7 @@ import { SITE_URL, ORG_ID, SOCIAL_LINKS } from '../constants';
 import type { OfferingData } from '../types';
 import type { ProductData } from '../data/products';
 import type { IndustryData } from '../data/industries';
-import type { TeamMember } from '../data/team';
+import { teamPath, type TeamMember } from '../data/team';
 
 export type JsonLdNode = Record<string, unknown>;
 
@@ -37,7 +37,8 @@ export const serviceId = (path: string) => `${absUrl(path)}#service`;
 export const softwareId = (path: string) => `${absUrl(path)}#software`;
 export const articleId = (path: string) => `${absUrl(path)}#article`;
 export const listId = (path: string) => `${absUrl(path)}#list`;
-export const personId = (member: Pick<TeamMember, 'id'>) => `${SITE_URL}/about#${member.id}`;
+/** A director's Person @id lives on their profile page (/team/<slug>). */
+export const personId = (member: Pick<TeamMember, 'id'>) => `${absUrl(teamPath(member))}#person`;
 
 const ref = (id: string) => ({ '@id': id });
 
@@ -54,7 +55,6 @@ const INDIA = { '@type': 'Country', name: 'India' };
  *   the footer says "Nixsoft Technologies Pvt. Ltd.". Check on mca.gov.in.
  * - identifier (CIN) and the registered-office address, from the same check.
  * - founder: the site calls Wajid and Pravin "Director", not founders.
- * - Directors' LinkedIn URLs (TeamMember.sameAs).
  */
 
 /** The company. Values match the footer, /contact and /about. */
@@ -116,7 +116,7 @@ export const websiteNode: JsonLdNode = {
   publisher: ref(ORG_ID),
 };
 
-export type PageType = 'WebPage' | 'AboutPage' | 'ContactPage' | 'CollectionPage';
+export type PageType = 'WebPage' | 'AboutPage' | 'ContactPage' | 'CollectionPage' | 'ProfilePage';
 
 export function webPageNode(opts: {
   path: string;
@@ -257,7 +257,7 @@ export function productSoftwareNode(product: ProductData): JsonLdNode {
   };
 }
 
-/** A director from /about. */
+/** A director (/about and their profile page /team/<slug>). */
 export function personNode(member: TeamMember): JsonLdNode {
   return {
     '@type': 'Person',
@@ -267,7 +267,7 @@ export function personNode(member: TeamMember): JsonLdNode {
     description: member.bio,
     image: absUrl(member.photo),
     email: member.email,
-    url: `${SITE_URL}/about#${member.id}`,
+    url: absUrl(teamPath(member)),
     worksFor: ref(ORG_ID),
     knowsAbout: member.focus,
     ...(member.sameAs?.length && { sameAs: member.sameAs }),
