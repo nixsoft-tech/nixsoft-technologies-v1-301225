@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Calendar, User, Clock, ChevronLeft, Share2, Twitter, Linkedin, Link as LinkIcon } from 'lucide-react';
 import { getBlogPostBySlug, peekBlogPost } from '../services/blogService';
 import { sanitizeHtml } from '../services/sanitize';
-import { TEAM } from '../data/team';
+import { BLOG_REVIEWER_ID, getTeamMember, teamPath } from '../data/team';
 import { personId, personNode } from '../lib/schema';
 import { BlogPost as BlogPostType } from '../types';
 import SEO from '../components/SEO';
@@ -11,7 +11,7 @@ import NotFound from './NotFound';
 import { blogPostingNode, articleId } from '../lib/schema';
 
 // Technical reviewer shown on every post (and in its structured data).
-const REVIEWER = TEAM.find((m) => m.id === 'pravin-kore')!;
+const REVIEWER = getTeamMember(BLOG_REVIEWER_ID)!;
 
 const SIZED_IMAGE = /-\d+x\d+(\.(?:jpe?g|png|gif|webp))$/i;
 
@@ -135,7 +135,7 @@ const BlogPost: React.FC = () => {
                 <p className="text-slate-900 font-bold">{post.author}</p>
                 <p className="text-xs">
                   Technically reviewed by{' '}
-                  <Link to={`/about#${REVIEWER.id}`} className="text-nixBlue hover:underline">{REVIEWER.name}</Link>, {REVIEWER.role}
+                  <Link to={teamPath(REVIEWER)} className="text-nixBlue hover:underline">{REVIEWER.name}</Link>, {REVIEWER.role}
                 </p>
               </div>
             </div>

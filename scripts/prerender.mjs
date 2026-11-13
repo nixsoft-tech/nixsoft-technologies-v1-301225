@@ -45,7 +45,7 @@ const started = Date.now();
 const purify = createDOMPurify(new JSDOM('').window);
 globalThis.__nixSanitize = (html) => purify.sanitize(html);
 
-const { render, mapWordPressPost, seedBlogCache, staticRoutes } = await import(
+const { render, mapWordPressPost, seedBlogCache, staticRoutes, REVIEWER_PROFILE } = await import(
   pathToFileURL(path.join(root, 'dist-ssr', 'entry-server.js')).href
 );
 
@@ -151,6 +151,7 @@ const PAGE_MODULES = [
   [/^\/contact$/, 'pages/Contact.tsx'],
   [/^\/privacy-policy$/, 'pages/PrivacyPolicy.tsx'],
   [/^\/terms-and-conditions$/, 'pages/Terms.tsx'],
+  [/^\/team\//, 'pages/TeamMember.tsx'],
 ];
 // Everything the entry already loads (no need to preload it again).
 const entryKey = manifest && Object.keys(manifest).find((k) => manifest[k].isEntry);
@@ -208,6 +209,10 @@ for (const route of routes) {
       if (!post) { skipped.push(route); continue; }
       seed = { post };
     }
+    seedBlogCache(seed);
+  } else if (route === REVIEWER_PROFILE && posts) {
+    // The blog reviewer's profile lists the posts he reviewed (cards only).
+    seed = { posts: posts.map(({ content, ...card }) => ({ ...card, content: '' })) };
     seedBlogCache(seed);
   }
 

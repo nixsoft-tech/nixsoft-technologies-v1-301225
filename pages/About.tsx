@@ -7,7 +7,7 @@ import {
   Globe, Server
 } from 'lucide-react';
 import SEO from '../components/SEO';
-import { TEAM } from '../data/team';
+import { TEAM, teamPath } from '../data/team';
 import { personNode } from '../lib/schema';
 import { ORG_ID } from '../constants';
 import HeroImage from '../components/HeroImage';
@@ -239,7 +239,9 @@ const About: React.FC = () => {
                   loading="lazy"
                   className="w-40 h-40 rounded-full object-cover object-top ring-4 ring-white shadow-lg mb-6 bg-slate-100"
                 />
-                <h4 className="text-2xl font-display font-bold text-slate-900">{member.name}</h4>
+                <h4 className="text-2xl font-display font-bold text-slate-900">
+                  <Link to={teamPath(member)} className="hover:text-nixBlue transition-colors">{member.name}</Link>
+                </h4>
                 <p className="mt-1 mb-5 text-sm font-semibold uppercase tracking-wide text-nixOrange">{member.role}</p>
                 <p className="text-slate-600 leading-relaxed text-sm mb-6">{member.bio}</p>
                 <ul className="flex flex-wrap justify-center gap-2 mb-6">
@@ -248,6 +250,9 @@ const About: React.FC = () => {
                   ))}
                 </ul>
                 <div className="mt-auto flex flex-col items-center gap-2">
+                  <Link to={teamPath(member)} className="inline-flex items-center text-sm font-bold text-nixBlue hover:text-blue-700 mb-2">
+                    View full profile<span className="sr-only">: {member.name}</span> <ArrowRight size={16} className="ml-1" aria-hidden="true" />
+                  </Link>
                   <a href={`mailto:${member.email}`} className="inline-flex items-center text-sm font-semibold text-slate-700 hover:text-nixBlue transition-colors">
                     <Mail size={16} className="mr-2" /> {member.email}
                   </a>
