@@ -117,7 +117,8 @@ export const AppShell: React.FC = () => {
               <Route path="/raise-ticket" element={<Navigate to="/contact" replace />} />
               <Route path="/testing" element={<Navigate to="/services" replace />} />
               <Route path="/monitoring" element={<Navigate to="/services/infrastructure-monitoring" replace />} />
-              <Route path="/it-service-management" element={<Navigate to="/services" replace />} />
+              <Route path="/it-service-management" element={<Navigate to="/services/it-managed-services" replace />} />
+              <Route path="/blog/it-service-management" element={<Navigate to="/services/it-managed-services" replace />} />
 
               {/* Anything else: Not Found (old root-level blog slugs are 301'd by nginx) */}
               <Route path="*" element={<NotFound />} />
