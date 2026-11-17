@@ -9,6 +9,7 @@ import { SERVICES, INDUSTRIES, PRODUCTS } from '../constants';
 import SEO from '../components/SEO';
 import Honeypot from '../components/Honeypot';
 import { submitForm, HONEYPOT_FIELD } from '../services/formApi';
+import { trackLead } from '../components/Analytics';
 
 // The puzzle widget (~90 KB) loads only once someone starts on the audit form,
 // so it never weighs on the home page's first paint.
@@ -137,6 +138,7 @@ const Home: React.FC = () => {
     setPuzzle(null);
     setPuzzleKey((k) => k + 1);
     if (result.ok) {
+      if (!honeypot) trackLead('homepage_email');
       setIsSubmitted(true);
       setEmail('');
     } else {
