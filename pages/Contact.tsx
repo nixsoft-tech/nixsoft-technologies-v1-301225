@@ -8,6 +8,7 @@ import { CALENDLY_URL } from '../constants';
 const AltchaWidget = lazy(() => import('../components/AltchaWidget'));
 import Honeypot from '../components/Honeypot';
 import { submitForm, HONEYPOT_FIELD } from '../services/formApi';
+import { trackEvent, trackLead } from '../components/Analytics';
 
 // Office map. TODO: replace both with the embed and share links from the
 // business's own Google Business Profile listing once it is verified (the
@@ -91,6 +92,9 @@ const Contact: React.FC = () => {
     setPuzzle(null);
     setPuzzleKey((k) => k + 1);
     if (result.ok) {
+      // Privacy requests use this form too, but they aren't sales leads.
+      if (!honeypot && topic === 'privacy') trackEvent('privacy_request');
+      else if (!honeypot) trackLead('contact', { lead_source: topic || 'direct' });
       setSubmitted(true);
       setFormData(INITIAL_FORM);
     } else {

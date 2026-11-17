@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useMemo, lazy, Suspense } from 'rea
 import { Send, Bot, Loader2 } from 'lucide-react';
 import Honeypot from './Honeypot';
 import { submitForm, HONEYPOT_FIELD } from '../services/formApi';
+import { trackLead } from './Analytics';
 import DOMPurify from 'dompurify';
 import { sendChatMessage } from '../services/chatService';
 
@@ -57,7 +58,10 @@ const LeadForm: React.FC<{ sessionId: string; onDone: (name: string) => void }> 
       name: name.trim(), email: email.trim(), phone: phone.trim(), sessionId, altcha: puzzle, [HONEYPOT_FIELD]: honeypot,
     });
     setSending(false);
-    if (result.ok) return onDone(name.trim());
+    if (result.ok) {
+      if (!honeypot) trackLead('nixbot');
+      return onDone(name.trim());
+    }
     // Each solved puzzle works once: start a fresh one.
     setPuzzle(null);
     setPuzzleKey((k) => k + 1);

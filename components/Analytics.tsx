@@ -32,6 +32,25 @@ if (enabled) {
   document.head.appendChild(script);
 }
 
+/**
+ * Send a GA4 event. A no-op off the production hosts, where gtag isn't loaded.
+ */
+export function trackEvent(name: string, params: Record<string, unknown> = {}): void {
+  if (enabled) window.gtag('event', name, params);
+}
+
+/**
+ * A real lead: call only after the server accepted a form (and never for a
+ * filled honeypot, which the server also answers with success). GA4 counts
+ * generate_lead as the key event; form_name tells the forms apart. From
+ * 7 Nov 2026 until this was added, a GA4 "create event" rule turned every
+ * /contact page view into generate_lead, so lead counts in that period are
+ * not real. Don't recreate such a rule: it fires without a submission.
+ */
+export function trackLead(formName: 'contact' | 'homepage_email' | 'nixbot', params: Record<string, unknown> = {}): void {
+  trackEvent('generate_lead', { form_name: formName, ...params });
+}
+
 let lastSentTitle = '';
 
 /** Sends a GA4 page_view for each client-side route change. */
