@@ -114,6 +114,8 @@ export const AppShell: React.FC = () => {
 
               {/* Utility Redirects */}
               <Route path="/get-quote" element={<Navigate to="/contact" replace />} />
+              <Route path="/case-studies" element={<Navigate to="/clients" replace />} />
+              <Route path="/case-study" element={<Navigate to="/clients" replace />} />
               <Route path="/raise-ticket" element={<Navigate to="/contact" replace />} />
               <Route path="/testing" element={<Navigate to="/services" replace />} />
               <Route path="/monitoring" element={<Navigate to="/services/infrastructure-monitoring" replace />} />

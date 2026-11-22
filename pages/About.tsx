@@ -108,7 +108,7 @@ const About: React.FC = () => {
             </div>
             <div className="p-4">
               <div className="text-4xl font-bold text-nixBlue mb-2">50+</div>
-              <p className="text-slate-500 text-sm font-medium uppercase tracking-wide">Enterprise Experts</p>
+              <p className="text-slate-500 text-sm font-medium uppercase tracking-wide">Enterprise Clients</p>
             </div>
           </div>
         </div>

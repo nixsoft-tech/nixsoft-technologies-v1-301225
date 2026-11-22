@@ -127,8 +127,8 @@ const Clients: React.FC = () => {
   return (
     <div className="flex flex-col">
       <SEO 
-        title="Case Studies: NCDEX, IndusInd Bank, Tata Trent"
-        description="DevOps, database and security case studies: how Nixsoft helped NCDEX, NCCL, IndusInd Bank, Hathway and Tata Trent improve uptime, performance and compliance."
+        title="Client Case Studies: DevOps, Database & Security"
+        description="Case studies from banking, stock exchanges, telecom and retail: how Nixsoft improves uptime, database performance and security with open-source tools."
         path="/clients"
         keywords="Nixsoft case studies, DevOps case studies India, PostgreSQL performance tuning case study, BFSI IT infrastructure case study, patch management case study"
       />
