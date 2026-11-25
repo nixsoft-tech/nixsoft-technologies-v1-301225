@@ -485,23 +485,36 @@ app.post('/api/contact', async (req, res) => {
   });
 });
 
-// Homepage "work email" lead form
+// Email-only forms: the homepage "work email" lead form, and the blog page's
+// "get new articles by email" box (source: 'blog'). There is no mailing list
+// yet: blog sign-ups reach sales@ to be added by hand.
+const LEAD_SOURCES = {
+  homepage: {
+    subject: (email) => `New lead from the homepage: ${email}`,
+    text: (email) => `Work email: ${email}\nSource: homepage — "Get Your Free Infrastructure Audit"\n\nNo other details were given — reply to this email to reach them.`,
+  },
+  blog: {
+    subject: (email) => `New blog subscriber: ${email}`,
+    text: (email) => `Email: ${email}\nSource: blog page — "Stay ahead of the curve" (asked to get new articles by email)\n\nAdd them to the blog mailing list. No other details were given — reply to this email to reach them.`,
+  },
+};
+
 app.post('/api/lead', async (req, res) => {
   if (!app.locals.transporter) {
     return res.status(503).json({ error: 'Email service is not configured' });
   }
 
-  const { email } = req.body || {};
+  const { email, source = 'homepage' } = req.body || {};
   if (typeof email !== 'string' || email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return res.status(400).json({ error: 'Validation failed', details: ['Invalid email'] });
   }
+  if (!Object.hasOwn(LEAD_SOURCES, source)) {
+    return res.status(400).json({ error: 'Validation failed', details: ['Invalid source'] });
+  }
   if (!(await guardEmailForm(req, res))) return;
 
-  await sendFormEmail(res, {
-    subject: `New lead from the homepage: ${email}`,
-    text: `Work email: ${email}\nSource: homepage — "Get Your Free Infrastructure Audit"\n\nNo other details were given — reply to this email to reach them.`,
-    replyTo: email,
-  });
+  const form = LEAD_SOURCES[source];
+  await sendFormEmail(res, { subject: form.subject(email), text: form.text(email), replyTo: email });
 });
 
 // ─── NixBot lead capture ──────────────────────────────────────────────────────
