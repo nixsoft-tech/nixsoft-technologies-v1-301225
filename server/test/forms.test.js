@@ -89,6 +89,8 @@ test('form abuse protection', async (t) => {
   await t.test('homepage lead form emails sales@ with the visitor as reply-to', async () => {
     assert.strictEqual((await post('/api/lead', { email: 'not-an-email', altcha: await solvedPuzzle(baseUrl) })).status, 400);
     assert.strictEqual((await post('/api/lead', { email: 'cto@acme.example' })).status, 403);
+    // Unknown source -> 400, checked before any puzzle work.
+    assert.strictEqual((await post('/api/lead', { email: 'cto@acme.example', source: 'toString' })).status, 400);
 
     const res = await post('/api/lead', { email: 'cto@acme.example', altcha: await solvedPuzzle(baseUrl) }); // email 3
     assert.strictEqual(res.status, 200);
@@ -110,7 +112,10 @@ test('form abuse protection', async (t) => {
     // Fresh per-IP allowance, so only the daily cap (4) can stop email 5.
     const formguard = require('../formguard');
     formguard.emailLimiter.check = () => ({ ok: true });
-    assert.strictEqual((await post('/api/lead', { email: 'a@acme.example', altcha: await solvedPuzzle(baseUrl) })).status, 200); // email 4
+    // Email 4 from the blog page's subscribe box: its own subject.
+    assert.strictEqual((await post('/api/lead', { email: 'a@acme.example', source: 'blog', altcha: await solvedPuzzle(baseUrl) })).status, 200); // email 4
+    assert.match(sent.at(-1).subject, /^New blog subscriber: a@acme\.example$/);
+    assert.strictEqual(sent.at(-1).replyTo, 'a@acme.example');
     const res = await post('/api/lead', { email: 'b@acme.example', altcha: await solvedPuzzle(baseUrl) });
     assert.strictEqual(res.status, 503);
     assert.strictEqual((await res.json()).code, 'DAILY_CAP');

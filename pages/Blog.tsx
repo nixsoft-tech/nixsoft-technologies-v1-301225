@@ -5,6 +5,8 @@ import { getBlogPosts, peekBlogPosts } from '../services/blogService';
 import { itemListNode, listId } from '../lib/schema';
 import { BlogPost } from '../types';
 import SEO from '../components/SEO';
+import BlogSubscribe from '../components/BlogSubscribe';
+import { getTeamMember } from '../data/team';
 
 const Blog: React.FC = () => {
   // Prerendered pages start with the posts already in the cache.
@@ -64,7 +66,9 @@ const Blog: React.FC = () => {
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {posts.map((post) => (
+              {posts.map((post, i) => {
+                const author = getTeamMember(post.authorId);
+                return (
                 <article key={post.id} className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col group">
                   <Link to={`/blog/${post.slug}`} className="block overflow-hidden h-48 relative">
                     <img
@@ -72,7 +76,10 @@ const Blog: React.FC = () => {
                       srcSet={post.imageSrcSet}
                       sizes="(min-width: 1280px) 400px, (min-width: 1024px) 33vw, (min-width: 768px) 50vw, calc(100vw - 32px)"
                       alt={post.title}
-                      loading="lazy"
+                      // The first card's image is in view on load (on phones it is
+                      // the page's Largest Contentful Paint): fetch it first.
+                      loading={i === 0 ? 'eager' : 'lazy'}
+                      fetchPriority={i === 0 ? 'high' : 'auto'}
                       decoding="async"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
@@ -105,9 +112,13 @@ const Blog: React.FC = () => {
                     
                     <div className="flex items-center justify-between pt-4 border-t border-gray-50">
                       <div className="flex items-center space-x-2">
-                        <div className="w-8 h-8 bg-blue-50 rounded-full flex items-center justify-center text-nixBlue">
-                          <User size={16} />
-                        </div>
+                        {author ? (
+                          <img src={author.photo} alt="" width={32} height={32} loading="lazy" className="w-8 h-8 rounded-full object-cover object-top bg-slate-100" />
+                        ) : (
+                          <div className="w-8 h-8 bg-blue-50 rounded-full flex items-center justify-center text-nixBlue">
+                            <User size={16} aria-hidden="true" />
+                          </div>
+                        )}
                         <span className="text-xs font-semibold text-slate-700">{post.author}</span>
                       </div>
                       
@@ -120,29 +131,15 @@ const Blog: React.FC = () => {
                     </div>
                   </div>
                 </article>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
       </section>
 
-      {/* Newsletter / CTA */}
-      <section className="py-20 bg-nixBlue relative overflow-hidden">
-        <div className="max-w-4xl mx-auto px-4 relative z-10 text-center">
-          <h2 className="text-3xl font-display font-bold text-white mb-4">Stay ahead of the curve</h2>
-          <p className="text-blue-100 mb-8">Join 5,000+ IT leaders receiving our monthly insights on open-source automation.</p>
-          <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-            <input 
-              type="email" 
-              placeholder="work@company.com" 
-              className="flex-1 px-6 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-nixGreen/50"
-            />
-            <button className="bg-nixGreen hover:bg-green-400 text-nixBlue font-bold px-8 py-3 rounded-xl transition-all">
-              Subscribe
-            </button>
-          </div>
-        </div>
-      </section>
+      {/* Get new articles by email */}
+      <BlogSubscribe />
     </div>
   );
 };

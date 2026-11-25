@@ -47,7 +47,7 @@ export function trackEvent(name: string, params: Record<string, unknown> = {}): 
  * /contact page view into generate_lead, so lead counts in that period are
  * not real. Don't recreate such a rule: it fires without a submission.
  */
-export function trackLead(formName: 'contact' | 'homepage_email' | 'nixbot', params: Record<string, unknown> = {}): void {
+export function trackLead(formName: 'contact' | 'homepage_email' | 'blog_subscribe' | 'nixbot', params: Record<string, unknown> = {}): void {
   trackEvent('generate_lead', { form_name: formName, ...params });
 }
 
