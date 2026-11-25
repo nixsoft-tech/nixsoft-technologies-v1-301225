@@ -89,6 +89,10 @@ const BlogPost: React.FC = () => {
   if (notFound) return <NotFound />;
   if (!post) return null;
 
+  // A director named in the post's byline (services/blogService.ts splitByline);
+  // otherwise the post is by "Nixsoft Team".
+  const author = getTeamMember(post.authorId);
+
   return (
     <div className="pt-24 min-h-screen bg-white">
       <SEO 
@@ -106,7 +110,11 @@ const BlogPost: React.FC = () => {
         dateModified={post.dateModified}
         mainEntityId={articleId(`/blog/${post.slug}`)}
         reviewedById={personId(REVIEWER)}
-        entities={[blogPostingNode(post), personNode(REVIEWER)]}
+        entities={[
+          blogPostingNode(post, author),
+          personNode(REVIEWER),
+          ...(author && author.id !== REVIEWER.id ? [personNode(author)] : []),
+        ]}
       />
       {/* Article Header */}
       <header className="py-12 bg-slate-50 border-b border-slate-100">
@@ -128,15 +136,28 @@ const BlogPost: React.FC = () => {
           
           <div className="flex flex-wrap items-center gap-6 text-slate-500 text-sm border-t border-slate-200 pt-8">
             <div className="flex items-center">
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-nixBlue mr-3 font-bold">
-                {post.author.charAt(0)}
-              </div>
+              {author ? (
+                <img src={author.photo} alt="" width={40} height={40} className="w-10 h-10 rounded-full object-cover object-top bg-slate-200 mr-3" />
+              ) : (
+                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-nixBlue mr-3 font-bold">
+                  {post.author.charAt(0)}
+                </div>
+              )}
               <div>
-                <p className="text-slate-900 font-bold">{post.author}</p>
-                <p className="text-xs">
-                  Technically reviewed by{' '}
-                  <Link to={teamPath(REVIEWER)} className="text-nixBlue hover:underline">{REVIEWER.name}</Link>, {REVIEWER.role}
+                <p className="text-slate-900 font-bold">
+                  {author ? (
+                    <Link to={teamPath(author)} rel="author" className="hover:text-nixBlue hover:underline">{author.name}</Link>
+                  ) : post.author}
                 </p>
+                {author?.id === REVIEWER.id ? (
+                  // The author is also the technical reviewer: one line, not two.
+                  <p className="text-xs">{author.role}, Nixsoft Technologies</p>
+                ) : (
+                  <p className="text-xs">
+                    Technically reviewed by{' '}
+                    <Link to={teamPath(REVIEWER)} className="text-nixBlue hover:underline">{REVIEWER.name}</Link>, {REVIEWER.role}
+                  </p>
+                )}
               </div>
             </div>
             
