@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Calendar, Clock, ChevronLeft, Share2 } from 'lucide-react';
 import ShareButtons from '../components/ShareButtons';
+import { relatedServices } from '../lib/relatedServices';
 import { getBlogPostBySlug, peekBlogPost } from '../services/blogService';
 import { sanitizeHtml } from '../services/sanitize';
 import { BLOG_REVIEWER_ID, getTeamMember, teamPath } from '../data/team';
@@ -119,7 +120,10 @@ const BlogPost: React.FC = () => {
       />
       {/* Article Header */}
       <header className="py-12 bg-slate-50 border-b border-slate-100">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Same container and 8-of-12 column as the article below, so the
+            title lines up with the text on wide screens. */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-12">
+        <div className="lg:col-span-8 min-w-0">
           <Link to="/blog" className="inline-flex items-center text-nixBlue hover:text-blue-700 font-semibold mb-8 group">
             <ChevronLeft size={20} className="mr-1 transition-transform group-hover:-translate-x-1" />
             Back to Blog
@@ -173,6 +177,7 @@ const BlogPost: React.FC = () => {
             </div>
           </div>
         </div>
+        </div>
       </header>
 
       {/* Article Content */}
@@ -216,22 +221,23 @@ const BlogPost: React.FC = () => {
             <aside className="lg:col-span-4 min-w-0 space-y-12">
               <div className="bg-slate-50 rounded-3xl p-8 border border-slate-100">
                 <h3 className="text-xl font-bold text-slate-900 mb-6 flex items-center">
-                  <Share2 size={20} className="mr-3 text-nixBlue" />
+                  <Share2 size={20} className="mr-3 text-nixBlue" aria-hidden="true" />
                   Related Services
                 </h3>
                 <div className="space-y-4">
-                  <Link to="/solutions" className="block p-4 bg-white rounded-xl border border-slate-200 hover:border-nixBlue transition-colors group">
-                    <h4 className="font-bold text-slate-900 group-hover:text-nixBlue">Enterprise DevOps</h4>
-                    <p className="text-sm text-slate-500">Automate your delivery pipeline.</p>
-                  </Link>
-                  <Link to="/solutions" className="block p-4 bg-white rounded-xl border border-slate-200 hover:border-nixBlue transition-colors group">
-                    <h4 className="font-bold text-slate-900 group-hover:text-nixBlue">Cloud Transformation</h4>
-                    <p className="text-sm text-slate-500">Scale without boundaries.</p>
-                  </Link>
+                  {relatedServices(post).map((s) => (
+                    <Link key={s.slug} to={`/services/${s.slug}`} className="block p-4 bg-white rounded-xl border border-slate-200 hover:border-nixBlue transition-colors group">
+                      <h4 className="font-bold text-slate-900 group-hover:text-nixBlue">{s.title}</h4>
+                      <p className="text-sm text-slate-500">{s.subtitle}</p>
+                    </Link>
+                  ))}
                 </div>
               </div>
 
-              <div className="bg-nixDark rounded-3xl p-8 text-white relative overflow-hidden">
+              {/* The "Talk to an Expert" card stays in view while the article
+                  scrolls; the column used to be empty below the first screen.
+                  Only this short card sticks, so it fits even short screens. */}
+              <div className="lg:sticky lg:top-28 bg-nixDark rounded-3xl p-8 text-white relative overflow-hidden">
                 <div className="relative z-10">
                   <h3 className="text-xl font-bold mb-4">Need help implementing this?</h3>
                   <p className="text-blue-100 mb-6 text-sm">Our experts specialize in the technologies discussed in this article.</p>
