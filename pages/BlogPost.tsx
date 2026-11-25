@@ -178,10 +178,14 @@ const BlogPost: React.FC = () => {
       {/* Article Content */}
       <main className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-12 gap-12">
-            
+          {/* grid-cols-1 + min-w-0: without them the phone layout's single
+              column grows to the article's widest line (a long code line or
+              table), and the whole page scrolls sideways. With them, wide
+              code blocks and tables scroll inside their own box. */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+
             {/* Main Content */}
-            <div className="lg:col-span-8">
+            <div className="lg:col-span-8 min-w-0">
               <div className="aspect-video mb-12 rounded-3xl overflow-hidden shadow-2xl">
                 {/* The page's Largest Contentful Paint: high priority, and a
                     WordPress-sized copy for the screen instead of the original. */}
@@ -209,7 +213,7 @@ const BlogPost: React.FC = () => {
             </div>
 
             {/* Sidebar */}
-            <aside className="lg:col-span-4 space-y-12">
+            <aside className="lg:col-span-4 min-w-0 space-y-12">
               <div className="bg-slate-50 rounded-3xl p-8 border border-slate-100">
                 <h3 className="text-xl font-bold text-slate-900 mb-6 flex items-center">
                   <Share2 size={20} className="mr-3 text-nixBlue" />

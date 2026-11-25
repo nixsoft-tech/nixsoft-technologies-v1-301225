@@ -39,6 +39,10 @@
    The headless site doesn't load WordPress's block stylesheet, so the classes
    its editor writes into post HTML need these minimal equivalents. Scoped to
    .wp-content, the article body wrapper in pages/BlogPost.tsx. */
+/* Long unbroken words (innodb_flush_log_at_trx_commit, URLs) wrap on narrow
+   screens instead of pushing the page wider. Code blocks don't wrap (pre). */
+.wp-content { overflow-wrap: break-word; }
+
 .wp-content .has-text-align-center { text-align: center; }
 .wp-content .has-text-align-right { text-align: right; }
 .wp-content .has-text-align-left { text-align: left; }
@@ -65,7 +69,11 @@
 /* Tables: scroll sideways on phones instead of overflowing the page. */
 .wp-content .wp-block-table { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .wp-content table { width: 100%; border-collapse: collapse; font-size: 0.95em; }
-.wp-content .has-fixed-layout { table-layout: fixed; }
+/* Equal-width columns only where there is room: on phones a fixed layout
+   squeezes each column below its longest word and the text spills out. */
+@media (min-width: 768px) {
+  .wp-content .has-fixed-layout { table-layout: fixed; }
+}
 .wp-content th,
 .wp-content td { border: 1px solid #e2e8f0; padding: 0.6rem 0.75rem; vertical-align: top; }
 .wp-content thead th,
