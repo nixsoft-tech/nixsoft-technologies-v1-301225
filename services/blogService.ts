@@ -1,5 +1,6 @@
 import { BlogPost } from '../types';
 import { BLOG_SEO } from '../data/blogSeo';
+import { TEAM, type TeamMember } from '../data/team';
 
 const WP_API_URL = import.meta.env.VITE_WORDPRESS_API_URL;
 
@@ -101,7 +102,26 @@ function featuredSrcSet(media: any): string | undefined {
   return [...byWidth.entries()].sort((a, b) => a[0] - b[0]).map(([w, url]) => `${url} ${w}w`).join(', ');
 }
 
+/**
+ * New posts open with a byline paragraph written in WordPress
+ * ("By Pravin Kore, Director, Nixsoft Technologies | Last reviewed: …").
+ * The page header already shows the author, so when that paragraph names a
+ * director it is taken out of the body, and the director becomes the post's
+ * author in place of the WordPress account name ("Nixsoft Team", the shared
+ * publishing account). Posts without such a byline are left as they are.
+ */
+const FIRST_PARAGRAPH = /^\s*<p\b[^>]*>([\s\S]*?)<\/p>\s*/i;
+export function splitByline(html: string): { author?: TeamMember; content: string } {
+  const first = html.match(FIRST_PARAGRAPH);
+  if (!first) return { content: html };
+  const text = htmlToText(first[1]).replace(/\s+/g, ' ');
+  const byline = text.match(/^By (.+)/i);
+  const author = byline ? TEAM.find((m) => byline[1].startsWith(m.name)) : undefined;
+  return author ? { author, content: html.slice(first[0].length) } : { content: html };
+}
+
 export const mapWordPressPost = (wpPost: any): BlogPost => {
+  const { author, content } = splitByline(wpPost.content.rendered);
   return {
     id: wpPost.id.toString(),
     slug: wpPost.slug,
@@ -109,8 +129,9 @@ export const mapWordPressPost = (wpPost: any): BlogPost => {
     // Written summary when there is one; otherwise the WordPress excerpt.
     seoTitle: BLOG_SEO[wpPost.slug]?.title,
     excerpt: BLOG_SEO[wpPost.slug]?.description ?? summarize(htmlToText(wpPost.excerpt.rendered)),
-    content: wpPost.content.rendered,
-    author: wpPost._embedded?.author?.[0]?.name || 'Nixsoft Team',
+    content,
+    author: author?.name || wpPost._embedded?.author?.[0]?.name || 'Nixsoft Team',
+    authorId: author?.id,
     date: new Date(wpPost.date).toLocaleDateString('en-US', { 
       year: 'numeric', 
       month: 'long', 
@@ -123,8 +144,8 @@ export const mapWordPressPost = (wpPost: any): BlogPost => {
     imageWidth: wpPost._embedded?.['wp:featuredmedia']?.[0]?.media_details?.width,
     imageHeight: wpPost._embedded?.['wp:featuredmedia']?.[0]?.media_details?.height,
     imageSrcSet: featuredSrcSet(wpPost._embedded?.['wp:featuredmedia']?.[0]),
-    wordCount: htmlToText(wpPost.content.rendered).split(/\s+/).filter(Boolean).length,
-    readTime: `${Math.ceil(wpPost.content.rendered.split(' ').length / 200)} min read`
+    wordCount: htmlToText(content).split(/\s+/).filter(Boolean).length,
+    readTime: `${Math.ceil(content.split(' ').length / 200)} min read`
   };
 };
 

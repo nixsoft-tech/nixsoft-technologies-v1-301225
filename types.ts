@@ -109,6 +109,8 @@ export interface BlogPost {
   excerpt: string;
   content: string;
   author: string;
+  /** Team member id (data/team.ts) when the post's byline names a director. */
+  authorId?: string;
   date: string;
   /** ISO 8601 timestamps for structured data (absent on mock posts). */
   datePublished?: string;

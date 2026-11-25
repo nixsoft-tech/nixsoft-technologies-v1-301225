@@ -50,6 +50,18 @@
 .wp-content .aligncenter { text-align: center; margin-left: auto; margin-right: auto; }
 .wp-content figcaption { text-align: center; font-size: 0.875rem; color: #64748b; margin-top: 0.5rem; }
 
+/* Inline code ("the <code>VACUUM</code> command"): the typography plugin
+   wraps it in literal backtick characters (code::before / ::after). Show it
+   as a shaded chip instead. Code blocks (pre > code) keep their own style. */
+.wp-content :not(pre) > code {
+  background: #f1f5f9;
+  border-radius: 0.375rem;
+  padding: 0.15em 0.4em;
+  font-weight: 500;
+}
+.wp-content :not(pre) > code::before,
+.wp-content :not(pre) > code::after { content: none; }
+
 /* Tables: scroll sideways on phones instead of overflowing the page. */
 .wp-content .wp-block-table { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .wp-content table { width: 100%; border-collapse: collapse; font-size: 0.95em; }
