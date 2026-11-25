@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Calendar, User, Clock, ChevronLeft, Share2, Twitter, Linkedin, Link as LinkIcon } from 'lucide-react';
+import { Calendar, Clock, ChevronLeft, Share2 } from 'lucide-react';
+import ShareButtons from '../components/ShareButtons';
 import { getBlogPostBySlug, peekBlogPost } from '../services/blogService';
 import { sanitizeHtml } from '../services/sanitize';
 import { BLOG_REVIEWER_ID, getTeamMember, teamPath } from '../data/team';
@@ -8,7 +9,7 @@ import { personId, personNode } from '../lib/schema';
 import { BlogPost as BlogPostType } from '../types';
 import SEO from '../components/SEO';
 import NotFound from './NotFound';
-import { blogPostingNode, articleId } from '../lib/schema';
+import { absUrl, blogPostingNode, articleId } from '../lib/schema';
 
 // Technical reviewer shown on every post (and in its structured data).
 const REVIEWER = getTeamMember(BLOG_REVIEWER_ID)!;
@@ -203,18 +204,7 @@ const BlogPost: React.FC = () => {
               />
               
               <div className="mt-16 pt-8 border-t border-slate-100 flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <span className="text-sm font-bold text-slate-900">Share this post:</span>
-                  <button className="p-2 bg-slate-50 rounded-full text-slate-500 hover:bg-blue-50 hover:text-blue-600 transition-colors">
-                    <Twitter size={20} />
-                  </button>
-                  <button className="p-2 bg-slate-50 rounded-full text-slate-500 hover:bg-blue-50 hover:text-blue-700 transition-colors">
-                    <Linkedin size={20} />
-                  </button>
-                  <button className="p-2 bg-slate-50 rounded-full text-slate-500 hover:bg-slate-200 transition-colors">
-                    <LinkIcon size={20} />
-                  </button>
-                </div>
+                <ShareButtons url={absUrl(`/blog/${post.slug}`)} title={post.title} />
               </div>
             </div>
 
