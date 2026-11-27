@@ -240,20 +240,48 @@ export function industryServiceNode(
   };
 }
 
-/** Product page (/products/<slug>). No offers, ratings or OS claims. */
+/**
+ * Product page (/products/<slug>): the product as software. Not schema.org
+ * Product: Google's Product results need a price, reviews or a rating, and
+ * these products have none public (demo on request), so Product markup would
+ * only show as errors in Search Console. No offers, ratings or invented OS
+ * claims; operatingSystem only where the page states it.
+ */
 export function productSoftwareNode(product: ProductData): JsonLdNode {
   const path = `/products/${product.slug}`;
   return {
     '@type': 'SoftwareApplication',
     '@id': softwareId(path),
     name: product.name,
+    alternateName: product.shortName,
     description: product.description,
     url: absUrl(path),
     mainEntityOfPage: ref(pageId(path)),
-    applicationCategory: 'SecurityApplication',
+    applicationCategory: product.applicationCategory,
+    applicationSubCategory: product.applicationSubCategory,
+    ...(product.operatingSystem ? { operatingSystem: product.operatingSystem } : {}),
     featureList: product.features,
+    keywords: product.keywords,
     publisher: ref(ORG_ID),
     creator: ref(ORG_ID),
+  };
+}
+
+/**
+ * The FAQ section of a page, as shown on it. Google shows FAQ rich results
+ * only for government and health sites, but Bing and AI answer engines read
+ * the questions and answers.
+ */
+export function faqPageNode(path: string, faqs: { q: string; a: string }[]): JsonLdNode {
+  return {
+    '@type': 'FAQPage',
+    '@id': `${absUrl(path)}#faq`,
+    isPartOf: ref(pageId(path)),
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
   };
 }
 
