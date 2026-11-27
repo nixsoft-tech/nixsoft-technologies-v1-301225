@@ -73,6 +73,26 @@ if (api) {
   console.warn('prerender: VITE_WORDPRESS_API_URL not set; blog pages fall back to the app shell');
 }
 
+const SITE = 'https://nixsoftech.in';
+
+// Share cards (og:image) for the posts: dist/og/blog/<slug>.png. Set on the
+// post before its page is rendered, so the page's meta tags and the post data
+// embedded for the browser both name the card. A post published after this
+// build has no card (and no prerendered page) until the next deploy.
+// If the cards can't be made (e.g. the image library fails to load on the
+// build machine), posts keep their featured image and the build goes on.
+if (posts) {
+  const t = Date.now();
+  try {
+    const { writeShareCards } = await import('./share-cards/index.mjs');
+    const cards = await writeShareCards(posts, dist);
+    for (const p of posts) p.shareImage = `${SITE}${cards[p.slug]}`;
+    console.log(`prerender: ${posts.length} share cards in ${((Date.now() - t) / 1000).toFixed(1)}s`);
+  } catch (err) {
+    console.warn(`prerender: share cards not made (${err.message}); posts use their featured image`);
+  }
+}
+
 // Pages to render: the site's pages, with the blog posts right after /blog.
 const statics = staticRoutes();
 const postRoutes = (posts ?? []).map((p) => `/blog/${p.slug}`);
@@ -80,7 +100,6 @@ const blogAt = statics.indexOf('/blog');
 const routes = [...statics.slice(0, blogAt + 1), ...postRoutes, ...statics.slice(blogAt + 1)];
 
 // ---- Sitemap helpers -------------------------------------------------------
-const SITE = 'https://nixsoftech.in';
 // Images listed in the sitemap: content images on our own hosts. Logos and
 // icons (SVG), data: URIs and images hotlinked from other sites are left out.
 const IMAGE_HOSTS = new Set(['nixsoftech.in', 'blog.nixsoftech.in']);
