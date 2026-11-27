@@ -31,6 +31,12 @@ export interface ProductData {
   metaTitle: string;
   metaDescription: string;
   keywords: string;
+  /** Structured data (lib/schema.ts productSoftwareNode). One of Google's
+   *  SoftwareApplication categories, e.g. "SecurityApplication". */
+  applicationCategory: string;
+  applicationSubCategory: string;
+  /** Only when the page itself says which systems it runs on. */
+  operatingSystem?: string;
 }
 
 export const PRODUCTS_DATA: ProductData[] = [
@@ -79,6 +85,8 @@ export const PRODUCTS_DATA: ProductData[] = [
     metaTitle: 'VulnGuard™ Vulnerability Management Platform',
     metaDescription: 'VulnGuard™ vulnerability management: continuous container and host CVE scanning, context-based prioritisation and automated patching, even air-gapped.',
     keywords: 'VulnGuard, vulnerability management platform, container and host vulnerability scanning, automated patch management tool, air-gapped vulnerability scanner, CVE scanning for Kubernetes',
+    applicationCategory: 'SecurityApplication',
+    applicationSubCategory: 'Vulnerability management',
   },
   {
     id: 'securebench',
@@ -125,6 +133,8 @@ export const PRODUCTS_DATA: ProductData[] = [
     metaTitle: 'SecureBench: CIS Benchmark Hardening Automation',
     metaDescription: 'SecureBench automates CIS Level 1 & 2 hardening across your server fleet, detects configuration drift, and generates audit-ready compliance reports.',
     keywords: 'SecureBench, CIS benchmark automation, CIS benchmark compliance tool, server hardening automation, configuration drift detection, CIS Level 1 and Level 2 hardening',
+    applicationCategory: 'SecurityApplication',
+    applicationSubCategory: 'CIS benchmark compliance and server hardening',
   },
   {
     id: 'nixops-ai',
@@ -171,6 +181,10 @@ export const PRODUCTS_DATA: ProductData[] = [
     metaTitle: 'NixOps AI Agents: AIOps & Self-Healing Servers',
     metaDescription: 'NixOps AI Agents use local machine learning to predict failures, analyse logs, and self-heal common issues across Linux, Windows, and Kubernetes.',
     keywords: 'NixOps AI Agents, AIOps platform, self-healing infrastructure, predictive anomaly detection agents, automated log analysis, cloud cost optimisation',
+    applicationCategory: 'BusinessApplication',
+    applicationSubCategory: 'AIOps and self-healing infrastructure',
+    // Deployment options on the page: Linux daemon, Windows service, Kubernetes sidecar.
+    operatingSystem: 'Linux, Windows',
   },
 ];
 
