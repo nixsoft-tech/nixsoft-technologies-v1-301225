@@ -102,9 +102,12 @@ const BlogPost: React.FC = () => {
         description={post.excerpt}
         path={`/blog/${post.slug}`}
         ogType="article"
-        ogImage={post.image}
-        ogImageWidth={post.imageWidth}
-        ogImageHeight={post.imageHeight}
+        // Link previews show the post's share card (title on the brand
+        // layout) when the build made one; otherwise the featured image.
+        ogImage={post.shareImage ?? post.image}
+        ogImageWidth={post.shareImage ? 1200 : post.imageWidth}
+        ogImageHeight={post.shareImage ? 630 : post.imageHeight}
+        ogImageAlt={post.title}
         keywords={`${post.category}, DevOps, Automation, ${post.author}`}
         breadcrumbs={[
           { name: 'Blog', path: '/blog' },

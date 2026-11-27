@@ -19,6 +19,8 @@ interface SEOProps {
   /** Pixel size of a custom ogImage, when known (the default image is 1200×630). */
   ogImageWidth?: number;
   ogImageHeight?: number;
+  /** Alt text of a custom ogImage (default: the title). */
+  ogImageAlt?: string;
   keywords?: string;
   /** Breadcrumb trail after Home, e.g. [{ name: 'Services', path: '/services' }, …]. */
   breadcrumbs?: { name: string; path: string }[];
@@ -51,6 +53,7 @@ const SEO: React.FC<SEOProps> = ({
   ogImage = DEFAULT_OG_IMAGE,
   ogImageWidth,
   ogImageHeight,
+  ogImageAlt,
   keywords,
   breadcrumbs,
   noindex = false,
@@ -77,7 +80,7 @@ const SEO: React.FC<SEOProps> = ({
   const socialDescription = shortDescription.endsWith('…') ? description : shortDescription;
   const isDefaultImage = ogImage === DEFAULT_OG_IMAGE;
   // Read out by screen readers on X and LinkedIn cards.
-  const imageAlt = isDefaultImage ? 'Nixsoft Technologies: open-source DevOps and managed IT services' : title;
+  const imageAlt = isDefaultImage ? 'Nixsoft Technologies: open-source DevOps and managed IT services' : ogImageAlt ?? title;
   const canonical = path === undefined ? undefined : `${SITE_URL}${path}`;
 
   // One connected @graph per indexable page (see lib/schema.ts). Not-found and

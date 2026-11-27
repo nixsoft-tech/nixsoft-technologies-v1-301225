@@ -120,6 +120,9 @@ export interface BlogPost {
   /** Featured image size in pixels, when WordPress reports it. */
   imageWidth?: number;
   imageHeight?: number;
+  /** Absolute URL of the post's 1200×630 share card (og:image), when the
+   *  build generated one (scripts/share-cards); else the featured image is used. */
+  shareImage?: string;
   /** srcset of the featured image's smaller WordPress copies (+ the original). */
   imageSrcSet?: string;
   /** Words in the article body (for Article structured data). */
