@@ -103,6 +103,8 @@ const BlogPost: React.FC = () => {
         path={`/blog/${post.slug}`}
         ogType="article"
         ogImage={post.image}
+        ogImageWidth={post.imageWidth}
+        ogImageHeight={post.imageHeight}
         keywords={`${post.category}, DevOps, Automation, ${post.author}`}
         breadcrumbs={[
           { name: 'Blog', path: '/blog' },
